@@ -1,5 +1,7 @@
 import React from 'react'
 import Navbar from '../components/Navbar'
+import { FaInstagram, FaGithub, FaLinkedin } from 'react-icons/fa';
+
 
 interface FeatureCard {
   id: number;
@@ -177,10 +179,9 @@ const Getstarted: React.FC = () => {
     <div>
       <h3 className="text-lg font-semibold mb-4 text-purple-400">Follow Us</h3>
       <div className="flex gap-4">
-        <a href="#" className="hover:text-pink-400 text-2xl"><i className="fab fa-instagram"></i></a>
-        <a href="#" className="hover:text-blue-400 text-2xl"><i className="fab fa-linkedin"></i></a>
-        <a href="#" className="hover:text-white text-2xl"><i className="fab fa-github"></i></a>
-        <a href="#" className="hover:text-green-400 text-2xl"><i className="fas fa-file-alt"></i></a>
+        <a href="https://www.instagram.com/chaitanya._001" className="hover:text-pink-400 text-2xl"><FaInstagram/></a>
+        <a href="https://www.linkedin.com/in/chaitanya-khurana-077b702a0/" className="hover:text-blue-400 text-2xl"><FaLinkedin/></a>
+        <a href="https://github.com/Chaitanyaa0001" className="hover:text-white text-2xl"><FaGithub/></a>
       </div>
       <p className="mt-4 text-gray-400 text-sm">
         Stay connected for updates, causes & impact stories.

@@ -1,13 +1,18 @@
 import React, { useState } from 'react';
-import { useTheme } from '@/context/useTheme';
 import { FiSun, FiMoon } from 'react-icons/fi';
 import { countries } from '@/utils/countries';
+import { useNavigate } from 'react-router-dom';
+import { toggleTheme } from '@/redux/themeSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import type { RootState } from '@/redux/store';
 
 
 type Method = 'email' | 'phone';
 
 const Login: React.FC = () => {
-  const { isDark, toggleTheme } = useTheme();
+  const dispatch = useDispatch();
+  const isDark = useSelector((state:RootState) => state.theme.isDark);
+  const navigate = useNavigate();
 
   const [method, setMethod] = useState<Method>('email');
   const [email, setEmail] = useState('');
@@ -15,43 +20,64 @@ const Login: React.FC = () => {
   const [countryCode, setCountryCode] = useState('+91');
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  e.preventDefault();
+  const payload =
+    method === 'email'
+      ? { method, email }
+      : { method, phone: `${countryCode}${phone}` };
 
-    const payload =
-      method === 'email'
-        ? { method, email }
-        : { method, phone: `${countryCode}${phone}` };
+  console.log('Login Payload:', payload);
 
-    console.log('Login Payload:', payload);
+  // ⬇️ Add navigation using payload values
+  const destination = method === 'email' ? email : `${countryCode}${phone}`;
+  navigate('/verify', {
+    state: {
+      method,
+      destination,
+      context: 'login',
+    },
+  });
+};
 
-  };
 
   return (
-    <div className='flex flex-col justify-center items-center h-[100vh] w-[100vw] '>
-      <button
-        type="button"
-        onClick={toggleTheme}
-        className="text-2xl hover:opacity-80 transition rounded-[6px]   cursor-pointer bg p-1 mr-2 border-2 border-purple-600 dark:border-purple-900 "
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#f0f0f0] to-[#e2e2e2] dark:from-[#0f0c29] dark:via-[#302b63] dark:to-[#24243e] px-4">
+      <div className="w-full max-w-md bg-white dark:bg-[#0e0d1f] p-8 rounded-2xl shadow-lg relative">
+        <button type='button'
+          onClick={() => dispatch(toggleTheme())}
+          className="absolute top-4 right-4 p-2 border rounded-full border-purple-700 hover:bg-purple-100 dark:hover:bg-[#1a1733] transition"
+        >
+          {isDark ? <FiSun className="text-purple-600" /> : <FiMoon className="text-purple-600" />}
+        </button>
 
-      >
-        {isDark ? <FiSun className='text-purple-600' /> : <FiMoon className='text-purple-600' />}
-      </button>
+        <h2 className="text-2xl font-bold text-center text-gray-800 dark:text-white mb-1">
+          Welcome Back
+        </h2>
+        <p className="text-sm text-center text-gray-600 dark:text-gray-400 mb-6">
+          Enter your details to continue
+        </p>
 
-      <div>
-        <h1>Welcome Back</h1>
-        <p>Enter your details to continue</p>
-
-        <form onSubmit={handleSubmit}>
-          <div>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="flex gap-4">
             <button
               type="button"
               onClick={() => setMethod('email')}
+              className={`flex-1 py-2 rounded-md text-sm font-semibold transition ${
+                method === 'email'
+                  ? 'bg-purple-600 text-white'
+                  : 'bg-[#f0f0f0] dark:bg-[#15132b] text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-[#2e2b4f]'
+              }`}
             >
               Email
             </button>
             <button
               type="button"
               onClick={() => setMethod('phone')}
+              className={`flex-1 py-2 rounded-md text-sm font-semibold transition ${
+                method === 'phone'
+                  ? 'bg-purple-600 text-white'
+                  : 'bg-[#f0f0f0] dark:bg-[#15132b] text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-[#2e2b4f]'
+              }`}
             >
               Phone
             </button>
@@ -64,32 +90,47 @@ const Login: React.FC = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              className="w-full p-3 rounded-md bg-[#f0f0f0] dark:bg-[#15132b] border border-gray-300 dark:border-[#2e2b4f] placeholder-gray-500 dark:placeholder-gray-400 text-sm text-black dark:text-white"
             />
           ) : (
-            <div>
+            <div className="flex gap-2">
               <select
-                aria-label="Select country code"
+              aria-label="State"
                 value={countryCode}
                 onChange={(e) => setCountryCode(e.target.value)}
+                className="bg-[#f0f0f0] dark:bg-[#15132b] border border-gray-300 dark:border-[#2e2b4f] p-2 rounded-md text-sm text-gray-700 dark:text-gray-300"
               >
-                {countries.map((country)=>{
-                  return <option key={country.code} value={country.dial_code}>
-                            {country.name} ({country.dial_code})
-                         </option>
-                })};
+                {countries.map((country) => (
+                  <option key={country.code} value={country.dial_code}>
+                    {country.name} ({country.dial_code})
+                  </option>
+                ))}
               </select>
               <input
                 type="tel"
-                placeholder="Enter your phone number"
+                placeholder="Phone number"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 required
+                className="flex-1 p-3 rounded-md bg-[#f0f0f0] dark:bg-[#15132b] border border-gray-300 dark:border-[#2e2b4f] placeholder-gray-500 dark:placeholder-gray-400 text-sm text-black dark:text-white"
               />
             </div>
           )}
 
-          <button type="submit">Send OTP</button>
+          <button
+            type="submit"
+            className="w-full p-3 rounded-md font-semibold bg-gradient-to-r from-purple-600 to-pink-500 text-white text-sm hover:opacity-90"
+          >
+            Send OTP
+          </button>
         </form>
+
+        <p className="text-center text-sm text-gray-600 dark:text-gray-400 mt-4">
+          Don’t have an account?{' '}
+          <a href="/signup" className="text-purple-500 font-semibold hover:underline">
+            Sign up here
+          </a>
+        </p>
       </div>
     </div>
   );

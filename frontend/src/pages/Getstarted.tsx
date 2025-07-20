@@ -2,7 +2,6 @@ import React from 'react'
 import Navbar from '../components/Navbar'
 import { FaInstagram, FaGithub, FaLinkedin } from 'react-icons/fa';
 
-
 interface FeatureCard {
   id: number;
   title: string;

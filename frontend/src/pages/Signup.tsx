@@ -147,13 +147,13 @@ const Signup: React.FC = () => {
               required
             />
           ) : (
-            <div className="flex gap-2">
+            <div className="flex gap-2 w-[100%]">
               <select
               aria-label='State'
                 name="countryCode"
                 value={formData.countryCode}
                 onChange={handleChange}
-                className="bg-[#f0f0f0] dark:bg-[#15132b] border border-gray-300 dark:border-[#2e2b4f] p-2 rounded-md text-sm text-gray-700 dark:text-gray-300"
+                className="bg-[#f0f0f0] w-[32%] dark:bg-[#15132b] border border-gray-300 dark:border-[#2e2b4f] p-2 rounded-md text-sm text-gray-700 dark:text-gray-300"
               >
                 {countries.map((c) => (
                   <option key={c.code} value={c.dial_code}>
@@ -167,7 +167,7 @@ const Signup: React.FC = () => {
                 value={formData.phone}
                 onChange={handleChange}
                 placeholder="Phone number"
-                className="flex-1 p-3 rounded-md bg-[#f0f0f0] dark:bg-[#15132b] border border-gray-300 dark:border-[#2e2b4f] placeholder-gray-500 dark:placeholder-gray-400 text-sm text-black dark:text-white"
+                className="flex-1 p-3  rounded-md bg-[#f0f0f0] dark:bg-[#15132b] border border-gray-300 dark:border-[#2e2b4f] placeholder-gray-500 dark:placeholder-gray-400 text-sm text-black dark:text-white"
                 required
               />
             </div>

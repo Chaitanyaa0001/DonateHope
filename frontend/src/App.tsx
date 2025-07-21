@@ -8,6 +8,12 @@ import Login from './pages/Login';
 import Signupverify from './components/verificationotp/verify';
 import type { RootState } from './redux/store';
 import { useInitApp } from './hooks/UseInitApp';
+import CampignExplore from './pages/donar/CampignExplore';
+import FunderDashboard from './pages/funder/FunderDashboard';
+import RegisterCampign from './pages/funder/RegisterCampign';
+import ProtectedRoutes from './protectedroutes/ProtectedRoute';
+import Donate from './pages/donar/Donate';
+
 
 const App = (): React.JSX.Element => {
   const isDark = useSelector((state: RootState) => state.theme.isDark);
@@ -20,6 +26,12 @@ const App = (): React.JSX.Element => {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/verify" element={<Signupverify />} />
+        {/* donar  */}
+        <Route path="/campaigns" element={<ProtectedRoutes role="donar"><CampignExplore /></ProtectedRoutes>}/>
+        <Route path='/paynment' element={<ProtectedRoutes role='donar'><Donate/></ProtectedRoutes>}/>
+        {/* funder  */}
+        <Route path='/funder/dashboard' element = {<ProtectedRoutes role='funder'><FunderDashboard/></ProtectedRoutes>}/>
+        <Route path='/register' element={<ProtectedRoutes role='funder'><RegisterCampign/></ProtectedRoutes>}/>
       </Routes>
     </div>
   );

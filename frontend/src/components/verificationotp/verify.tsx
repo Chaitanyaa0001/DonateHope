@@ -12,8 +12,10 @@ interface LocationState {
 }
 
 const Signupverify: React.FC = () => {
-  const dispatch = useDispatch()
-  const isDark = useSelector((state:RootState)=> state.theme.isDark)
+  const dispatch = useDispatch();
+  const isDark = useSelector((state: RootState) => state.theme.isDark);
+  const role = useSelector((state: RootState) => state.auth.role);
+
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -27,7 +29,6 @@ const Signupverify: React.FC = () => {
     const updatedOtp = [...otp];
     updatedOtp[index] = value;
     setOtp(updatedOtp);
-
     if (value && index < 5) {
       inputRefs.current[index + 1]?.focus();
     }
@@ -43,19 +44,29 @@ const Signupverify: React.FC = () => {
     e.preventDefault();
     const enteredOtp = otp.join('');
     console.log(`Entered OTP (${context}):`, enteredOtp);
-    // Send OTP to backend for verification based on context...
+
+    if (context === 'login') {
+  if (role === 'donar') {
+    navigate('/campaigns');
+  } else if (role === 'funder') {
+    navigate('/register');
+  } else {
+    // Fallback role for now (until real backend is wired)
+    dispatch({ type: 'auth/setRole', payload: 'donar' }); 
+    navigate('/campaigns');
+  }
+}
+
   };
 
   return (
     <div className="relative w-full h-screen overflow-hidden">
       <div className="absolute inset-0 flex justify-center items-center z-10">
-        <div
-          className="w-[90%] sm:w-[60%] lg:w-[30%] mx-auto py-8 px-5 
-          bg-white/70 dark:bg-[#020817]/80 backdrop-blur-md
-          rounded-[6px] border-[#9810FA] border-2 
-          shadow-md shadow-gray-600 dark:shadow-none flex flex-col items-center"
-        >
-          {/* Icon & Theme Toggle */}
+        <div className="w-[90%] sm:w-[60%] lg:w-[30%] mx-auto py-8 px-5 
+            bg-white/70 dark:bg-[#020817]/80 backdrop-blur-md
+            rounded-[6px] border-[#9810FA] border-2 
+            shadow-md shadow-gray-600 dark:shadow-none flex flex-col items-center">
+
           <div className="flex flex-col items-center relative w-full">
             {method === 'email' ? (
               <FiMail className="text-white text-5xl p-2 bg-purple-600 rounded-[6px] shadow-md hover:bg-purple-700 transition" />
@@ -78,7 +89,6 @@ const Signupverify: React.FC = () => {
             <span className="font-medium">{destination}</span>
           </p>
 
-          {/* OTP Form */}
           <form onSubmit={handleSubmit} className="w-full flex flex-col items-center">
             <div className="flex gap-3 my-5">
               {otp.map((digit, idx) => (
@@ -92,10 +102,9 @@ const Signupverify: React.FC = () => {
                   value={digit}
                   onChange={(e) => handleChange(e.target.value, idx)}
                   onKeyDown={(e) => handleKeyDown(e, idx)}
-                 ref={(el) => {
+                  ref={(el) => {
                     if (el) inputRefs.current[idx] = el;
                   }}
-
                 />
               ))}
             </div>

@@ -123,6 +123,7 @@ const CampaignExplore: React.FC = () => {
 
           {/* Category Filter */}
           <select
+          aria-label='State'
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
             className="px-6 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white transition-all duration-200"
@@ -134,7 +135,7 @@ const CampaignExplore: React.FC = () => {
           </select>
 
           {/* Sort Filter */}
-          <select className="px-6 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white transition-all duration-200">
+          <select aria-label='State' className="px-6 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white transition-all duration-200">
             <option value="Most Recent">Most Recent</option>
             <option value="Urgent">Most Urgent</option>
             <option value="Goal Amount">Goal Amount</option>

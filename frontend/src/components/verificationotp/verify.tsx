@@ -51,7 +51,6 @@ const Signupverify: React.FC = () => {
   } else if (role === 'funder') {
     navigate('/register');
   } else {
-    // Fallback role for now (until real backend is wired)
     dispatch({ type: 'auth/setRole', payload: 'donar' }); 
     navigate('/campaigns');
   }

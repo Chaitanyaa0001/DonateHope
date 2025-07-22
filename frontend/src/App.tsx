@@ -11,7 +11,6 @@ import { useInitApp } from './hooks/UseInitApp';
 import CampignExplore from './pages/donar/CampignExplore';
 import FunderDashboard from './pages/funder/FunderDashboard';
 import RegisterCampign from './pages/funder/RegisterCampign';
-import ProtectedRoutes from './protectedroutes/ProtectedRoute';
 import Donate from './pages/donar/Donate';
 
 
@@ -27,11 +26,11 @@ const App = (): React.JSX.Element => {
         <Route path="/signup" element={<Signup />} />
         <Route path="/verify" element={<Signupverify />} />
         {/* donar  */}
-        <Route path="/campaigns" element={<ProtectedRoutes role="donar"><CampignExplore /></ProtectedRoutes>}/>
-        <Route path='/paynment' element={<ProtectedRoutes role='donar'><Donate/></ProtectedRoutes>}/>
-        {/* funder  */}
-        <Route path='/funder/dashboard' element = {<ProtectedRoutes role='funder'><FunderDashboard/></ProtectedRoutes>}/>
-        <Route path='/register' element={<ProtectedRoutes role='funder'><RegisterCampign/></ProtectedRoutes>}/>
+        <Route path="/campaigns" element={<CampignExplore />}/>
+        <Route path='/paynment' element={<Donate/>}/>
+  
+        <Route path='/funder/dashboard' element = {<FunderDashboard/>}/>
+        <Route path='/register' element={<RegisterCampign/>}/>
       </Routes>
     </div>
   );

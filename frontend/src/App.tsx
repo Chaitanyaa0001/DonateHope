@@ -13,8 +13,8 @@ import CampignExplore from './pages/donar/CampignExplore';
 import FunderDashboard from './pages/funder/FunderDashboard';
 import RegisterCampign from './pages/funder/RegisterCampign';
 import Donate from './pages/donar/Donate';
-import PaymentHistory from './pages/donar/PaymentHistory';
 
+const PaymentHistory = lazy(()=> import('@/pages/donar/PaymentHistory')) ;
 
 const App = (): React.JSX.Element => {
   const isDark = useSelector((state: RootState) => state.theme.isDark);

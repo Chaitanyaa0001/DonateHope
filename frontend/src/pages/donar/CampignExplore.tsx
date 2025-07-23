@@ -1,8 +1,10 @@
-import React, { lazy, Suspense } from 'react';
+import React, { lazy, Suspense, useState } from 'react';
 import { FiSearch } from 'react-icons/fi';
 import Togglebutton from '@/components/ui/Togglebutton';
 import { motion } from 'framer-motion';
 import dummy from '../../assets/dummy.jpg'
+import Footer from '@/components/Footer';
+import { useNavigate} from 'react-router-dom';
 
 const CampaignCard = lazy(() => import('@/components/cards/CampaignCard'));
 
@@ -45,7 +47,98 @@ const cardData = [
     daysLeft: 8,
     category: 'Education',
     image: dummy,
+  },{
+  id: 4,
+    title: 'Flood Relief in Kerala',
+    description: 'Immediate relief for flood-affected families. Providing food, shelter, and medical aid to those in need.',
+    location: 'Kerala',
+    raised: '₹7,50,000',
+    goal: '₹10,00,000',
+    percent: 75,
+    donors: 432,
+    daysLeft: 8,
+    category: 'Education',
+    image: dummy,
   },
+  {
+  id: 5,
+    title: 'Flood Relief in Kerala',
+    description: 'Immediate relief for flood-affected families. Providing food, shelter, and medical aid to those in need.',
+    location: 'Kerala',
+    raised: '₹7,50,000',
+    goal: '₹10,00,000',
+    percent: 75,
+    donors: 432,
+    daysLeft: 8,
+    category: 'Education',
+    image: dummy,
+  },
+  {
+  id: 6,
+    title: 'Flood Relief in Kerala',
+    description: 'Immediate relief for flood-affected families. Providing food, shelter, and medical aid to those in need.',
+    location: 'Kerala',
+    raised: '₹7,50,000',
+    goal: '₹10,00,000',
+    percent: 75,
+    donors: 432,
+    daysLeft: 8,
+    category: 'Education',
+    image: dummy,
+  },
+  {
+  id: 7,
+    title: 'Flood Relief in Kerala',
+    description: 'Immediate relief for flood-affected families. Providing food, shelter, and medical aid to those in need.',
+    location: 'Kerala',
+    raised: '₹7,50,000',
+    goal: '₹10,00,000',
+    percent: 75,
+    donors: 432,
+    daysLeft: 8,
+    category: 'Education',
+    image: dummy,
+  },
+  {
+  id: 8,
+    title: 'Flood Relief in Kerala',
+    description: 'Immediate relief for flood-affected families. Providing food, shelter, and medical aid to those in need.',
+    location: 'Kerala',
+    raised: '₹7,50,000',
+    goal: '₹10,00,000',
+    percent: 75,
+    donors: 432,
+    daysLeft: 8,
+    category: 'Education',
+    image: dummy,
+  },
+  {
+  id: 9,
+    title: 'Flood Relief in Kerala',
+    description: 'Immediate relief for flood-affected families. Providing food, shelter, and medical aid to those in need.',
+    location: 'Kerala',
+    raised: '₹7,50,000',
+    goal: '₹10,00,000',
+    percent: 75,
+    donors: 432,
+    daysLeft: 8,
+    category: 'Education',
+    image: dummy,
+  },
+  {
+  id: 10,
+    title: 'Flood Relief in Kerala',
+    description: 'Immediate relief for flood-affected families. Providing food, shelter, and medical aid to those in need.',
+    location: 'Kerala',
+    raised: '₹7,50,000',
+    goal: '₹10,00,000',
+    percent: 75,
+    donors: 432,
+    daysLeft: 8,
+    category: 'Education',
+    image: dummy,
+  },
+ 
 ];
 
 const containerVariants = {
@@ -66,23 +159,47 @@ const itemVariants = {
 };
 
 const CampignExplore: React.FC = () => {
+  const navigate = useNavigate();
+  const [searchtext, setsearchtext] = useState('');
+  const [selectcategory, setselectcategory] = useState('All')  
+  const [sortoptions, setsortoptions] = useState("Most Recent ")
+
+  const filteredCampaigns = cardData
+  .filter((card) => {
+    const matchSearch = card.title.toLowerCase().includes(searchtext.toLowerCase());
+    const matchCategory = selectcategory === 'All' || card.category === selectcategory;
+    return matchSearch && matchCategory;
+  })
+  .sort((a, b) => {
+    if (sortoptions === 'Most Urgent') return a.daysLeft - b.daysLeft;
+    if (sortoptions === 'Most Funded') return parseInt(b.raised.replace(/\D/g, '')) - parseInt(a.raised.replace(/\D/g, ''));
+    return b.id - a.id; // assuming most recent means newest ID
+  });
+
   return (
     <motion.div
-      className="w-[90%] sm:w-[85%] mx-auto py-10"
+      className= ""
       initial="hidden"
       animate="visible"
       variants={containerVariants}
     >
       {/* Header */}
-      <motion.div className="flex justify-between items-center mb-8" variants={itemVariants}>
+      <motion.div className=" w-[90%] sm:w-[85%] mx-auto flex justify-between items-center mt-8" variants={itemVariants}>
         <Togglebutton />
-        <button className="bg-[#9D5ED5] text-white dark:text-black px-4 py-2 rounded-md font-semibold shadow-md hover:scale-105 transition duration-300">
-          Dashboard
+        <div className="flex gap-3">
+          <button
+          type="button"
+          className="bg-green-500 text-white dark:text-black px-4 py-2 rounded-md font-semibold shadow-md hover:scale-105 transition duration-300"
+          onClick={() => navigate('/paymenthistory')}
+        >
+          Payment History
         </button>
+        </div>
       </motion.div>
 
+
       {/* Title */}
-      <motion.div className="mb-16 flex flex-col sm:items-center text-center gap-2" variants={itemVariants}>
+      <motion.div className=" w-[90%] sm:w-[85%] mx-auto mb-16 flex flex-col sm:items-center text-center gap-2" variants={itemVariants}>
         <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold">
           Active <span className="text-purple-600 drop-shadow-sm">Campaigns</span>
         </h1>
@@ -92,11 +209,13 @@ const CampignExplore: React.FC = () => {
       </motion.div>
 
       {/* Filters */}
-      <motion.div className="flex flex-col md:flex-row gap-4 mb-10" variants={itemVariants}>
+      <motion.div className=" w-[90%] sm:w-[85%] mx-auto flex flex-col md:flex-row gap-4 mb-10" variants={itemVariants}>
         {/* Search Box */}
-        <div className="flex items-center border-2 border-gray-300 focus-within:border-purple-500 rounded-md px-3 py-2 bg-white dark:bg-[#1a1a2e] w-full transition duration-300">
-          <FiSearch className="text-gray-500 mr-2" />
+        <div className="flex items-center border-2 border-green-400 focus-within:border-purple-500 rounded-md px-3 py-2 bg-white dark:bg-[#1a1a2e] w-full transition duration-300">
+          <FiSearch className="text-green-500 mr-2" />
           <input
+          value={searchtext}
+          onChange={(e) => setsearchtext(e.target.value)}
             type="text"
             name="search"
             placeholder="Search campaigns"
@@ -106,8 +225,10 @@ const CampignExplore: React.FC = () => {
 
         {/* Category Filter */}
         <select
+        value={selectcategory}
+        onChange={(e) => setselectcategory(e.target.value)}
           aria-label="Category"
-          className="bg-white dark:bg-[#1a1a2e] border border-gray-400 rounded-md px-3 py-2 text-sm text-gray-800 dark:text-white w-full md:w-auto transition duration-300"
+          className="bg-white dark:bg-[#1a1a2e] border-2 border-green-500 rounded-md px-3 py-2 text-sm text-gray-800 dark:text-white w-full md:w-auto transition duration-300"
         >
           <option>Medical</option>
           <option>Education</option>
@@ -118,21 +239,23 @@ const CampignExplore: React.FC = () => {
 
         {/* Sort Filter */}
         <select
+        value={sortoptions}
+        onChange={(e)=>setsortoptions(e.target.value)}
           aria-label="Sort"
-          className="bg-white dark:bg-[#1a1a2e] border border-gray-400 rounded-md px-3 py-2 text-sm text-gray-800 dark:text-white w-full md:w-auto transition duration-300"
+          className="bg-white dark:bg-[#1a1a2e] border-2 border-green-500 rounded-md px-3 py-2 text-sm text-gray-800 dark:text-white w-full md:w-auto transition duration-300"
         >
           <option>Most Recent</option>
           <option>Most Urgent</option>
           <option>Most Funded</option>
         </select>
-      </motion.div>
+      </motion.div>  
 
       {/* Cards Grid */}
       <motion.div
-        className="grid md:grid-cols-2 lg:grid-cols-3 gap-6"
+        className=" w-[90%] sm:w-[85%] mx-auto grid md:grid-cols-2 lg:grid-cols-3 gap-6"
         variants={containerVariants}
       >
-        {cardData.map((card) => (
+        {filteredCampaigns.map((card) => (
           <motion.div key={card.id} variants={itemVariants}>
             <Suspense fallback={<div className="h-[400px] bg-gray-200 dark:bg-gray-800 rounded-lg animate-pulse" />}>
               <CampaignCard card={card} />
@@ -140,7 +263,9 @@ const CampignExplore: React.FC = () => {
           </motion.div>
         ))}
       </motion.div>
+      <Footer/>
     </motion.div>
+  
   );
 };
 

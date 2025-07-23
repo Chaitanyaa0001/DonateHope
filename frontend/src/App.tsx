@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { lazy, Suspense } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+
 
 import Getstarted from './pages/Getstarted';
 import Signup from './pages/Signup';
@@ -12,6 +13,7 @@ import CampignExplore from './pages/donar/CampignExplore';
 import FunderDashboard from './pages/funder/FunderDashboard';
 import RegisterCampign from './pages/funder/RegisterCampign';
 import Donate from './pages/donar/Donate';
+import PaymentHistory from './pages/donar/PaymentHistory';
 
 
 const App = (): React.JSX.Element => {
@@ -27,7 +29,8 @@ const App = (): React.JSX.Element => {
         <Route path="/verify" element={<Signupverify />} />
         {/* donar  */}
         <Route path="/campaigns" element={<CampignExplore />}/>
-        <Route path='/paynment' element={<Donate/>}/>
+        <Route path='/paynment/:id' element ={<Suspense><Donate/></Suspense>}/>
+        <Route path='/paymenthistory' element={<PaymentHistory/>}/>
   
         <Route path='/funder/dashboard' element = {<FunderDashboard/>}/>
         <Route path='/register' element={<RegisterCampign/>}/>

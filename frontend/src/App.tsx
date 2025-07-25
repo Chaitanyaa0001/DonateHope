@@ -13,6 +13,8 @@ import CampignExplore from './pages/donar/CampignExplore';
 import FunderDashboard from './pages/funder/FunderDashboard';
 import RegisterCampign from './pages/funder/RegisterCampign';
 import Donate from './pages/donar/Donate';
+import MyCampaignDetails from './pages/funder/Mycampaigns';
+
 
 const PaymentHistory = lazy(()=> import('@/pages/donar/PaymentHistory')) ;
 
@@ -32,8 +34,10 @@ const App = (): React.JSX.Element => {
         <Route path='/paynment/:id' element ={<Suspense><Donate/></Suspense>}/>
         <Route path='/paymenthistory' element={<PaymentHistory/>}/>
   
-        <Route path='/funder/dashboard' element = {<FunderDashboard/>}/>
+        <Route path='/dashboard' element = {<FunderDashboard/>}/>
         <Route path='/register' element={<RegisterCampign/>}/>
+        <Route path="/my-campaigns/:id" element={<MyCampaignDetails />} />
+
       </Routes>
     </div>
   );

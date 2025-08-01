@@ -4,9 +4,8 @@ import { useSelector } from 'react-redux';
 
 
 import Getstarted from './pages/Getstarted';
-import Signup from './pages/Signup';
-import Login from './pages/Login';
-import Signupverify from './components/verificationotp/verify';
+import Login from '@/pages/Login';
+import Verify from './components/verificationotp/verify';
 import type { RootState } from './redux/store';
 import { useInitApp } from './hooks/UseInitApp';
 import CampignExplore from './pages/donar/CampignExplore';
@@ -27,8 +26,7 @@ const App = (): React.JSX.Element => {
       <Routes>
         <Route path="/" element={<Getstarted />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/verify" element={<Signupverify />} />
+        <Route path="/verify" element={<Verify />} />
         {/* donar  */}
         <Route path="/campaigns" element={<CampignExplore />}/>
         <Route path='/paynment/:id' element ={<Suspense><Donate/></Suspense>}/>

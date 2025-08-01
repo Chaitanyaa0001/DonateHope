@@ -1,25 +1,23 @@
 import React, { useState, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { FiMail, FiMoon, FiPhone, FiSun } from 'react-icons/fi';
+import { FiMail,FiPhone } from 'react-icons/fi';
 import { useDispatch, useSelector } from 'react-redux';
 import type { RootState } from '@/redux/store';
-import { toggleTheme } from '@/redux/themeSlice';
+import Togglebutton from '../ui/Togglebutton';
 
 interface LocationState {
   method: 'email' | 'phone';
   destination: string;
-  context: 'signup' | 'login';
 }
 
-const Signupverify: React.FC = () => {
+const Verify: React.FC = () => {
   const dispatch = useDispatch();
-  const isDark = useSelector((state: RootState) => state.theme.isDark);
   const role = useSelector((state: RootState) => state.auth.role);
 
   const location = useLocation();
   const navigate = useNavigate();
 
-  const { method, destination, context } = location.state as LocationState;
+  const { method, destination } = location.state as LocationState;
 
   const [otp, setOtp] = useState(Array(6).fill(''));
   const inputRefs = useRef<HTMLInputElement[]>([]);
@@ -43,9 +41,8 @@ const Signupverify: React.FC = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const enteredOtp = otp.join('');
-    console.log(`Entered OTP (${context}):`, enteredOtp);
+    console.log(`Entered OTP :`, enteredOtp);
 
-    if (context === 'login') {
   if (role === 'donar') {
     navigate('/campaigns');
   } else if (role === 'funder') {
@@ -54,7 +51,7 @@ const Signupverify: React.FC = () => {
     dispatch({ type: 'auth/setRole', payload: 'donar' }); 
     navigate('/campaigns');
   }
-}
+
 
   };
 
@@ -73,13 +70,7 @@ const Signupverify: React.FC = () => {
               <FiPhone className="text-white text-5xl p-2 bg-purple-600 rounded-[6px] shadow-md hover:bg-purple-700 transition" />
             )}
 
-            <button
-              type="button"
-              onClick={() => dispatch(toggleTheme())}
-              className="absolute right-0 top-0 border p-2 rounded-full border-purple-700 hover:bg-purple-100 dark:hover:bg-[#1a1733] transition"
-            >
-              {isDark ? <FiSun className="text-purple-600" /> : <FiMoon className="text-purple-600" />}
-            </button>
+           <Togglebutton/>
           </div>
 
           <h1 className="text-2xl font-semibold mt-6">Verify {method === 'email' ? 'Email' : 'Phone'}</h1>
@@ -128,4 +119,4 @@ const Signupverify: React.FC = () => {
   );
 };
 
-export default Signupverify;
+export default Verify;

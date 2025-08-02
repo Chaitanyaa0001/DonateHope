@@ -7,3 +7,6 @@ export interface IUser extends Document {
     role: 'donar' | 'funder';
     isVerified: boolean;
 }
+
+
+// vuujvuivi 

@@ -1,51 +1,77 @@
-// src/controllers/auth.controller.ts
-import { Request, Response } from 'express';
-import User from '../models/user.model';
-import { generateToken } from '../utils/generateToken';
+// import { Request, Response } from 'express';
+// import User from '../models/user.model';
+// import { generateAccessToken, generateRefreshToken } from '../utils/generateToken';
 
-export const authLogin = async (req: Request, res: Response) => {
-  try {
-    const { email, phone, fullName, role } = req.body;
+// export const authLogin = async (req: Request, res: Response) => {
+//   try {
+//     const { email, phone, role, fullName } = req.body;
 
-    // Require either email or phone
-    if (!email && !phone) {
-      return res.status(400).json({ message: 'Email or phone is required' });
-    }
+//     if (!email && !phone) {
+//       return res.status(400).json({ message: 'Email or phone is required' });
+//     }
 
-    // Find existing user by email or phone
-    let user = await User.findOne({ $or: [{ email }, { phone }] });
+//     let user = await User.findOne({ $or: [{ email }, { phone }] });
 
-    // If no user exists, require role and create new verified user (OTP assumed verified before this call)
-    if (!user) {
-      if (!role) {
-        return res.status(400).json({ message: 'Role is required for new user registration' });
-      }
-      user = new User({ email, phone, fullName, role, isVerified: true });
-      await user.save();
-    }
+//     if (!user) {
+//       if (!role) return res.status(400).json({ message: 'Role required for new user' });
+//       user = new User({ email, phone, fullName, role, isVerified: true });
+//       await user.save();
+//     }
 
-    // Ensure the user has verified via OTP
-    if (!user.isVerified) {
-      return res.status(403).json({ message: 'Please verify your account via OTP' });
-    }
+//     if (!user.isVerified) {
+//       return res.status(403).json({ message: 'Verify account via OTP' });
+//     }
 
-    // Generate JWT token
-    const token = generateToken(user._id.toString(), user.role);
+//     const accessToken = generateAccessToken(user._id.toString(), user.role);
+//     const refreshToken = generateRefreshToken(user._id.toString(), user.role);
 
-    // Send response
-    return res.status(200).json({
-      message: 'Login successful',
-      token,
-      user: {
-        id: user._id,
-        email: user.email,
-        phone: user.phone,
-        fullName: user.fullName,
-        role: user.role,
-      },
-    });
-  } catch (err) {
-    console.error('Login Error:', err);
-    return res.status(500).json({ message: 'Server error' });
-  }
-};
+//     res.cookie('accessToken', accessToken, {
+//       httpOnly: true,
+//       secure: true,
+//       sameSite: 'strict',
+//       maxAge: 15 * 60 * 1000,
+//     });
+
+//     res.cookie('refreshToken', refreshToken, {
+//       httpOnly: true,
+//       secure: true,
+//       sameSite: 'strict',
+//       maxAge: 7 * 24 * 60 * 60 * 1000,
+//     });
+
+//     return res.status(200).json({
+//       message: 'Login successful',
+//       user: {
+//         id: user._id,
+//         email: user.email,
+//         phone: user.phone,
+//         fullname: user.fullname,
+//         role: user.role,
+//       },
+//     });
+//   } catch (err) {
+//     console.error('Login error:', err);
+//     res.status(500).json({ message: 'Server error' });
+//   }
+// };
+
+// export const refreshToken = (req: Request, res: Response) => {
+//   const token = req.cookies.refreshToken;
+//   if (!token) return res.status(401).json({ message: 'Refresh token missing' });
+
+//   try {
+//     const payload = jwt.verify(token, process.env.JWT_REFRESH_SECRET!);
+//     const accessToken = generateAccessToken(payload.userId, payload.role);
+
+//     res.cookie('accessToken', accessToken, {
+//       httpOnly: true,
+//       secure: true,
+//       sameSite: 'strict',
+//       maxAge: 15 * 60 * 1000,
+//     });
+
+//     return res.status(200).json({ message: 'Token refreshed' });
+//   } catch (err) {
+//     return res.status(403).json({ message: 'Invalid refresh token' });
+//   }
+// };

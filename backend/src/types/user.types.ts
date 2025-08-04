@@ -1,6 +1,6 @@
 export interface IUser extends Document {
-    email?:string;
-    phone?: string;
+    email:string;
+    // phone?: string;
     fullname: string;
     otp?:string;
     otpExpiresAt?: Date;

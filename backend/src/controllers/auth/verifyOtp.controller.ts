@@ -9,7 +9,8 @@ export const verifyOTP = async (req:Request,res:Response) =>{
         if(!identifier && !otp){
             return res.status(400).json({message:"OTP is required"})
         }
-        const user = await User.findOne({$or: [{ email: identifier }, { phone: identifier }],otp});
+        // const user = await User.findOne({$or: [{ email: identifier }, { phone: identifier }],otp});
+        const user = await User.findOne({ email: identifier, otp });
         if(!user){
             return res.status(400).json({message:"inavlaid otp or identifier"});
         }

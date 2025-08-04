@@ -1,4 +1,4 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema, trusted } from "mongoose";
 import { IUser } from "../types/user.types";
 
 const userschema = new Schema<IUser>({
@@ -14,10 +14,15 @@ const userschema = new Schema<IUser>({
         unique:true,
         index:true
     },
+    fullname:{
+        type:String,
+        required:true
+    },
     otp:{
         type:String,
+        required:false
     },
-    otpExpiredAt:{
+    otpExpiresAt:{
         type:Date,
         index:{expires:'5m'}
     },

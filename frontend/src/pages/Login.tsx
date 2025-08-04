@@ -1,11 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { countries } from '@/utils/countries';
-import { FiSun, FiMoon, FiUser } from 'react-icons/fi';
-import { useDispatch, useSelector } from 'react-redux';
-import type { RootState } from '@/redux/store';
-import { toggleTheme } from '@/redux/themeSlice';
 import Togglebutton from '@/components/ui/Togglebutton';
+import { FiUser } from 'react-icons/fi'; // Fixed: import
 
 type Method = 'email' | 'phone';
 type Role = 'donor' | 'fundraiser';
@@ -20,8 +17,6 @@ type FormData = {
 };
 
 const Login: React.FC = () => {
-  const dispatch = useDispatch();
-  const isDark = useSelector((state:RootState)=> state.theme.isDark);
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState<FormData>({
@@ -33,9 +28,7 @@ const Login: React.FC = () => {
     role: 'donor',
   });
 
-  useEffect(() => {
-    document.documentElement.classList.toggle('dark', isDark);
-  }, [isDark]);
+ 
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -55,6 +48,8 @@ const Login: React.FC = () => {
       state: {
         method: formData.method,
         destination,
+        context: 'signup', // pass context for clarity
+        role: formData.role, // pass role if needed
       },
     });
   };
@@ -63,8 +58,7 @@ const Login: React.FC = () => {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#f0f0f0] to-[#e2e2e2] dark:from-[#0f0c29] dark:via-[#302b63] dark:to-[#24243e] text-black dark:text-white px-4">
       <div className="bg-white dark:bg-[#0e0d1f] p-8 rounded-2xl w-full max-w-md shadow-xl relative">
         {/* Theme Toggle */}
-        <Togglebutton/>
-
+        <Togglebutton />
         {/* Header Icon */}
         <div className="flex justify-center mb-4">
           <div className="bg-purple-600 p-3 rounded-xl">
@@ -142,9 +136,9 @@ const Login: React.FC = () => {
               required
             />
           ) : (
-            <div className="flex gap-2 w-[100%]">
+            <div className="flex gap-2 w-full">
               <select
-              aria-label='State'
+                aria-label='State'
                 name="countryCode"
                 value={formData.countryCode}
                 onChange={handleChange}
@@ -162,7 +156,7 @@ const Login: React.FC = () => {
                 value={formData.phone}
                 onChange={handleChange}
                 placeholder="Phone number"
-                className="flex-1 p-3  rounded-md bg-[#f0f0f0] dark:bg-[#15132b] border border-gray-300 dark:border-[#2e2b4f] placeholder-gray-500 dark:placeholder-gray-400 text-sm text-black dark:text-white"
+                className="flex-1 p-3 rounded-md bg-[#f0f0f0] dark:bg-[#15132b] border border-gray-300 dark:border-[#2e2b4f] placeholder-gray-500 dark:placeholder-gray-400 text-sm text-black dark:text-white"
                 required
               />
             </div>
@@ -177,7 +171,6 @@ const Login: React.FC = () => {
           </button>
         </form>
 
-        
       </div>
     </div>
   );

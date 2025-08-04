@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
-import User from '../../models/user.model';
-import { generateOTP } from '../../utils/otp';
-import { sendOTPEmail } from '../../service/sendOTPEmail';
-import { sendOTPPhone } from '../../service/sendOTPPhone';
+import User from '../../models/user.model.js';
+import { generateOTP } from '../../utils/otp.js';
+import { sendOTPEmail } from '../../service/sendOTPEmail.js';
+import { sendOTPPhone } from '../../service/sendOTPPhone.js';
 
 export const requestOTP = async (req: Request, res: Response) => {
   try {

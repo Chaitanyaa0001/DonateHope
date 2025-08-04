@@ -51,9 +51,7 @@ const Verify: React.FC = () => {
     dispatch({ type: 'auth/setRole', payload: 'donar' }); 
     navigate('/campaigns');
   }
-
-
-  };
+};
 
   return (
     <div className="relative w-full h-screen overflow-hidden">
@@ -69,7 +67,6 @@ const Verify: React.FC = () => {
             ) : (
               <FiPhone className="text-white text-5xl p-2 bg-purple-600 rounded-[6px] shadow-md hover:bg-purple-700 transition" />
             )}
-
            <Togglebutton/>
           </div>
 
@@ -82,37 +79,17 @@ const Verify: React.FC = () => {
           <form onSubmit={handleSubmit} className="w-full flex flex-col items-center">
             <div className="flex gap-3 my-5">
               {otp.map((digit, idx) => (
-                <input
-                  key={idx}
-                  type="text"
-                  maxLength={1}
-                  inputMode="numeric"
-                  placeholder="•"
-                  className="text-center text-lg font-semibold w-12 h-12 sm:h-14 sm:w-14 rounded-md p-3 border-2 focus:outline-none focus:border-purple-600 bg-transparent dark:text-white"
-                  value={digit}
+                <input key={idx} type="text" maxLength={1} inputMode="numeric" placeholder="•" className="text-center text-lg font-semibold w-12 h-12 sm:h-14 sm:w-14 rounded-md p-3 border-2 focus:outline-none focus:border-purple-600 bg-transparent dark:text-white"value={digit}
                   onChange={(e) => handleChange(e.target.value, idx)}
                   onKeyDown={(e) => handleKeyDown(e, idx)}
                   ref={(el) => {
                     if (el) inputRefs.current[idx] = el;
-                  }}
-                />
+                  }}/>
               ))}
             </div>
-
-            <button
-              type="submit"
-              className="bg-purple-600 text-white px-6 py-2 rounded-md hover:bg-purple-700 transition"
-            >
-              Verify OTP
-            </button>
+            <button type="submit" className="bg-purple-600 text-white px-6 py-2 rounded-md hover:bg-purple-700 transition">Verify OTP</button>
           </form>
-
-          <button
-            onClick={() => navigate(-1)}
-            className="text-sm text-purple-700 mt-4 hover:underline"
-          >
-            ← Back to contact info
-          </button>
+          <button type='button' onClick={() => navigate(-1)} className="text-sm text-purple-700 mt-4 hover:underline">← Back to contact info</button>
         </div>
       </div>
     </div>

@@ -1,5 +1,5 @@
-import User from "../../models/user.model";
-import { generateAccessToken, generateRefreshToken } from "../../utils/generateToken";
+import User from "../../models/user.model.js";
+import { generateAccessToken, generateRefreshToken } from "../../utils/generateToken.js";
 import {Request,Response} from 'express'
 
 export const verifyOTP = async (req:Request,res:Response) =>{

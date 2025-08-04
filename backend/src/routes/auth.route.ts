@@ -1,7 +1,7 @@
 import  express  from "express";
-import { requestOTP } from "../controllers/auth/sendOtp.controller";
-import { verifyOTP } from "../controllers/auth/verifyOtp.controller";
-import { refreshAccessToken } from "../controllers/auth/refreshToken.controller";
+import { requestOTP } from "../controllers/auth/sendOtp.controller.js";
+import { verifyOTP } from "../controllers/auth/verifyOtp.controller.js";
+import { refreshAccessToken } from "../controllers/auth/refreshToken.controller.js";
 const router = express.Router();
 
 router.post('/request-otp', requestOTP);

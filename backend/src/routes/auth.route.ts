@@ -4,6 +4,7 @@ import { verifyOTP } from "../controllers/auth/verifyOtp.controller.js";
 import { refreshAccessToken } from "../controllers/auth/refreshToken.controller.js";
 const router = express.Router();
 
+// routes 
 router.post('/request-otp', requestOTP);
 router.post('/verify-otp', verifyOTP);
 router.get('/refresh-token', refreshAccessToken);

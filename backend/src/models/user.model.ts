@@ -8,12 +8,6 @@ const userschema = new Schema<IUser>({
         unique:true,
         index:true
     },
-    phone:{
-        type:String,
-        required:false,
-        unique:true,
-        index:true
-    },
     fullname:{
         type:String,
         required:true
@@ -39,7 +33,7 @@ const userschema = new Schema<IUser>({
 },{timestamps:true})
 
 userschema.pre('validate', function (next) {
-  if (!this.email && !this.phone) {
+  if (!this.email) {
     next(new Error('Either email or phone is required'));
   } else {
     next();

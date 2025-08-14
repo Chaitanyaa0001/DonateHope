@@ -4,8 +4,7 @@ import cors from 'cors';
 import { connectDB } from './config/DB.ts';
 import cookieParser from 'cookie-parser';
 import authroutes from './routes/auth.route.ts'
-
-connectDB();
+import campaignroutes from './routes/campaign.route.ts'
 
 
 dotenv.config();
@@ -13,11 +12,15 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+
+connectDB();
+import './config/cloudinary.ts';
 app.use(cors());
 app.use(express.json());
 app.use(cookieParser());
 
 app.use('/api/auth', authroutes);
+app.use('/api/campaign',campaignroutes );
 
 // Sample route
 app.get('/', (req, res) => {

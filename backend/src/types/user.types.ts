@@ -1,11 +1,8 @@
 export interface IUser extends Document {
-    email:string;
-    // phone?: string;
-    fullname: string;
-    otp?:string;
-    otpExpiresAt?: Date;
-    role: 'donar' | 'funder';
-    isVerified: boolean;
+  email: string;
+  fullname: string;
+  otp?: string;
+  otpExpiresAt?: Date;
+  role: 'donor' | 'funder';   // <-- fixed spelling
+  isVerified: boolean;
 }
-
-

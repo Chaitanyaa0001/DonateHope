@@ -24,7 +24,8 @@ const campaginSchema =  new Schema<ICampaign>({
         required:true
     },
     raised:{
-        type:Number   ,
+        type:Number,
+        default: 0,
         required:true 
     },
     location:{

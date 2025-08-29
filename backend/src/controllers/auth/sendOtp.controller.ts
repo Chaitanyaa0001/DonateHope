@@ -23,6 +23,10 @@ export const requestOTP = async (req: Request, res: Response) => {
         role,
         fullname,
       });
+    }else{
+      if(role && user.role ! == role){
+        return res.status(400).json({message:`User already registered as ${user.role}. You cannot log in as ${role} with the same email.`});
+      }
     }
 
     const otp = generateOTP();

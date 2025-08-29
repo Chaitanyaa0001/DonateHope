@@ -16,10 +16,6 @@ const  paymentschema = new Schema<IPayment>({
         type:Number,
         required:true
     },
-    currency:{
-        type:String,
-        default: "INR"
-    },
     paymentStatus: {
       type: String,
       enum: ["PENDING", "SUCCESS", "FAILED"],

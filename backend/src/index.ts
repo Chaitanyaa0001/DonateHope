@@ -5,6 +5,7 @@ import { connectDB } from './config/DB.ts';
 import cookieParser from 'cookie-parser';
 import authroutes from './routes/auth.route.ts'
 import campaignroutes from './routes/campaign.route.ts'
+import paymentroutes from './routes/payment.route.ts'
 
 
 dotenv.config();
@@ -21,6 +22,8 @@ app.use(cookieParser());
 
 app.use('/api/auth', authroutes);
 app.use('/api/campaign',campaignroutes );
+app.use('/api/payment', paymentroutes);
+
 
 // Sample route
 app.get('/', (req, res) => {

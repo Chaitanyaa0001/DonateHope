@@ -33,7 +33,7 @@ const dummyCampaigns: Campaign[] = [
   },
 ];
 
-const MyCampaignDetails: React.FC = () => {
+const DashBoard: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
@@ -113,4 +113,4 @@ const MyCampaignDetails: React.FC = () => {
   );
 };
 
-export default MyCampaignDetails;
+export default DashBoard;

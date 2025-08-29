@@ -5,14 +5,14 @@ import { useSelector } from 'react-redux';
 
 import Getstarted from './pages/Getstarted';
 import Login from '@/pages/Login';
-import Verify from './components/verificationotp/verify';
 import type { RootState } from './redux/store';
 import { useInitApp } from './hooks/UseInitApp';
 import CampignExplore from './pages/donar/CampignExplore';
+import Verify from './pages/verificationotp/Verify';
 import FunderDashboard from './pages/funder/FunderDashboard';
 import RegisterCampign from './pages/funder/RegisterCampign';
 import Donate from './pages/donar/Donate';
-import MyCampaignDetails from './pages/funder/Mycampaigns';
+import MyCampaignDetails from './pages/funder/MyCampaigns';
 
 
 const PaymentHistory = lazy(()=> import('@/pages/donar/PaymentHistory')) ;

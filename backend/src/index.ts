@@ -13,7 +13,6 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-
 connectDB();
 import './config/cloudinary.ts';
 app.use(cors({

@@ -2,7 +2,6 @@ import mongoose from "mongoose";
 import { Request,Response } from "express";
 import crypto from "crypto";
 
-import userModel from "../../models/user.model";
 import { razorpay } from "../../config/razopay";
 import { Payment } from "../../models/Payment.model";
 import campaignModel from "../../models/campaign.model";

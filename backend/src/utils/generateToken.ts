@@ -11,13 +11,13 @@ const REFRESH_EXPIRE = process.env.REFRESH_EXPIRE || '7d';
 export interface TokenPayload {
   userId: string;
   role:string
-}
+};
 
 export const generateAccessToken =(userId:string,role:string) =>{
   const payload: TokenPayload = {userId,role};
   const options: SignOptions = {expiresIn:ACCESS_EXPIRE as SignOptions['expiresIn']};
   return jwt.sign(payload,JWT_SECRET,options);
-}
+};
 export const generateRefreshToken = (userId:string,role:string)=>{
   const paylaod: TokenPayload = {userId,role};
   const options: SignOptions = {expiresIn:REFRESH_EXPIRE as SignOptions['expiresIn']};
@@ -26,11 +26,10 @@ export const generateRefreshToken = (userId:string,role:string)=>{
 
 export const verifyAccessToken = (token:string): TokenPayload =>{
   return jwt.verify(token,JWT_SECRET) as TokenPayload;
-}
-
+};
 export const verifyRefreshToken = (token:string): TokenPayload =>{
   return jwt.verify(token,JWT_REFRESH_SECRET) as TokenPayload;
-}
+};
 
 // if (!JWT_SECRET || !JWT_REFRESH_SECRET) {
 //   throw new Error('JWT secrets are not defined in the environment variables');

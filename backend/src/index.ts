@@ -25,7 +25,6 @@ app.use(cookieParser());
 
 app.use('/api/auth', authroutes);
 app.use('/api/campaign',campaignroutes );
-// payment 
 app.use('/api/payment', paymentroutes);
 
 

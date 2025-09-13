@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-// import { countries } from '@/utils/countries'; // ⛔️ Not needed if phone is disabled
+// import { countries } from '@/utils/countries'; 
 import Togglebutton from '@/components/ui/Togglebutton';
 import { FiUser } from 'react-icons/fi';
+import { requestOTP } from '@/hooks/auth/uselogin';
 
-type Method = 'email'; // ⛔️ Only allow email
+type Method = 'email'; 
 type Role = 'donor' | 'fundraiser';
 
 type FormData = {
@@ -33,12 +34,14 @@ const Login: React.FC = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    const destination = formData.email;
-
-    navigate('/verify', {
+    try {
+      const success = await requestOTP(formData.email,formData.fullName,formData.role) ;
+      console.log(success.data.message);
+      const destination = formData.email;
+    if(success){
+      navigate('/verify', {
       state: {
         method: formData.method,
         destination,
@@ -46,6 +49,10 @@ const Login: React.FC = () => {
         role: formData.role,
       },
     });
+    }
+    } catch (err) {
+      console.error("Error requesting OTP",err)
+    }
   };
 
   return (

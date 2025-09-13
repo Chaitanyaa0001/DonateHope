@@ -1,8 +1,10 @@
 import React, { useState, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { FiMail /*, FiPhone */ } from 'react-icons/fi';
-import { useDispatch, useSelector } from 'react-redux';
+import {  useDispatch, useSelector } from 'react-redux';
 import type { RootState } from '@/redux/store';
+import { verifyOTP } from '@/hooks/auth/uselogin';
+import { setRole } from '@/redux/authSlice';
 // import Togglebutton from '../ui/Togglebutton';
 
 interface LocationState {
@@ -38,21 +40,31 @@ const Verify: React.FC = () => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const enteredOtp = otp.join('');
-    console.log(`Entered OTP:`, enteredOtp);
 
-    // TODO: Add backend email OTP verification logic here (Brevo)
+    try {
+      const verify = await verifyOTP(destination,enteredOtp)
+      dispatch(setRole(verify.data.role));
 
-    if (role === 'donar') {
-      navigate('/campaigns');
-    } else if (role === 'funder') {
-      navigate('/register');
+    if (verify.data.role === "donor") {
+      navigate("/campaigns");
     } else {
-      dispatch({ type: 'auth/setRole', payload: 'donar' });
-      navigate('/campaigns');
+      navigate("/register");
     }
+      
+    } catch (err) {
+      console.error("Error while verifying OTP",err);
+    }
+    // if (role === 'donar') {
+    //   navigate('/campaigns');
+    // } else if (role === 'funder') {
+    //   navigate('/register');
+    // } else {
+    //   dispatch({ type: 'auth/setRole', payload: 'donar' });
+    //   navigate('/campaigns');
+    // }
   };
 
   return (

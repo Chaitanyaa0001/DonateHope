@@ -1,6 +1,6 @@
 import {createSlice, type PayloadAction} from '@reduxjs/toolkit';
 
-type Role = 'donar' | 'funder' | null;
+type Role = 'donor' | 'funder' | null;
 
 interface AuthState {
     role: Role

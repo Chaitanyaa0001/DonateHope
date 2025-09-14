@@ -3,6 +3,6 @@ export interface IUser extends Document {
   fullname: string;
   otp?: string;
   otpExpiresAt?: Date;
-  role: 'donor' | 'funder';   // <-- fixed spelling
+  role: 'donor' | 'funder';   
   isVerified: boolean;
 }

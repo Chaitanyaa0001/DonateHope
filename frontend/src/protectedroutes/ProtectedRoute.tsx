@@ -5,7 +5,7 @@ import type { JSX, ReactNode } from "react";
 
 interface ProtectedRouteProps {
   children: ReactNode;
-  role: 'donar' | 'funder';
+  role: 'donor' | 'funder';
 }
 
 const ProtectedRoutes = ({ role, children }: ProtectedRouteProps): JSX.Element => {

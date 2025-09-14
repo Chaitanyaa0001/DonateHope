@@ -9,7 +9,7 @@ export const requestOTP = async (req: Request, res: Response) => {
 
     if (!email) {
       return res.status(400).json({ message: 'Email is required' });
-    }
+    };
 
     let user = await User.findOne({ email });
 
@@ -24,9 +24,12 @@ export const requestOTP = async (req: Request, res: Response) => {
         fullname,
       });
     }else{
-      if(role && user.role ! == role){
-        return res.status(400).json({message:`User already registered as ${user.role}. You cannot log in as ${role} with the same email.`});
-      }
+      if (role && user.role !== role) {  // ✅ fixed typo
+  return res.status(400).json({
+    message: `User already registered as ${user.role}. You cannot log in as ${role} with the same email.`,
+  });
+}
+
     }
 
     const otp = generateOTP();

@@ -6,7 +6,7 @@ import { FiUser } from 'react-icons/fi';
 import { requestOTP } from '@/hooks/auth/uselogin';
 
 type Method = 'email'; 
-type Role = 'donor' | 'fundraiser';
+type Role = 'donor' | 'funder';
 
 type FormData = {
   fullName: string;
@@ -84,7 +84,7 @@ const Login: React.FC = () => {
           />
 
           <div className="flex gap-4">
-            {(['donor', 'fundraiser'] as Role[]).map((r) => (
+            {(['donor', 'funder'] as Role[]).map((r) => (
               <button
                 key={r}
                 type="button"

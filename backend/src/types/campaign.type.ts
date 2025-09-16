@@ -12,4 +12,4 @@ export interface ICampaign extends Document {
   donors: number;
   daysLeft: number;
   user: mongoose.Schema.Types.ObjectId; 
-}
+};

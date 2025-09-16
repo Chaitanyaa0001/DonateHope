@@ -11,14 +11,14 @@ export const refreshAccessToken = async (req: Request, res: Response) => {
   const refreshToken = req.cookies?.refresh_token;
   if (!refreshToken) {
     return res.status(401).json({ message: 'No refresh token provided' });
-  }
+  };
 
   try {
     const decoded = jwt.verify(refreshToken, JWT_REFRESH_SECRET) as JwtPayload;
 
     if (!decoded || typeof decoded === 'string' || !decoded.userId || !decoded.role) {
       return res.status(403).json({ message: 'Invalid refresh token payload' });
-    }
+    };
 
     const accessToken = generateAccessToken(decoded.userId, decoded.role);
 

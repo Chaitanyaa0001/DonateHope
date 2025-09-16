@@ -1,7 +1,8 @@
 import { Request, Response } from 'express';
 import User from '../../models/user.model.js';
 import { generateOTP } from '../../utils/otp.js';
-import { sendOTPEmail } from '../../service/sendOTPEmail.js';
+// import { sendOTPEmail } from '../../service/sendOTPEmail.js';
+import { sendotpemail } from '../../service/emailservice.js';
 
 export const requestOTP = async (req: Request, res: Response) => {
   try {
@@ -10,36 +11,32 @@ export const requestOTP = async (req: Request, res: Response) => {
     if (!email) {
       return res.status(400).json({ message: 'Email is required' });
     };
-
     let user = await User.findOne({ email });
-
     if (!user) {
       if (!role || !fullname) {
         return res.status(400).json({ message: 'Role and full name are required for new users' });
       }
-
       user = new User({
         email,
         role,
         fullname,
       });
     }else{
-      if (role && user.role !== role) {  // ✅ fixed typo
+      if (role && user.role !== role) { 
   return res.status(400).json({
     message: `User already registered as ${user.role}. You cannot log in as ${role} with the same email.`,
   });
 }
-
     }
 
     const otp = generateOTP();
-    const otpExpiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 mins
+    const otpExpiresAt = new Date(Date.now() + 5 * 60 * 1000); 
 
     user.otp = otp;
     user.otpExpiresAt = otpExpiresAt;
     await user.save();
 
-    await sendOTPEmail(email, otp);
+    await sendotpemail(email, otp);
 
     res.status(200).json({ message: 'OTP sent successfully' });
   } catch (error: any) {

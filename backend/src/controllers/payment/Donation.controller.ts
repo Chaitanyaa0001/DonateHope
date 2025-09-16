@@ -55,17 +55,14 @@ export const verifyPayment = async (req: Request, res: Response) =>{
             );
             return res.status(200).json({success: false, message: "Payment verified failed "});
         };
-
         const payment = await Payment.findOneAndUpdate(
         { orderId: razorpay_order_id },
         {paymentStatus: "SUCCESS",paymentId: razorpay_payment_id,},{ new: true });
-
         if(payment){
             await campaignModel.findByIdAndUpdate(payment.campaignId,{
                 $inc:{raised:payment.amount, donors:1},
             });
         };
-
         return res.status(200).json({ success: true, message: "Payment verified successfully" });
     } catch (err) {
         console.log(err);

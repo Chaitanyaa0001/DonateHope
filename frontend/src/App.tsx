@@ -31,62 +31,14 @@ const App = (): React.JSX.Element => {
         <Route path="/" element={<Getstarted />} />
         <Route path="/login" element={<Login />} />
         <Route path="/verify" element={<Verify />} />
-
         {/* Donar protected routes */}
-        <Route
-          path="/campaigns"
-          element={
-            <ProtectedRoutes role="donor">
-              <CampignExplore />
-            </ProtectedRoutes>
-          }
-        />
-        <Route
-          path="/paynment/:id"
-          element={
-            <ProtectedRoutes role="donor">
-              <Donate />
-            </ProtectedRoutes>
-          }
-        />
-        <Route
-          path="/paymenthistory"
-          element={
-            <ProtectedRoutes role="donor">
-              <Suspense fallback={<div>Loading...</div>}>
-                <PaymentHistory />
-              </Suspense>
-            </ProtectedRoutes>
-          }
-        />
-
+        <Route path="/campaigns" element={ <ProtectedRoutes role="donor"><CampignExplore /></ProtectedRoutes>}/>
+        <Route path="/paynment/:id" element={<ProtectedRoutes role="donor"><Donate /></ProtectedRoutes>}/>
+        <Route path="/paymenthistory"element={<ProtectedRoutes role="donor"><Suspense fallback={<div>Loading...</div>}><PaymentHistory /></Suspense></ProtectedRoutes>}/>
         {/* Funder protected routes */}
-        <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoutes role="funder">
-              <FunderDashboard />
-            </ProtectedRoutes>
-          }
-        />
-        <Route
-          path="/register"
-          element={
-            <ProtectedRoutes role="funder">
-              <RegisterCampign />
-            </ProtectedRoutes>
-          }
-        />
-        <Route
-          path="/my-campaigns/:id"
-          element={
-            <ProtectedRoutes role="funder">
-              <MyCampaignDetails />
-            </ProtectedRoutes>
-          }
-        />
-
-        {/* Catch-all route (404) */}
+        <Route path="/dashboard" element={<ProtectedRoutes role="funder"> <FunderDashboard /></ProtectedRoutes>}/>
+        <Route path="/register" element={<ProtectedRoutes role="funder"><RegisterCampign /></ProtectedRoutes>}/>
+        <Route path="/my-campaigns/:id" element={<ProtectedRoutes role="funder"><MyCampaignDetails /></ProtectedRoutes>}/>
         <Route path="*" element={<div>Page Not Found</div>} />
       </Routes>
     </div>

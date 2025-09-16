@@ -8,7 +8,7 @@ export const sendotpemail = async (toEmail: string, otp: string) => {
     const response = await axios.post(
       "https://api.brevo.com/v3/smtp/email",
       {
-        sender: { name: "DonateHope", email: "no-reply@donatehope.com" }, // ✅ must be verified in Brevo
+        sender: { name: "DonateHope", email: "chaitanyakhurana.workk@gmail.com" }, 
         to: [{ email: toEmail }],
         subject: "Your OTP for DonateHope",
         htmlContent: `
@@ -29,7 +29,6 @@ export const sendotpemail = async (toEmail: string, otp: string) => {
         },
       }
     );
-
     console.log("Brevo response:", response.data);
   } catch (error: any) {
     console.error("Error sending email via Brevo:", error.response?.data || error.message);

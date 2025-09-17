@@ -9,3 +9,6 @@ export const verifyOTP = async (identifier: string, otp: string) => {
   return await  api.post<verifyOTPResponse>("/auth/verify-otp", { identifier, otp });
 };
 
+export const refreshToken = async () => {
+  return await api.get("/auth/refresh-token");
+};

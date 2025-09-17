@@ -15,7 +15,7 @@ export const refreshAccessToken = async (req: Request, res: Response) => {
 
   try {
     const decoded = jwt.verify(refreshToken, JWT_REFRESH_SECRET) as JwtPayload;
-
+     console.log(decoded);
     if (!decoded || typeof decoded === 'string' || !decoded.userId || !decoded.role) {
       return res.status(403).json({ message: 'Invalid refresh token payload' });
     };
@@ -29,7 +29,15 @@ export const refreshAccessToken = async (req: Request, res: Response) => {
       maxAge: 15 * 60 * 1000,
     });
 
-    res.status(200).json({ message: 'Access token refreshed successfully' });
+     return res.status(200).json({
+      message: "Access token refreshed successfully",
+      role: decoded.role,
+      userId: decoded.userId,
+    });
+
+   
+    
+
   } catch (err) {
     console.error('Refresh token error', err);
     res.status(403).json({ message: 'Invalid or expired refresh token' });

@@ -45,7 +45,7 @@ const RegisterCampaign: React.FC = () => {
         <Togglebutton />
         <Link to='/dashboard'>
         <button className="bg-green-500 text-white cursor-pointer dark:text-black px-4 py-2 rounded-md">
-          My Campaigns
+          Dashboard
         </button>
         </Link>
       </div>

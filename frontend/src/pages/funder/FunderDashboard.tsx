@@ -63,7 +63,7 @@ const FunderDashboard: React.FC = () => {
   return (
     <div className="w-[90%] lg:w-[85%] mx-auto my-10">
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
-        <h1 className="text-3xl font-bold dark:text-white">My Campaigns</h1>
+        <h1 className="text-3xl font-bold dark:text-white">Dashboard</h1>
         <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
           <Link
             to="/register"

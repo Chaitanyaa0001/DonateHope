@@ -12,14 +12,6 @@ const userschema = new Schema<IUser>({
         type:String,
         required:true
     },
-    otp:{
-        type:String,
-        required:false
-    },
-    otpExpiresAt:{
-        type:Date,
-        index:{expires:'5m'}
-    },
     role:{
         type:String,
         enum: ['donor', 'funder'],

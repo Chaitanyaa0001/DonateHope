@@ -19,7 +19,6 @@ export const createorder = async(req: Request, res: Response) =>{
                 campaignId
             },
         };
-
         const order = await razorpay.orders.create(options);
 
         const payment = new Payment ({
@@ -29,10 +28,10 @@ export const createorder = async(req: Request, res: Response) =>{
             orderId: order.id,
             receipt: order.receipt,
             paymentStatus:"PENDING",
+            
         });
 
         await payment.save();
-
         return res.json({success: true, order});
     } catch (err) {
         console.log(err);

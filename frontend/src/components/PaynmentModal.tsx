@@ -54,8 +54,6 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ amount, onClose }) => {
     e.preventDefault();
 
     
-
-    // Simulate payment
     console.log('Processing Payment:', {
       ...formData,
       amount,

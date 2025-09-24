@@ -24,7 +24,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.use('/api/auth', authroutes);
-app.use('/api/campaign',campaignroutes );
+app.use('/api/campaigns',campaignroutes );
 app.use('/api/payment', paymentroutes);
 
 

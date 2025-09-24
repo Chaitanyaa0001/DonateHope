@@ -34,10 +34,7 @@ export const refreshAccessToken = async (req: Request, res: Response) => {
       role: decoded.role,
       userId: decoded.userId,
     });
-
-   
     
-
   } catch (err) {
     console.error('Refresh token error', err);
     res.status(403).json({ message: 'Invalid or expired refresh token' });

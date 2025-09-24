@@ -28,9 +28,8 @@ export const createorder = async(req: Request, res: Response) =>{
             orderId: order.id,
             receipt: order.receipt,
             paymentStatus:"PENDING",
-            
-        });
 
+        });
         await payment.save();
         return res.json({success: true, order});
     } catch (err) {

@@ -22,7 +22,7 @@ export const postCampaign = async (req: Request, res: Response) => {
       raised: 0,
       location,
       category,
-      donors: 0,              // server-initialized
+      donors: 0,              
       daysLeft,
       user: req.user.userId,  // <-- fixed
     });
@@ -43,12 +43,25 @@ export const getAllCampaigns = async (_req: Request, res: Response) => {
   }
 };
 
+
+export const getCampaignById = async (req: Request, res: Response) => {
+  try {
+    const campagin = await campaignModel.findById(req.params.id).populate("user", "email role");
+    if (!campagin) {
+      return res.status(404).json({ message: "Campaign not found" });
+    }
+  } catch (err) {
+    console.error("Get campaign by ID error", err);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 export const getMyCampaigns = async (req: Request, res: Response) => {
   try {
     if (!req.user) return res.status(401).json({ message: "Unauthorized" });
     const campaigns = await campaignModel.find({ user: req.user.userId }); // <-- fixed
-    return res.status(200).json(campaigns);
-  } catch (err) {
+    return res.status(200).json({ campaigns });
+    } catch (err) {
     console.error("Get my campaigns error", err);
     return res.status(500).json({ message: "Internal server error" });
   }

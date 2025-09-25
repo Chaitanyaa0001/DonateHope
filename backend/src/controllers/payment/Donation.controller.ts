@@ -63,8 +63,21 @@ export const verifyPayment = async (req: Request, res: Response) =>{
         };
         return res.status(200).json({ success: true, message: "Payment verified successfully" });
     } catch (err) {
-        console.log(err);
+        console.log(err)
         return res.status(500).json({message:"Internal server error"});
     };
 };
+
+
+export const getpaymentHistory = async (req: Request, res: Response) =>{
+    try {
+        if(!req.user) return res.status(401).json({message: "Unauthorize"});
+        const payment = await Payment.find({ userId: req.user.userId }).populate("campaignId", "title description goal raised").sort({createdAt: -1});
+        return res.status(200).json({success:true, payment});
+
+    } catch (err) {
+        console.log("Internal sercver error ", err);
+        return res.status(500).json({message:"Internal server error ", err});
+    }
+}
 

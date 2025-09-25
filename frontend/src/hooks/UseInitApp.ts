@@ -8,7 +8,7 @@ export const useInitApp = () => {
 
   useEffect(() => {
     // Initialize role
-    const storedRole = localStorage.getItem('role') as 'donar' | 'funder' | null;
+    const storedRole = localStorage.getItem('role') as 'donor' | 'funder' | null;
     if (storedRole) dispatch(setRole(storedRole));
 
     // Initialize theme

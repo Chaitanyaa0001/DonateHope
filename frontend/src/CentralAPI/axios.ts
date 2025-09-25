@@ -7,12 +7,4 @@ const api = axios.create({
   withCredentials: true, 
 });
 
-
-// api.interceptors.response.use(
-//   (response) => response,
-//   async (error) =>{
-//     const originalRequest
-//   }
-// )
-
 export default api;

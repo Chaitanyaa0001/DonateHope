@@ -61,6 +61,7 @@ const Donate: React.FC = () => {
     setShowModal(true); // open modal instead of alert
   };
 
+
   if (!campaign)
     return (
       <div className="text-center text-gray-700 dark:text-white p-6">
@@ -82,11 +83,7 @@ const Donate: React.FC = () => {
         >
           ⬅ Back to Campaigns
         </button>
-
-        <h1 className="text-3xl sm:text-4xl font-bold mb-4 text-purple-600 dark:text-white">
-          {campaign.title}
-        </h1>
-
+        <h1 className="text-3xl sm:text-4xl font-bold mb-4 text-purple-600 dark:text-white">{campaign.title} </h1>
         <img
           src={campaign.image}
           alt="Campaign"

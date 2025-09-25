@@ -1,5 +1,5 @@
-import api from "../../utils/axios";
-import type { RequestOTPResponse, verifyOTPResponse } from "./authresponse";
+import api from "../../CentralAPI/axios";
+import type { RequestOTPResponse, verifyOTPResponse } from "../../responses/authresponse";
 
 export const requestOTP = async (email: string,fullName: string, role: string) => {
   return  await api.post<RequestOTPResponse>("/auth/request-otp", { email, fullname:fullName, role });

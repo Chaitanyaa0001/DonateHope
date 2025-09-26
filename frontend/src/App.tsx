@@ -13,6 +13,7 @@ import RegisterCampign from "./pages/funder/RegisterCampign";
 import Donate from "./pages/donar/Donate";
 import MyCampaignDetails from "./pages/funder/MyCampaigns";
 import ProtectedRoutes from "./protectedroutes/ProtectedRoute"; 
+import FunderLayout from "./pages/layouts/FunderLayout"; // ✅ Layout wrapper
 
 const PaymentHistory = lazy(() => import("@/pages/donar/PaymentHistory"));
 
@@ -31,14 +32,49 @@ const App = (): React.JSX.Element => {
         <Route path="/" element={<Getstarted />} />
         <Route path="/login" element={<Login />} />
         <Route path="/verify" element={<Verify />} />
-        {/* Donar protected routes */}
-        <Route path="/campaigns" element={ <ProtectedRoutes role="donor"><CampignExplore /></ProtectedRoutes>}/>
-        <Route path="/paynment/:id" element={<ProtectedRoutes role="donor"><Donate /></ProtectedRoutes>}/>
-        <Route path="/paymenthistory"element={<ProtectedRoutes role="donor"><Suspense fallback={<div>Loading...</div>}><PaymentHistory /></Suspense></ProtectedRoutes>}/>
-        {/* Funder protected routes */}
-        <Route path="/dashboard" element={<ProtectedRoutes role="funder"> <FunderDashboard /></ProtectedRoutes>}/>
-        <Route path="/register" element={<ProtectedRoutes role="funder"><RegisterCampign /></ProtectedRoutes>}/>
-        <Route path="/my-campaigns/:id" element={<ProtectedRoutes role="funder"><MyCampaignDetails /></ProtectedRoutes>}/>
+
+        {/* Donor protected routes */}
+        <Route
+          path="/campaigns"
+          element={
+            <ProtectedRoutes role="donor">
+              <CampignExplore />
+            </ProtectedRoutes>
+          }
+        />
+        <Route
+          path="/paynment/:id"
+          element={
+            <ProtectedRoutes role="donor">
+              <Donate />
+            </ProtectedRoutes>
+          }
+        />
+        <Route
+          path="/paymenthistory"
+          element={
+            <ProtectedRoutes role="donor">
+              <Suspense fallback={<div>Loading...</div>}>
+                <PaymentHistory />
+              </Suspense>
+            </ProtectedRoutes>
+          }
+        />
+
+        {/* Funder protected routes with layout */}
+        <Route
+          element={
+            <ProtectedRoutes role="funder">
+              <FunderLayout />
+            </ProtectedRoutes>
+          }
+        >
+          <Route path="/dashboard" element={<FunderDashboard />} />
+          <Route path="/register" element={<RegisterCampign />} />
+          <Route path="/my-campaigns/:id" element={<MyCampaignDetails />} />
+        </Route>
+
+        {/* 404 fallback */}
         <Route path="*" element={<div>Page Not Found</div>} />
       </Routes>
     </div>

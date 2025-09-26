@@ -8,7 +8,6 @@ import { motion, type Variants } from 'framer-motion';
 import { FiTrash2 } from 'react-icons/fi';
 import { easeOut } from 'framer-motion';
 
-
 const dummyCampaigns: Campaign[] = [
   {
     id: '1',
@@ -39,50 +38,41 @@ const dummyCampaigns: Campaign[] = [
 const containerVariants = {
   hidden: {},
   show: {
-    transition: {
-      staggerChildren: 0.15,
-    },
+    transition: { staggerChildren: 0.15 },
   },
 };
-
 
 const cardVariants: Variants = {
   hidden: { opacity: 0, y: 40 },
   show: {
     opacity: 1,
     y: 0,
-    transition: {
-      duration: 0.5,
-      ease: easeOut,
-    },
+    transition: { duration: 0.5, ease: easeOut },
   },
 };
 
-
 const FunderDashboard: React.FC = () => {
   return (
-    <div className="w-[90%] lg:w-[85%] mx-auto my-10">
+    <div className="w-full">
+      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
         <h1 className="text-3xl font-bold dark:text-white">Dashboard</h1>
         <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
-          <Link
-            to="/register"
-            className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 whitespace-nowrap"
-          >
-            + Create New Campaign
-          </Link>
           <Togglebutton />
         </div>
       </div>
 
+      {/* Campaign Cards */}
       {dummyCampaigns.length === 0 ? (
-        <p className="text-center text-gray-600 dark:text-gray-400">No campaigns found.</p>
+        <p className="text-center text-gray-600 dark:text-gray-400">
+          No campaigns found.
+        </p>
       ) : (
         <motion.div
           variants={containerVariants}
           initial="hidden"
           animate="show"
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6"
+          className="flex flex-row gap-6"
         >
           {dummyCampaigns.map((card) => {
             const percent = Math.min((card.raised / card.goal) * 100, 100);
@@ -90,7 +80,7 @@ const FunderDashboard: React.FC = () => {
               <motion.div
                 key={card.id}
                 variants={cardVariants}
-                className="dark:bg-[#0d0b1d] rounded-2xl border-2 overflow-hidden border-[#C800DE] hover:shadow-lg transition duration-300 flex flex-col"
+                className="dark:bg-[#0d0b1d] w-full rounded-2xl border-2 overflow-hidden border-[#C800DE] hover:shadow-lg transition duration-300 flex flex-col"
               >
                 <div className="h-48 overflow-hidden">
                   <img
@@ -146,9 +136,7 @@ const FunderDashboard: React.FC = () => {
                     >
                       View Details
                     </Link>
-                    <button
-                      className="w-full text-white bg-red-500 hover:bg-red-600 py-2 rounded-md text-sm flex items-center justify-center gap-1"
-                    >
+                    <button className="w-full text-white bg-red-500 hover:bg-red-600 py-2 rounded-md text-sm flex items-center justify-center gap-1">
                       <FiTrash2 className="text-base" />
                       Delete
                     </button>

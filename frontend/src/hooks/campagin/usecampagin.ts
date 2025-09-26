@@ -38,13 +38,13 @@ export const useCampaigns = () => {
       url: `/campagins/${id}`,
       data: updatedData,
     });
-    setCampaigns(prev => prev.map(c => (c.id === id ? updatedCampaign : c)));
+    setCampaigns(prev => prev.map(c => (c._id === id ? updatedCampaign : c)));
     return updatedCampaign;
   };
 
   const deleteCampaign = async (id: string) => {
     await callAPI<void>({ method: "delete", url: `/campagins/${id}` });
-    setCampaigns(prev => prev.filter(c => c.id !== id));
+    setCampaigns(prev => prev.filter(c => c._id !== id));
   };
 
   return {

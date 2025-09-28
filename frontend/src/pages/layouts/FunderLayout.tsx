@@ -10,7 +10,7 @@ const FunderLayout: React.FC = () => {
       <Sidebar />
 
       {/* Page content */}
-      <div className="flex-1 ml-64  min-h-screen p-6">
+      <div className="flex-1 lg:ml-64  min-h-screen p-3 lg:p-6">
         <Outlet /> 
       </div>
     </div>

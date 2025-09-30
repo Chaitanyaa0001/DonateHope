@@ -20,7 +20,6 @@ type FormData = {
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
-
   const [formData, setFormData] = useState<FormData>({
     fullName: '',
     email: '',

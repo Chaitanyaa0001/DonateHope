@@ -15,7 +15,6 @@ type FormData = {
   // countryCode: string;
   method: Method;
   role: Role;
-  
 };
 
 const Login: React.FC = () => {

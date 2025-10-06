@@ -12,7 +12,6 @@ export const requestOTP = async (req: Request, res: Response) => {
       return res.status(400).json({ message: 'Email is required' });
     }
 
-    // 1️⃣ Rate limiter per email (1 OTP per minute)
     const rateLimiterKey = `otp_rate_limit:${email}`;
     const isLimited = await redis.exists(rateLimiterKey);
 
@@ -45,7 +44,7 @@ export const requestOTP = async (req: Request, res: Response) => {
 
     // 4️⃣ Generate OTP and store in Redis (5 min expiry)
     const otp = generateOTP();
-    await redis.setex(`otp:${email}`, 300, otp); // 5 minutes
+    await redis.setex(`otp:${email}`, 300, otp); 
 
     await sendotpemail(email, otp);
 

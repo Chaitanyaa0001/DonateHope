@@ -1,20 +1,19 @@
 import React, { useState, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { FiMail /*, FiPhone */ } from 'react-icons/fi';
-import {  useDispatch, useSelector } from 'react-redux';
-import type { RootState } from '@/redux/store';
+import {  useDispatch } from 'react-redux';
+// import type { RootState } from '@/redux/store';
 import { verifyOTP } from '@/hooks/auth/uselogin';
 import { setRole } from '@/redux/authSlice';
 // import Togglebutton from '../ui/Togglebutton';
 
 interface LocationState {
-  method: 'email'; // 🔒 Restrict to email only
+  method: 'email'; 
   destination: string;
 }
 
 const Verify: React.FC = () => {
   const dispatch = useDispatch();
-  const role = useSelector((state: RootState) => state.auth.role);
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -46,9 +45,9 @@ const Verify: React.FC = () => {
 
     try {
       const verify = await verifyOTP(destination,enteredOtp)
-      dispatch(setRole(verify.data.role));
+      dispatch(setRole(verify.role));
 
-    if (verify.data.role === "donor") {
+    if (verify.role === "donor") {
       navigate("/campaigns");
     } else {
       navigate("/register");
@@ -57,14 +56,7 @@ const Verify: React.FC = () => {
     } catch (err) {
       console.error("Error while verifying OTP",err);
     }
-    // if (role === 'donar') {
-    //   navigate('/campaigns');
-    // } else if (role === 'funder') {
-    //   navigate('/register');
-    // } else {
-    //   dispatch({ type: 'auth/setRole', payload: 'donar' });
-    //   navigate('/campaigns');
-    // }
+   
   };
 
   return (

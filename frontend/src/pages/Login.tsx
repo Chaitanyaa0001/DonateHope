@@ -37,14 +37,13 @@ const Login: React.FC = () => {
     e.preventDefault();
     try {
       const success = await requestOTP(formData.email,formData.fullName,formData.role) ;
-      console.log(success.data.message);
+      console.log(success.message);
       const destination = formData.email;
     if(success){
       navigate('/verify', {
       state: {
         method: formData.method,
-        destination,
-        context: 'signup',
+        destination, 
         role: formData.role,
       },
     });

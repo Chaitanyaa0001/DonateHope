@@ -3,24 +3,24 @@ import { IUser } from "../types/user.types";
 
 const userschema = new Schema<IUser>({
     email:{
-        type:String,
-        required:false,
-        unique:true,
-        index:true
+      type:String,
+      required:false,
+      unique:true,
+      index:true
     },
     fullname:{
-        type:String,
-        required:true
+      type:String,
+      required:true
     },
     role:{
-        type:String,
-        enum: ['donor', 'funder'],
-        required:true,
-        index:true
+      type:String,
+      enum: ['donor', 'funder'],
+      required:true,
+      index:true
     },
     isVerified:{
-        type:Boolean,
-        default:false
+      type:Boolean,
+      default:false
     }
 },{timestamps:true})
 

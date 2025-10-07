@@ -12,3 +12,9 @@ export interface verifyOTPResponse {
         role: "donor" | "funder"
     };
 };
+
+export interface RefreshTokenResponse {
+  role?: 'donor' | 'funder';
+  userId?: string;
+  message?: string;
+}

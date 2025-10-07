@@ -14,6 +14,7 @@ const Sidebar: React.FC = () => {
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
 
+
   const navItems = [
     { name: "Dashboard", path: "/dashboard", icon: <FiHome /> },
     { name: "Post a Campaign", path: "/register", icon: <FiPlusCircle /> },

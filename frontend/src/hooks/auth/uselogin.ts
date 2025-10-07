@@ -1,14 +1,28 @@
-import api from "../../CentralAPI/axios";
-import type { RequestOTPResponse, verifyOTPResponse } from "../../responses/authresponse";
+import { callAPI } from "@/CentralAPI/centralapi";
+import type { RefreshTokenResponse, RequestOTPResponse, verifyOTPResponse } from "../../responses/authresponse";
 
-export const requestOTP = async (email: string,fullName: string, role: string) => {
-  return  await api.post<RequestOTPResponse>("/auth/request-otp", { email, fullname:fullName, role });
+export const requestOTP = async (email: string ,fullName: string, role: string) => {
+  return  await callAPI<RequestOTPResponse, {email: string,fullname: string, role: string}>({
+    method : "post",
+    url: "/auth/request-otp",
+    data: {email, fullname: fullName, role}
+  })
 };
 
 export const verifyOTP = async (identifier: string, otp: string) => {
-  return await  api.post<verifyOTPResponse>("/auth/verify-otp", { identifier, otp });
+  return await  callAPI<verifyOTPResponse, {identifier: string, otp: string}>({
+    method: "post",
+    url: "/auth/verify-otp",
+    data: {identifier, otp}
+  });
 };
 
+export  const logout = async () =>{
+  
+}
 export const refreshToken = async () => {
-  return await api.get("/auth/refresh-token");
+  return await callAPI<RefreshTokenResponse>({
+    method: "get",
+    url: "/auth/refresh-token"
+  });
 };

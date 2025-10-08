@@ -16,7 +16,6 @@ export const verifyOTP = async (identifier: string, otp: string) => {
     data: {identifier, otp}
   });
 };
-
 export  const logout = async () =>{
   
 }

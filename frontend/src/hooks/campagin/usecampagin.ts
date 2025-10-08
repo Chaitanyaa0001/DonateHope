@@ -7,27 +7,27 @@ export const useCampaigns = () => {
 
   
   const getAllCampaigns = async () => {
-    const data = await callAPI<CampaignData[]>({ method: "get", url: "/campagins" });
+    const data = await callAPI<CampaignData[]>({ method: "get", url: "/campaigns" });
     setCampaigns(data);
     return data;
   };
 
   
   const getMyCampaigns = async () => {
-    const data = await callAPI<CampaignData[]>({ method: "get", url: "/campagins/my" });
+    const data = await callAPI<CampaignData[]>({ method: "get", url: "/campaigns/my" });
     setCampaigns(data);
     return data;
   };
 
   
   const getCampaignById = async (id: string) => {
-    const data = await callAPI<CampaignData>({ method: "get", url: `/campagins/${id}` });
+    const data = await callAPI<CampaignData>({ method: "get", url: `/campaigns/${id}` });
     return data;
   };
 
   
   const postCampaign = async (formData: FormData) => {
-    const newCampaign = await callAPI<CampaignData, FormData>({ method: "post",url: "/campagins",data: formData,});
+    const newCampaign = await callAPI<CampaignData, FormData>({ method: "post",url: "/campaigns",data: formData,});
     setCampaigns(prev => [...prev, newCampaign]);
     return newCampaign;
   };
@@ -43,7 +43,7 @@ export const useCampaigns = () => {
   };
 
   const deleteCampaign = async (id: string) => {
-    await callAPI<void>({ method: "delete", url: `/campagins/${id}` });
+    await callAPI<void>({ method: "delete", url: `/campaigns/${id}` });
     setCampaigns(prev => prev.filter(c => c._id !== id));
   };
 

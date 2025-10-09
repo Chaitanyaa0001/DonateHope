@@ -2,9 +2,14 @@ import React, { useState } from 'react';
 import Togglebutton from '@/components/ui/Togglebutton';
 import type { Campaign } from '@/types/campign';
 import Sidebar from '@/components/sidebar/Sidebar';
-import formImage from '@/assets/image.png'; // ✅ React import for static image
+import formImage from '@/assets/image.png';
+import { useCampaigns } from '@/hooks/campagin/usecampagin';
 
 const RegisterCampaign: React.FC = () => {
+  const { postCampaign } = useCampaigns();
+
+  // We’ll keep both: a file (for upload) and a preview URL (for UI)
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const [formData, setFormData] = useState<
     Omit<Campaign, 'id' | 'raised' | 'donors' | 'daysLeft'>
   >({
@@ -17,10 +22,9 @@ const RegisterCampaign: React.FC = () => {
     urgent: false,
   });
 
+  // ✅ Handle text/number/select inputs
   const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -29,34 +33,56 @@ const RegisterCampaign: React.FC = () => {
     }));
   };
 
+  // ✅ Handle image file selection
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const imageUrl = URL.createObjectURL(file);
+      setImageFile(file);
+      const previewUrl = URL.createObjectURL(file);
       setFormData((prev) => ({
         ...prev,
-        image: imageUrl,
+        image: previewUrl, // just for preview
       }));
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // ✅ Handle form submission
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log(formData);
-    
+    try {
+      if (!imageFile) {
+        alert('Please upload a campaign image.');
+        return;
+      }
+
+      const campaignData = {
+        title: formData.title,
+        description: formData.description,
+        location: formData.location,
+        goal: formData.goal,
+        category: formData.category,
+        urgent: formData.urgent,
+        image: imageFile, // must be File
+      };
+
+      const result = await postCampaign(campaignData);
+      console.log('✅ Campaign created:', result);
+      alert('Campaign created successfully!');
+    } catch (error) {
+      console.error('❌ Error creating campaign:', error);
+      alert('Something went wrong while creating the campaign.');
+    }
   };
 
   return (
     <>
       <Sidebar />
       <div className="relative">
-        <div className="w-[90%]  lg:w-[75%] flex my-4 items-center justify-between">
+        <div className="w-[90%] lg:w-[75%] flex my-4 items-center justify-between">
           <Togglebutton />
         </div>
 
-        {/* Wrapper with relative positioning */}
-        <div className="w-[90%] lg:w-[90%]  my-8 relative flex justify-center">
-          {/* Decorative Image Behind Form */}
+        <div className="w-[90%] lg:w-[90%] my-8 relative flex justify-center">
           <div className="absolute -top-9 -right-30 hidden lg:block">
             <img
               src={formImage}
@@ -65,91 +91,73 @@ const RegisterCampaign: React.FC = () => {
             />
           </div>
 
-          {/* Form */}
-          <div className="relative z-10 w-full lg:w-[85%] border-2 border-purple-500 
-                          bg-white/90 dark:bg-gray-900/90 backdrop-blur-md 
-                          p-6 rounded-xl shadow-xl">
+          <div className="relative z-10 w-full lg:w-[85%] border-2 border-purple-500 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md p-6 rounded-xl shadow-xl">
             <h2 className="text-2xl font-semibold mb-6 text-center dark:text-white">
               Register a New Fundraiser
             </h2>
 
             <form className="space-y-6" onSubmit={handleSubmit}>
-              {/* Campaign Title */}
+              {/* title */}
               <div>
-                <label className="block font-medium mb-1 dark:text-white">
-                  Campaign Title
-                </label>
+                <label className="block font-medium mb-1 dark:text-white">Campaign Title</label>
                 <input
                   type="text"
                   name="title"
                   value={formData.title}
                   onChange={handleChange}
                   placeholder="Flood Relief in Kerala"
-                  className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 
-                             dark:bg-gray-800 dark:text-white dark:border-gray-600 placeholder-gray-400 dark:placeholder-gray-500"
+                  className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white dark:border-gray-600"
                 />
               </div>
 
-              {/* Description */}
+              {/* description */}
               <div>
-                <label className="block font-medium mb-1 dark:text-white">
-                  Description
-                </label>
+                <label className="block font-medium mb-1 dark:text-white">Description</label>
                 <textarea
                   name="description"
                   value={formData.description}
                   onChange={handleChange}
                   placeholder="Immediate relief for flood-affected families..."
                   rows={4}
-                  className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 
-                             dark:bg-gray-800 dark:text-white dark:border-gray-600 placeholder-gray-400 dark:placeholder-gray-500"
+                  className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white dark:border-gray-600"
                 ></textarea>
               </div>
 
-              {/* Location */}
+              {/* location */}
               <div>
-                <label className="block font-medium mb-1 dark:text-white">
-                  Location
-                </label>
+                <label className="block font-medium mb-1 dark:text-white">Location</label>
                 <input
                   type="text"
                   name="location"
                   value={formData.location}
                   onChange={handleChange}
                   placeholder="Kerala"
-                  className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 
-                             dark:bg-gray-800 dark:text-white dark:border-gray-600 placeholder-gray-400 dark:placeholder-gray-500"
+                  className="w-full px-4 py-2 border rounded-md dark:bg-gray-800 dark:text-white"
                 />
               </div>
 
-              {/* Goal */}
+              {/* goal */}
               <div>
-                <label className="block font-medium mb-1 dark:text-white">
-                  Fundraising Goal (INR)
-                </label>
+                <label className="block font-medium mb-1 dark:text-white">Goal (INR)</label>
                 <input
                   type="number"
                   name="goal"
                   value={formData.goal}
                   onChange={handleChange}
                   placeholder="1000000"
-                  className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 
-                             dark:bg-gray-800 dark:text-white dark:border-gray-600 placeholder-gray-400 dark:placeholder-gray-500"
+                  className="w-full px-4 py-2 border rounded-md dark:bg-gray-800 dark:text-white"
                 />
               </div>
 
-              {/* Category */}
+              {/* category */}
               <div>
-                <label className="block font-medium mb-1 dark:text-white">
-                  Category
-                </label>
+                <label className="block font-medium mb-1 dark:text-white">Category</label>
                 <select
-                  aria-label="State"
+                aria-label='state'
                   name="category"
                   value={formData.category}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 
-                             dark:bg-gray-800 dark:text-white dark:border-gray-600"
+                  className="w-full px-4 py-2 border rounded-md dark:bg-gray-800 dark:text-white"
                 >
                   <option value="Medical">Medical</option>
                   <option value="Education">Education</option>
@@ -157,13 +165,11 @@ const RegisterCampaign: React.FC = () => {
                 </select>
               </div>
 
-              {/* Upload Image */}
+              {/* image */}
               <div>
-                <label className="block font-medium mb-1 dark:text-white">
-                  Campaign Image
-                </label>
+                <label className="block font-medium mb-1 dark:text-white">Campaign Image</label>
                 <input
-                  placeholder="image"
+                aria-label='state'
                   type="file"
                   name="image"
                   accept="image/*"
@@ -172,6 +178,9 @@ const RegisterCampaign: React.FC = () => {
                              file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 
                              dark:text-white"
                 />
+                {formData.image && (
+                  <img src={formData.image} alt="Preview" className="mt-3 w-32 rounded-md" />
+                )}
               </div>
 
               <div className="text-center">

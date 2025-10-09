@@ -11,3 +11,14 @@ export interface Campaign {
   image: string;
   urgent?: boolean;
 }
+
+interface NewCampaignData {
+  title: string;
+  description: string;
+  location: string;
+  goal: number;
+  category: string;
+  urgent?: boolean;
+  image: File;
+}
+

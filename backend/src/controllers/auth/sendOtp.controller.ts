@@ -9,7 +9,7 @@ export const requestOTP = async (req: Request, res: Response) => {
     const { email, role, fullname } = req.body;
 
     if (!email) {
-      return res.status(400).json({ message: 'Email is required' });
+      return  res.status(400).json({ message: 'Email is required' });
     }
 
     const rateLimiterKey = `otp_rate_limit:${email}`;

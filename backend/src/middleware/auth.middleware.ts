@@ -17,6 +17,8 @@ export const verifyToken = async (req: Request, res: Response, next: NextFunctio
     if (!decoded || typeof decoded === 'string' || !('userId' in decoded)) {
       return res.status(403).json({ message: 'Invalid token payload' });
     }
+
+    
     const user = await User.findById(decoded.userId);
     if (!user) {
       res.clearCookie('access_token');

@@ -1,7 +1,6 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import type { AppDispatch } from './store';
-import { refreshToken as apiRefreshToken } from '@/hooks/auth/uselogin';
-
+import { refreshToken as apiRefreshToken } from '../hooks/auth/uselogin';
 
 export type Role = 'donor' | 'funder' | null;
 
@@ -26,19 +25,19 @@ const authSlice = createSlice({
     logout: (state) => {
       state.role = null;
       state.loading = false;
+      localStorage.removeItem('role');
     },
   },
 });
 
 export const { setRole, setLoading, logout } = authSlice.actions;
 
-// Properly typed thunk
+// Check session and refresh token
 export const checkSession = () => {
   return async (dispatch: AppDispatch) => {
     try {
       dispatch(setLoading(true));
-      const res = await apiRefreshToken();
-      const data = res as { role?: Role };
+      const data = await apiRefreshToken();
       if (data?.role) dispatch(setRole(data.role));
       else dispatch(logout());
     } catch {

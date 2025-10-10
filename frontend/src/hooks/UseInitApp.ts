@@ -14,11 +14,10 @@ export const useInitApp = () => {
     // Initialize theme
     const storedTheme = localStorage.getItem('theme');
     let isDark = false;
-    
+
     if (storedTheme) {
       isDark = storedTheme === 'dark';
     } else {
-      // Check system preference if no stored theme
       isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
     }
     dispatch(setTheme(isDark));

@@ -19,8 +19,15 @@ api.interceptors.response.use(
       const status = error.response?.status;
 
       if (status === 401 || status === 403) {
-        store.dispatch(logout());
-        window.location.href = "/login";
+       if (!window.location.pathname.includes('/login')) {
+  store.dispatch(logout());
+  // clear any auth data
+  localStorage.removeItem('role');
+  setTimeout(() => {
+    window.location.replace("/login");
+  }, 300); // small delay prevents reload loop
+}
+
       }
     }
     return Promise.reject(error);

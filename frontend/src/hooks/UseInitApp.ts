@@ -21,7 +21,6 @@ export const useInitApp = () => {
       // Check system preference if no stored theme
       isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
     }
-    
     dispatch(setTheme(isDark));
   }, [dispatch]);
 };

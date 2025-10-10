@@ -2,6 +2,8 @@ import { Request, Response } from 'express';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import { generateAccessToken } from '../../utils/generateToken.js';
+import User from '../../models/user.model.js';
+
 
 dotenv.config();
 
@@ -19,6 +21,14 @@ export const refreshAccessToken = async (req: Request, res: Response) => {
     if (!decoded || typeof decoded === 'string' || !decoded.userId || !decoded.role) {
       return res.status(403).json({ message: 'Invalid refresh token payload' });
     };
+
+    const user = await User.findById(decoded.userId);
+    if (!user) {
+      res.clearCookie('access_token');
+      res.clearCookie('refresh_token');
+      return res.status(401).json({ message: 'User no longer exists' });
+    }
+
 
     const accessToken = generateAccessToken(decoded.userId, decoded.role);
 

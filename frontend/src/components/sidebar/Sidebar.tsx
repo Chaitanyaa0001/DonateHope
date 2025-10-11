@@ -7,26 +7,40 @@ import {
   FiLogOut,
   FiMenu,
   FiX,
+  FiSearch,
+  FiCreditCard,
 } from "react-icons/fi";
 import { motion } from "framer-motion";
+import { useSelector } from "react-redux";
+import type { RootState } from "@/redux/store";
 
 const Sidebar: React.FC = () => {
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
 
+  const role = useSelector((state:RootState) => state.auth.role);
 
-  const navItems = [
-    { name: "Dashboard", path: "/dashboard", icon: <FiHome /> },
-    { name: "Post a Campaign", path: "/register", icon: <FiPlusCircle /> },
-  ];
+  const navItems = role === "funder"
+    ? [
+        { name: "Dashboard", path: "/dashboard", icon: <FiHome /> },
+        { name: "Post a Campaign", path: "/register", icon: <FiPlusCircle /> },
+      ]
+    : [
+        { name: "Explore", path: "/explore", icon: <FiSearch /> },
+        { name: "Payment History", path: "/paymenthistory", icon: <FiCreditCard /> },
+      ];
 
   return (
     <>
+      {/* Mobile Header */}
       <div className="lg:hidden fixed top-0 left-0 w-full bg-white dark:bg-[#0d0b1d] border-b border-gray-200 dark:border-gray-800 z-30 flex items-center justify-between px-4 py-3">
         <h1 className="text-xl font-bold text-[#9810FA]">DonateHope</h1>
-        <button  onClick={() => setIsOpen(true)} className="text-2xl text-gray-700 dark:text-gray-300"> <FiMenu /></button>
+        <button onClick={() => setIsOpen(true)} className="text-2xl text-gray-700 dark:text-gray-300">
+          <FiMenu />
+        </button>
       </div>
 
+      {/* Desktop Sidebar */}
       <div className="hidden lg:flex h-screen w-64 bg-white dark:bg-[#0d0b1d] border-r border-gray-200 dark:border-gray-800 flex-col justify-between fixed left-0 top-0">
         <div className="px-6 py-4">
           <h1 className="text-2xl font-bold text-[#9810FA]">DonateHope</h1>
@@ -35,12 +49,23 @@ const Sidebar: React.FC = () => {
           <ul className="space-y-2">
             {navItems.map((item) => (
               <li key={item.name}>
-                <Link to={item.path} className={`flex items-center gap-3 px-4 py-2 rounded-lg text-sm font-medium transition ${location.pathname === item.path? "bg-[#9810FA] text-white" : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"}`}>{item.icon}{item.name}</Link>
+                <Link
+                  to={item.path}
+                  className={`flex items-center gap-3 px-4 py-2 rounded-lg text-sm font-medium transition ${
+                    location.pathname === item.path
+                      ? "bg-[#9810FA] text-white"
+                      : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                  }`}
+                >
+                  {item.icon}
+                  {item.name}
+                </Link>
               </li>
             ))}
           </ul>
         </nav>
 
+        {/* Common links */}
         <div className="px-4 py-6 space-y-2 border-t border-gray-200 dark:border-gray-800">
           <Link
             to="/help"
@@ -63,13 +88,8 @@ const Sidebar: React.FC = () => {
       {/* Mobile + Tablet Sidebar */}
       {isOpen && (
         <>
-          {/* Overlay */}
-          <div
-            className="fixed inset-0 bg-black/50 z-40"
-            onClick={() => setIsOpen(false)}
-          />
+          <div className="fixed inset-0 bg-black/50 z-40" onClick={() => setIsOpen(false)} />
 
-          {/* Sidebar */}
           <motion.div
             initial={{ x: -300 }}
             animate={{ x: 0 }}
@@ -79,10 +99,7 @@ const Sidebar: React.FC = () => {
           >
             <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-800">
               <h1 className="text-2xl font-bold text-[#9810FA]">DonateHope</h1>
-              <button
-                onClick={() => setIsOpen(false)}
-                className="text-2xl text-gray-700 dark:text-gray-300"
-              >
+              <button onClick={() => setIsOpen(false)} className="text-2xl text-gray-700 dark:text-gray-300">
                 <FiX />
               </button>
             </div>

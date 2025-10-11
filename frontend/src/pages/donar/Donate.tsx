@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
-import dummy from '../../assets/dummy.jpg';
+// import dummy from '../../assets/dummy.jpg';
 import Togglebutton from '@/components/ui/Togglebutton';
 import PaynmentModal from '@/components/PaynmentModal'; // Ensure the path is correct!
+import { useCampaigns } from '@/hooks/campagin/usecampagin';
 
 interface Campaign {
-  id: number;
+  _id: number;
   title: string;
   description: string;
   location: string;
@@ -20,33 +21,15 @@ interface Campaign {
 }
 
 const Donate: React.FC = () => {
-  const { id } = useParams();
+  const {getCampaignById}  = useCampaigns();
+  const { _id } = useParams();
   const navigate = useNavigate();
   const [campaign, setCampaign] = useState<Campaign | null>(null);
   const [amount, setAmount] = useState('');
   const [error, setError] = useState('');
   const [showModal, setShowModal] = useState(false);
 
-  useEffect(() => {
-    fetch(`/api/campaigns/${id}`)
-      .then((res) => res.json())
-      .then((data) => setCampaign(data))
-      .catch(() => {
-        setCampaign({
-          id: 1,
-          title: 'Emergency Heart Surgery for Baby Arya',
-          description: 'Help save 6-month-old Arya with urgent surgery.',
-          location: 'Mumbai',
-          raised: '₹3,25,000',
-          goal: '₹5,00,000',
-          percent: 65,
-          donors: 240,
-          daysLeft: 12,
-          category: 'Medical',
-          image: dummy,
-        });
-      });
-  }, [id]);
+  
 
   const handleQuickSelect = (val: number) => {
     setAmount(val.toString());

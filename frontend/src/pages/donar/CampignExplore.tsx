@@ -131,27 +131,26 @@ const CampaignExplore: React.FC = () => {
       </motion.div>
     ))
   ) : (
-    <motion.div
-      className="col-span-full flex flex-col items-center justify-center text-center py-16"
-      variants={itemVariants}
-    >
-      <img
-        src="https://cdn-icons-png.flaticon.com/512/7486/7486814.png"
-        alt="No Campaigns"
-        className="w-28 h-28 opacity-80 mb-4"
-      />
-      <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-200">
-        No campaigns available
-      </h2>
-      <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
-        Try adjusting your search or filters to find more results.
-      </p>
-    </motion.div>
-  )}
-</motion.div>
+      <motion.div
+        className="col-span-full flex flex-col items-center justify-center text-center py-16"
+        variants={itemVariants}
+      >
+        <img
+          src="https://cdn-icons-png.flaticon.com/512/7486/7486814.png"
+          alt="No Campaigns"
+          className="w-28 h-28 opacity-80 mb-4"
+        />
+        <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-200">
+          No campaigns available
+        </h2>
+        <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
+          Try adjusting your search or filters to find more results.
+        </p>
+      </motion.div>
+      )}
+  </motion.div>
 
 
-      <Footer />
     </motion.div>
   );
 };

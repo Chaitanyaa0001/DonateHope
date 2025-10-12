@@ -3,7 +3,7 @@ import React, { lazy, Suspense, useEffect, useState } from "react";
 import { FiSearch } from "react-icons/fi";
 import Togglebutton from "@/components/ui/Togglebutton";
 import { motion } from "framer-motion";
-import Footer from "@/components/Footer";
+
 import { useNavigate } from "react-router-dom";
 import { useCampaigns } from "@/hooks/campagin/usecampagin";
 

@@ -15,8 +15,8 @@ import RegisterCampign from "./pages/funder/RegisterCampign";
 import MyCampaignDetails from "./pages/funder/MyCampaigns";
 
 import ProtectedRoutes from "./protectedroutes/ProtectedRoute"; 
-import FunderLayout from "./pages/layouts/FunderLayout";
-import DonorLayout from "./pages/layouts/DonarLayout"; // ✅ Donor layout with sidebar if needed
+import FunderLayout from "./layouts/FunderLayout";
+import DonorLayout from "./layouts/DonarLayout"; 
 
 // Lazy-loaded pages
 const PaymentHistory = lazy(() => import("@/pages/donar/PaymentHistory"));

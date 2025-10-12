@@ -100,12 +100,7 @@ const CampaignExplore: React.FC = () => {
         </select>
 
         {/* Sort Filter */}
-        <select
-        aria-label="state"
-          value={sortOption}
-          onChange={(e) => setSortOption(e.target.value)}
-          className="bg-white dark:bg-[#1a1a2e] border-2 border-green-500 rounded-md px-3 py-2 text-sm w-full md:w-auto"
-        >
+        <select aria-label="state" value={sortOption} onChange={(e) => setSortOption(e.target.value)} className="bg-white dark:bg-[#1a1a2e] border-2 border-green-500 rounded-md px-3 py-2 text-sm w-full md:w-auto">
           <option>Most Recent</option>
           <option>Most Urgent</option>
           <option>Most Funded</option>

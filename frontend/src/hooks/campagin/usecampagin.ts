@@ -2,25 +2,38 @@ import { useState } from "react";
 import { callAPI } from "../../CentralAPI/centralapi";
 import type { CampaignData } from "@/responses/campaign";
 import  type { NewCampaignData } from "@/types/campign";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+// import { all } from "axios";
 
 
+
+const campaginKeys = {
+  all: ["campaigns"] as const,
+  my: ["campagins", "my"] as const,
+  detail: (id: string) => ["campaign", id] as const,
+}
 
 export const useCampaigns = () => {
-  const [campaigns, setCampaigns] = useState<CampaignData[]>([]);
+
+  const queryclient = useQueryClient();
+
+  // const [campaigns, setCampaigns] = useState<CampaignData[]>([]);
 
   
-  const getAllCampaigns = async () => {
-    const data = await callAPI<CampaignData[]>({ method: "get", url: "/campaigns" });
-    setCampaigns(data);
-    return data;
-  };
+  const getAllCampaignsQuery = useQuery ({
+    queryKey: campaginKeys.all,
+    queryFn: async () => {
+      await callAPI<CampaignData[]>({method: "get" , url : "/campaigns"})
+    }
+  })
 
   
-  const getMyCampaigns = async () => {
-    const data = await callAPI<CampaignData[]>({ method: "get", url: "/campaigns/my" });
-    setCampaigns(data);
-    return data;
-  };
+  const getmycampaignQuery = useQuery ({
+    queryKey: campaginKeys.my,
+    queryFn:   async () => {
+      await callAPI<CampaignData[]>({method: "get" , url : "/campaigns/my"}),
+    }
+  })
 
   
   const getCampaignById = async (id: string) => {
@@ -39,7 +52,6 @@ export const useCampaigns = () => {
       formData.append("urgent", String(data.urgent));
 
       if (data.image) formData.append("image", data.image);
-
 
     const newCampaign = await callAPI<CampaignData, FormData>({ method: "post",url: "/campaigns",data: formData,});
     setCampaigns(prev => [...prev, newCampaign]);
@@ -63,7 +75,7 @@ export const useCampaigns = () => {
 
   return {
     campaigns,
-    getAllCampaigns,
+    getAllCampaignsQuery,
     getMyCampaigns,
     getCampaignById,
     postCampaign,

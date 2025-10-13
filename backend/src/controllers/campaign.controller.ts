@@ -75,12 +75,13 @@ export const getMyCampaigns = async (req: Request, res: Response) => {
       .find({ user: req.user._id })
       .populate("user", "fullname email role");
 
-    return res.status(200).json({ campaigns });
+    return res.status(200).json(campaigns); 
   } catch (err) {
     console.error("Get my campaigns error", err);
     return res.status(500).json({ message: "Internal server error" });
   }
 };
+
 
 // Edit campaign
 export const editCampaign = async (req: Request, res: Response) => {

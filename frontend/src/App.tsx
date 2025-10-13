@@ -12,7 +12,7 @@ import CampignExplore from "./pages/donar/CampignExplore";
 import Donate from "./pages/donar/Donate";
 import FunderDashboard from "./pages/funder/FunderDashboard";
 import RegisterCampign from "./pages/funder/RegisterCampign";
-import MyCampaignDetails from "./pages/funder/MyCampaigns";
+import MyCampaigns from "./pages/funder/MyCampaigns";
 
 import ProtectedRoutes from "./protectedroutes/ProtectedRoute"; 
 import FunderLayout from "./layouts/FunderLayout";
@@ -48,7 +48,7 @@ const App = (): React.JSX.Element => {
         <Route element={<ProtectedRoutes role="funder"><FunderLayout /></ProtectedRoutes>}>
           <Route path="/dashboard" element={<FunderDashboard />} />
           <Route path="/register" element={<RegisterCampign />} />
-          <Route path="/my-campaigns/:id" element={<MyCampaignDetails />} />
+          <Route path="/my-campaign/:id" element={<MyCampaigns />} />
         </Route>
 
         {/* 404 fallback */}

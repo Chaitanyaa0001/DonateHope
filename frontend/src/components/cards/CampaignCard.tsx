@@ -13,6 +13,10 @@ interface CampaignCardProps {
     daysLeft: number;
     category: string;
     image: string;
+    urgent?: boolean;
+    user?: {
+      fullname: string;
+    };
   };
 }
 
@@ -22,15 +26,21 @@ const CampaignCard: React.FC<CampaignCardProps> = ({ card }) => {
   return (
     <div className="dark:bg-[#0d0b1d] rounded-2xl border-2 overflow-hidden border-[#C800DE] hover:shadow-lg transition duration-300 flex flex-col">
       {/* Image */}
-      <div className="h-48 overflow-hidden">
+      <div className="h-48 overflow-hidden relative">
         <img src={card.image} alt={card.title} loading="lazy" className="w-full h-full object-cover" />
+        {card.urgent && (
+          <span className="absolute top-2 left-2 bg-red-600 text-white text-xs px-2 py-1 rounded-md font-semibold">
+            URGENT
+          </span>
+        )}
       </div>
 
       {/* Category */}
-      <div className="px-4 pt-3">
+      <div className="px-4 pt-3 flex justify-between items-center">
         <p className="inline-block bg-green-300 text-green-800 text-xs font-semibold px-3 py-1 rounded-full">
           {card.category}
         </p>
+        {card.user && <span className="text-sm text-purple-500 font-medium">By: {card.user.fullname}</span>}
       </div>
 
       {/* Content */}

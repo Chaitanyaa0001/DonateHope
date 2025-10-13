@@ -1,35 +1,43 @@
-import React, { useState } from 'react';
-import Togglebutton from '@/components/ui/Togglebutton';
-import type { Campaign } from '@/types/campign';
-import Sidebar from '@/components/sidebar/Sidebar';
-import formImage from '@/assets/image.png';
-import { useCampaigns } from '@/hooks/campagin/usecampagin';
+import React, { useState } from "react";
+import { useCampaigns } from "@/hooks/campagin/usecampagin";
+import type { Campaign } from "@/types/campign";
 
 const RegisterCampaign: React.FC = () => {
-  const { postCampaign } = useCampaigns();
+  const { usePostCampaignQuery } = useCampaigns();
+  const { mutateAsync: postCampaign, isPending } = usePostCampaignQuery;
 
-  // We’ll keep both: a file (for upload) and a preview URL (for UI)
+  // 🖼️ Image file state
   const [imageFile, setImageFile] = useState<File | null>(null);
-  const [formData, setFormData] = useState<
-    Omit<Campaign, 'id' | 'raised' | 'donors' | 'daysLeft'>
-  >({
-    title: '',
-    description: '',
-    location: '',
+
+  // 🧩 Form data state
+  const [formData, setFormData] = useState<Omit<Campaign, "id" | "raised" | "donors">>({
+    title: "",
+    description: "",
+    location: "",
     goal: 0,
-    category: 'Medical',
-    image: '',
+    category: "Medical",
+    image: "",
     urgent: false,
   });
 
-  // ✅ Handle text/number/select inputs
+  // ✅ Handle text, number, select, checkbox inputs
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
-    const { name, value } = e.target;
+    const target = e.target;
+    const { name, type, value } = target;
+
+    // Safely determine input value type
+    let fieldValue: string | number | boolean = value;
+    if (type === "checkbox") {
+      fieldValue = (target as HTMLInputElement).checked;
+    } else if (type === "number") {
+      fieldValue = Number(value);
+    }
+
     setFormData((prev) => ({
       ...prev,
-      [name]: name === 'goal' ? Number(value) : value,
+      [name]: fieldValue,
     }));
   };
 
@@ -41,7 +49,7 @@ const RegisterCampaign: React.FC = () => {
       const previewUrl = URL.createObjectURL(file);
       setFormData((prev) => ({
         ...prev,
-        image: previewUrl, // just for preview
+        image: previewUrl, // for preview only
       }));
     }
   };
@@ -49,153 +57,166 @@ const RegisterCampaign: React.FC = () => {
   // ✅ Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    try {
-      if (!imageFile) {
-        alert('Please upload a campaign image.');
-        return;
-      }
 
+    if (!imageFile) {
+      alert("Please upload an image");
+      return;
+    }
+
+    try {
       const campaignData = {
-        title: formData.title,
-        description: formData.description,
-        location: formData.location,
-        goal: formData.goal,
-        category: formData.category,
-        urgent: formData.urgent,
-        image: imageFile, // must be File
+        ...formData,
+        image: imageFile, // pass actual file to backend
       };
 
-      const result = await postCampaign(campaignData);
-      console.log('✅ Campaign created:', result);
-      alert('Campaign created successfully!');
+      await postCampaign(campaignData);
+      alert("✅ Campaign created successfully!");
+
+      // Reset form
+      setFormData({
+        title: "",
+        description: "",
+        location: "",
+        goal: 0,
+        category: "Medical",
+        image: "",
+        urgent: false,
+      });
+      setImageFile(null);
     } catch (error) {
-      console.error('❌ Error creating campaign:', error);
-      alert('Something went wrong while creating the campaign.');
+      console.error("❌ Error creating campaign:", error);
+      alert("Something went wrong while creating the campaign.");
     }
   };
 
   return (
-    <>
-      <Sidebar />
-      <div className="relative">
-        <div className="w-[90%] lg:w-[75%] flex my-4 items-center justify-between">
-          <Togglebutton />
-        </div>
+    <div className="flex justify-center py-10 px-4">
+      <div className="w-full max-w-lg border border-gray-300 dark:border-gray-700 rounded-xl p-6 shadow-lg bg-white dark:bg-gray-900">
+        <h2 className="text-2xl font-semibold mb-6 text-center dark:text-white">
+          Register New Campaign
+        </h2>
 
-        <div className="w-[90%] lg:w-[90%] my-8 relative flex justify-center">
-          <div className="absolute -top-9 -right-30 hidden lg:block">
-            <img
-              src={formImage}
-              alt="Campaign Illustration"
-              className="w-72 opacity-80 rotate-8 rounded-xl shadow-lg"
+        <form className="space-y-5" onSubmit={handleSubmit}>
+          {/* Title */}
+          <div>
+            <label className="block font-medium mb-1 dark:text-white">Title</label>
+            <input
+              type="text"
+              name="title"
+              value={formData.title}
+              onChange={handleChange}
+              placeholder="Flood Relief in Kerala"
+              required
+              className="w-full px-4 py-2 border rounded-md dark:bg-gray-800 dark:text-white"
             />
           </div>
 
-          <div className="relative z-10 w-full lg:w-[85%] border-2 border-purple-500 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md p-6 rounded-xl shadow-xl">
-            <h2 className="text-2xl font-semibold mb-6 text-center dark:text-white">
-              Register a New Fundraiser
-            </h2>
-
-            <form className="space-y-6" onSubmit={handleSubmit}>
-              {/* title */}
-              <div>
-                <label className="block font-medium mb-1 dark:text-white">Campaign Title</label>
-                <input
-                  type="text"
-                  name="title"
-                  value={formData.title}
-                  onChange={handleChange}
-                  placeholder="Flood Relief in Kerala"
-                  className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white dark:border-gray-600"
-                />
-              </div>
-
-              {/* description */}
-              <div>
-                <label className="block font-medium mb-1 dark:text-white">Description</label>
-                <textarea
-                  name="description"
-                  value={formData.description}
-                  onChange={handleChange}
-                  placeholder="Immediate relief for flood-affected families..."
-                  rows={4}
-                  className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white dark:border-gray-600"
-                ></textarea>
-              </div>
-
-              {/* location */}
-              <div>
-                <label className="block font-medium mb-1 dark:text-white">Location</label>
-                <input
-                  type="text"
-                  name="location"
-                  value={formData.location}
-                  onChange={handleChange}
-                  placeholder="Kerala"
-                  className="w-full px-4 py-2 border rounded-md dark:bg-gray-800 dark:text-white"
-                />
-              </div>
-
-              {/* goal */}
-              <div>
-                <label className="block font-medium mb-1 dark:text-white">Goal (INR)</label>
-                <input
-                  type="number"
-                  name="goal"
-                  value={formData.goal}
-                  onChange={handleChange}
-                  placeholder="1000000"
-                  className="w-full px-4 py-2 border rounded-md dark:bg-gray-800 dark:text-white"
-                />
-              </div>
-
-              {/* category */}
-              <div>
-                <label className="block font-medium mb-1 dark:text-white">Category</label>
-                <select
-                aria-label='state'
-                  name="category"
-                  value={formData.category}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border rounded-md dark:bg-gray-800 dark:text-white"
-                >
-                  <option value="Medical">Medical</option>
-                  <option value="Education">Education</option>
-                  <option value="Disaster Relief">Disaster Relief</option>
-                </select>
-              </div>
-
-              {/* image */}
-              <div>
-                <label className="block font-medium mb-1 dark:text-white">Campaign Image</label>
-                <input
-                aria-label='state'
-                  type="file"
-                  name="image"
-                  accept="image/*"
-                  onChange={handleImageChange}
-                  className="w-full file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm 
-                             file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 
-                             dark:text-white"
-                />
-                {formData.image && (
-                  <img src={formData.image} alt="Preview" className="mt-3 w-32 rounded-md" />
-                )}
-              </div>
-
-              <div className="text-center">
-                <button
-                  type="submit"
-                  className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition duration-300"
-                >
-                  Submit Campaign
-                </button>
-              </div>
-            </form>
+          {/* Description */}
+          <div>
+            <label className="block font-medium mb-1 dark:text-white">Description</label>
+            <textarea
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
+              placeholder="Immediate relief for flood-affected families..."
+              rows={4}
+              required
+              className="w-full px-4 py-2 border rounded-md dark:bg-gray-800 dark:text-white"
+            />
           </div>
-        </div>
+
+          {/* Location */}
+          <div>
+            <label className="block font-medium mb-1 dark:text-white">Location</label>
+            <input
+              type="text"
+              name="location"
+              value={formData.location}
+              onChange={handleChange}
+              placeholder="Kerala"
+              required
+              className="w-full px-4 py-2 border rounded-md dark:bg-gray-800 dark:text-white"
+            />
+          </div>
+
+          {/* Goal */}
+          <div>
+            <label className="block font-medium mb-1 dark:text-white">Goal (INR)</label>
+            <input
+              type="number"
+              name="goal"
+              value={formData.goal}
+              onChange={handleChange}
+              placeholder="1000000"
+              required
+              className="w-full px-4 py-2 border rounded-md dark:bg-gray-800 dark:text-white"
+            />
+          </div>
+
+          {/* Category */}
+          <div>
+            <label className="block font-medium mb-1 dark:text-white">Category</label>
+            <select
+            aria-label="state"
+              name="category"
+              value={formData.category}
+              onChange={handleChange}
+              required
+              className="w-full px-4 py-2 border rounded-md dark:bg-gray-800 dark:text-white"
+            >
+              <option value="Medical">Medical</option>
+              <option value="Education">Education</option>
+              <option value="Disaster Relief">Disaster Relief</option>
+            </select>
+          </div>
+
+          {/* Urgent */}
+          <div className="flex items-center gap-2">
+            <input
+            aria-label="state"
+              type="checkbox"
+              name="urgent"
+              checked={formData.urgent}
+              onChange={handleChange}
+            />
+            <label className="dark:text-white">Mark as Urgent</label>
+          </div>
+
+          {/* Image Upload */}
+          <div>
+            <label className="block font-medium mb-1 dark:text-white">Campaign Image</label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              required
+              className="w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md 
+                         file:border-0 file:font-semibold file:bg-blue-50 file:text-blue-700 
+                         hover:file:bg-blue-100 dark:text-white"
+            />
+            {formData.image && (
+              <img
+                src={formData.image}
+                alt="Preview"
+                className="mt-3 w-32 rounded-md border dark:border-gray-700"
+              />
+            )}
+          </div>
+
+          {/* Submit Button */}
+          <div className="text-center">
+            <button
+              type="submit"
+              disabled={isPending}
+              className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 
+                         transition duration-300 disabled:opacity-70"
+            >
+              {isPending ? "Submitting..." : "Submit Campaign"}
+            </button>
+          </div>
+        </form>
       </div>
-    </>
+    </div>
   );
 };
 

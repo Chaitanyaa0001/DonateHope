@@ -7,12 +7,12 @@ import redis from '../../config/redisClient.js';
 export const requestOTP = async (req: Request, res: Response) => {
   try {
     const { email, role, fullname } = req.body;
-
     if (!email) {
       return  res.status(400).json({ message: 'Email is required' });
     }
 
     const rateLimiterKey = `otp_rate_limit:${email}`;
+    const attemptsKey = `otp_attempts:${email}`;
     const isLimited = await redis.exists(rateLimiterKey);
 
     if (isLimited) {
@@ -21,7 +21,6 @@ export const requestOTP = async (req: Request, res: Response) => {
 
     await redis.set(rateLimiterKey, '1', 'EX', 60); // expires in 60 sec
 
-    const attemptsKey = `otp_attempts:${email}`;
     const attempts = await redis.incr(attemptsKey);
     if (attempts === 1) await redis.expire(attemptsKey, 600); // 10 minutes
 

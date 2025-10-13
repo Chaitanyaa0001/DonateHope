@@ -1,12 +1,14 @@
 import { Request, Response } from "express";
-import campaignModel from "../models/campaign.model.ts";
+import campaignModel from "../models/campaign.model";
+import "../utils/CampaginCron";
 
+// Create campaign
 export const postCampaign = async (req: Request, res: Response) => {
   try {
     if (!req.user) return res.status(401).json({ message: "Unauthenticated" });
 
-    const { title, description, goal, location, category, daysLeft } = req.body;
-    if (!title || !description || !goal || !location || !category || daysLeft == null) {
+    const { title, description, goal, location, category, urgent } = req.body;
+    if (!title || !description || !goal || !location || !category) {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
@@ -22,9 +24,10 @@ export const postCampaign = async (req: Request, res: Response) => {
       raised: 0,
       location,
       category,
-      donors: 0,              
-      daysLeft,
-      user: req.user.userId,  // <-- fixed
+      donors: 0,
+      urgent: urgent || false,
+      daysLeft: 30,
+      user: req.user._id, // ✅ use user._id
     });
 
     return res.status(201).json({ message: "Campaign created successfully", campaign });
@@ -34,39 +37,51 @@ export const postCampaign = async (req: Request, res: Response) => {
   }
 };
 
+// Get all campaigns
 export const getAllCampaigns = async (_req: Request, res: Response) => {
   try {
-    const campaigns = await campaignModel.find().populate("user", "email role");
+    const campaigns = await campaignModel
+      .find()
+      .populate("user", "fullname email role"); // populate username
     res.status(200).json(campaigns);
   } catch (error) {
     res.status(500).json({ message: "Error fetching campaigns", error });
   }
 };
 
-
+// Get campaign by ID
 export const getCampaignById = async (req: Request, res: Response) => {
   try {
-    const campagin = await campaignModel.findById(req.params.id).populate("user", "email role");
-    if (!campagin) {
-      return res.status(404).json({ message: "Campaign not found" });
-    }
+    const campaign = await campaignModel
+      .findById(req.params.id)
+      .populate("user", "fullname email role");
+
+    if (!campaign) return res.status(404).json({ message: "Campaign not found" });
+
+    return res.status(200).json(campaign);
   } catch (err) {
     console.error("Get campaign by ID error", err);
     return res.status(500).json({ message: "Internal server error" });
   }
 };
 
+// Get campaigns for logged-in user
 export const getMyCampaigns = async (req: Request, res: Response) => {
   try {
     if (!req.user) return res.status(401).json({ message: "Unauthorized" });
-    const campaigns = await campaignModel.find({ user: req.user.userId }); // <-- fixed
+
+    const campaigns = await campaignModel
+      .find({ user: req.user._id })
+      .populate("user", "fullname email role");
+
     return res.status(200).json({ campaigns });
-    } catch (err) {
+  } catch (err) {
     console.error("Get my campaigns error", err);
     return res.status(500).json({ message: "Internal server error" });
   }
 };
 
+// Edit campaign
 export const editCampaign = async (req: Request, res: Response) => {
   try {
     if (!req.user) return res.status(401).json({ message: "Unauthorized" });
@@ -74,7 +89,7 @@ export const editCampaign = async (req: Request, res: Response) => {
     const campaign = await campaignModel.findById(req.params.id);
     if (!campaign) return res.status(404).json({ message: "Campaign not found" });
 
-    if (campaign.user.toString() !== req.user.userId) {
+    if (campaign.user.toString() !== req.user._id.toString()) {
       return res.status(403).json({ message: "Not authorized to edit this campaign" });
     }
 
@@ -84,6 +99,7 @@ export const editCampaign = async (req: Request, res: Response) => {
     campaign.location = req.body.location ?? campaign.location;
     campaign.category = req.body.category ?? campaign.category;
     campaign.daysLeft = req.body.daysLeft ?? campaign.daysLeft;
+    campaign.urgent = req.body.urgent ?? campaign.urgent;
 
     const updated = await campaign.save();
     return res.status(200).json({ message: "Campaign updated", campaign: updated });
@@ -93,6 +109,7 @@ export const editCampaign = async (req: Request, res: Response) => {
   }
 };
 
+// Delete campaign
 export const deleteCampaign = async (req: Request, res: Response) => {
   try {
     if (!req.user) return res.status(401).json({ message: "Unauthorized" });
@@ -100,7 +117,7 @@ export const deleteCampaign = async (req: Request, res: Response) => {
     const campaign = await campaignModel.findById(req.params.id);
     if (!campaign) return res.status(404).json({ message: "Campaign not found" });
 
-    if (campaign.user.toString() !== req.user.userId) {
+    if (campaign.user.toString() !== req.user._id.toString()) {
       return res.status(403).json({ message: "Not authorized to delete this campaign" });
     }
 

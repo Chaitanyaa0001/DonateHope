@@ -17,3 +17,13 @@ export interface CampaignData {
   createdAt: string;
   updatedAt: string;
 };
+
+export interface NewCampaignData {
+  title: string;
+  description: string;
+  location: string;
+  goal: number;
+  category: string;
+  urgent?: boolean;
+  image: File;
+}

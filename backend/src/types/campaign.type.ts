@@ -11,5 +11,6 @@ export interface ICampaign extends Document {
   category: string;
   donors: number;
   daysLeft: number;
+  urgent: boolean;
   user: mongoose.Schema.Types.ObjectId; 
 };

@@ -42,8 +42,15 @@ const campaginSchema =  new Schema<ICampaign>({
         required:true
     },
     daysLeft:{
-        type:Number
+        type:Number,
+        default: 30,
+        required: true
+    },
+    urgent:{
+        type: Boolean,
+        default: false
     }
+
 },{timestamps:true});
 
 campaginSchema.index({category: 1});

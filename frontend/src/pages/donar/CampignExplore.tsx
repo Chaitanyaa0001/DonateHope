@@ -1,5 +1,5 @@
 // src/pages/CampaignExplore.tsx
-import React, { lazy, Suspense, useEffect, useState } from "react";
+import React, { lazy, Suspense, useState } from "react";
 import { FiSearch } from "react-icons/fi";
 import Togglebutton from "@/components/ui/Togglebutton";
 import { motion } from "framer-motion";
@@ -22,17 +22,27 @@ const itemVariants = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 
 
 const CampaignExplore: React.FC = () => {
   const navigate = useNavigate();
-  const { campaigns, getAllCampaigns } = useCampaigns();
-
+  
   const [searchText, setSearchText] = useState("");
   const [category, setCategory] = useState("All");
   const [sortOption, setSortOption] = useState("Most Recent");
+  
+  // fetching data 
+  const {useAllCampaignsQuery} = useCampaigns();
+  const {data: campaigns = [] , isLoading, isError} = useAllCampaignsQuery;
 
-  useEffect(() => {
-    getAllCampaigns();
-  }, [getAllCampaigns]);
+  if (isLoading)
+  return (
+    <div className="text-center py-20 text-gray-500">Loading campaigns...</div>
+  );
 
-  const filteredCampaigns = campaigns
+if (isError)
+  return (
+    <div className="text-center py-20 text-red-500">Failed to load campaigns.</div>
+  );
+
+
+  const filteredCampaigns = (campaigns || [])
     .filter((c) => {
       const matchSearch = c.title.toLowerCase().includes(searchText.toLowerCase());
       const matchCategory = category === "All" || c.category === category;

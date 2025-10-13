@@ -1,15 +1,12 @@
-import { useState } from "react";
+
 import { callAPI } from "../../CentralAPI/centralapi";
 import type { CampaignData } from "@/responses/campaign";
-import  type { NewCampaignData } from "@/types/campign";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-// import { all } from "axios";
+import  type { NewCampaignData } from "../../responses/campaign";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-
-
-const campaginKeys = {
+const campaignKeys = {
   all: ["campaigns"] as const,
-  my: ["campagins", "my"] as const,
+  my: ["campaigns", "my"] as const,
   detail: (id: string) => ["campaign", id] as const,
 }
 
@@ -17,69 +14,81 @@ export const useCampaigns = () => {
 
   const queryclient = useQueryClient();
 
-  // const [campaigns, setCampaigns] = useState<CampaignData[]>([]);
-
-  
-  const getAllCampaignsQuery = useQuery ({
-    queryKey: campaginKeys.all,
+  const useAllCampaignsQuery = useQuery ({
+    queryKey: campaignKeys.all,
     queryFn: async () => {
-      await callAPI<CampaignData[]>({method: "get" , url : "/campaigns"})
+      return await callAPI<CampaignData[]>({method: "get" , url : "/campaigns"});
     }
-  })
+  });
 
-  
-  const getmycampaignQuery = useQuery ({
-    queryKey: campaginKeys.my,
+  const useMyCampaignQuery = useQuery ({
+    queryKey: campaignKeys.my,
     queryFn:   async () => {
-      await callAPI<CampaignData[]>({method: "get" , url : "/campaigns/my"}),
-    }
-  })
+      return await callAPI<CampaignData[]>({method: "get" , url : "/campaigns/my"})}
+  });
+
+  const useCampaignByIdQuery = (id: string) =>
+    useQuery({
+      queryKey: campaignKeys.detail(id),
+      queryFn: async () =>
+        await callAPI<CampaignData>({ method: "get", url: `/campaigns/${id}` }),
+      enabled: !!id,
+    });
 
   
-  const getCampaignById = async (id: string) => {
-    const data = await callAPI<CampaignData>({ method: "get", url: `/campaigns/${id}` });
-    return data;
-  };
-
-  
-  const postCampaign = async (data : NewCampaignData) => {
-   const formData = new FormData ();
+  const usePostCampaignQuery  = useMutation({
+    mutationFn: async (data: NewCampaignData) =>{
+      const formData   = new FormData();
       formData.append("title", data.title);
       formData.append("description", data.description);
       formData.append("location", data.location);
       formData.append("goal", String(data.goal));
       formData.append("category", data.category);
       formData.append("urgent", String(data.urgent));
-
       if (data.image) formData.append("image", data.image);
 
-    const newCampaign = await callAPI<CampaignData, FormData>({ method: "post",url: "/campaigns",data: formData,});
-    setCampaigns(prev => [...prev, newCampaign]);
-    return newCampaign;
-  };
+      return await callAPI<CampaignData, FormData>({
+        method:"post", url : "/campaigns", data: formData
+      });
+    },
 
-  const editCampaign = async (id: string, updatedData: Partial<CampaignData>) => {
-    const updatedCampaign = await callAPI<CampaignData, Partial<CampaignData>>({
-      method: "put",
-      url: `/campaigns/${id}`,
-      data: updatedData,
-    });
-    setCampaigns(prev => prev.map(c => (c._id === id ? updatedCampaign : c)));
-    return updatedCampaign;
-  };
+    onSuccess: () =>{
+      queryclient.invalidateQueries({queryKey: campaignKeys.all});
+    }
+  })
 
-  const deleteCampaign = async (id: string) => {
-    await callAPI<void>({ method: "delete", url: `/campaigns/${id}` });
-    setCampaigns(prev => prev.filter(c => c._id !== id));
-  };
+  const useEditCampaignQuery = useMutation({
+    mutationFn: async ({id,data,}:{id:string,data: Partial<CampaignData>;}) =>{
+      return await callAPI<CampaignData, Partial<CampaignData>>({
+        method : "put", url : `/campaigns/${id}`, data
+      });
+    },
+        onSuccess: (_, variables) => {
+      //  Refresh specific campaign and the list
+      queryclient.invalidateQueries({
+        queryKey: campaignKeys.detail(variables.id),
+      });
+      queryclient.invalidateQueries({ queryKey: campaignKeys.all });
+    },
+  });
+
+ 
+
+  const useDeleteCampaignQuery =  useMutation({
+    mutationFn: async (id: string) =>{
+      await callAPI({method: "delete" , url : `/campaigns/${id}`})
+    },
+   onSuccess : () =>{
+    queryclient.invalidateQueries ({queryKey : campaignKeys.all})
+   } 
+  })
 
   return {
-    campaigns,
-    getAllCampaignsQuery,
-    getMyCampaigns,
-    getCampaignById,
-    postCampaign,
-    editCampaign,
-    deleteCampaign,
+    useAllCampaignsQuery,
+    useMyCampaignQuery,
+    useCampaignByIdQuery,
+    usePostCampaignQuery,
+    useEditCampaignQuery,
+    useDeleteCampaignQuery,
   };
 };

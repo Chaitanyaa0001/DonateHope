@@ -28,12 +28,17 @@ export const useCampaigns = () => {
   });
 
   const useCampaignByIdQuery = (id: string) =>
-    useQuery({
-      queryKey: campaignKeys.detail(id),
-      queryFn: async () =>
-        await callAPI<CampaignData>({ method: "get", url: `/campaigns/${id}` }),
-      enabled: !!id,
-    });
+  useQuery({
+    queryKey: campaignKeys.detail(id),
+    queryFn: async () => {
+      return await callAPI<CampaignData>({
+        method: "get",
+        url: `/campaigns/${id}`,
+      });
+    },
+    enabled: !!id, 
+  });
+
 
   
   const usePostCampaignQuery  = useMutation({

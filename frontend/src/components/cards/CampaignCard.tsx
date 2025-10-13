@@ -15,7 +15,10 @@ interface CampaignCardProps {
     image: string;
     urgent?: boolean;
     user?: {
+      _id: string
       fullname: string;
+      role: string;
+      email:string;
     };
   };
 }
@@ -69,7 +72,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({ card }) => {
           <span>🗓 {card.daysLeft} days left</span>
         </div>
 
-        <Link to={`/paynment/${card._id}`}>
+        <Link to={`/campaigns/${card._id}`}>
           <button
             type="button"
             className="mt-4 w-full text-white bg-fuchsia-500 hover:bg-fuchsia-600 py-2 rounded-md font-semibold text-sm flex items-center justify-center gap-2"

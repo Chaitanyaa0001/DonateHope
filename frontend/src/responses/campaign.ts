@@ -9,8 +9,9 @@ export interface CampaignData {
   category: string;
   donors: number;
   daysLeft: number;
-  user: {
+  user: { 
     _id: string;
+    fullname: string
     email: string;
     role: string;
   };

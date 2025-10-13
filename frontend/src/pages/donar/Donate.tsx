@@ -1,49 +1,51 @@
-import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import React  from 'react';
+import { useParams, useNavigate, } from 'react-router-dom';
 
-// import dummy from '../../assets/dummy.jpg';
+
 import Togglebutton from '@/components/ui/Togglebutton';
-import PaynmentModal from '@/components/PaynmentModal'; // Ensure the path is correct!
-import { useCampaigns } from '@/hooks/campagin/usecampagin';
 
-interface Campaign {
-  _id: number;
-  title: string;
-  description: string;
-  location: string;
-  raised: string;
-  goal: string;
-  percent: number;
-  donors: number;
-  daysLeft: number;
-  category: string;
-  image: string;
-}
+// import type { Campaign } from '@/types/campign';
+import { useCampaigns } from '@/hooks/campagin/usecampagin';
+import { useState } from 'react';
+
 
 const Donate: React.FC = () => {
-  const {getCampaignById}  = useCampaigns();
-  const { _id } = useParams();
+
+  const { id } = useParams();
+  const {useCampaignByIdQuery} = useCampaigns();
+
+  const {data:campaign, isLoading, isError, error} = useCampaignByIdQuery(id!);
+
+  console.log("Fetched campaign:", campaign);
+console.log("Fetch error details:", error);
+
   const navigate = useNavigate();
-  const [campaign, setCampaign] = useState<Campaign | null>(null);
   const [amount, setAmount] = useState('');
-  const [error, setError] = useState('');
-  const [showModal, setShowModal] = useState(false);
 
   
 
   const handleQuickSelect = (val: number) => {
     setAmount(val.toString());
-    setError('');
+   
   };
 
   const handleDonateClick = () => {
-    if (!amount || parseInt(amount) < 10) {
-      setError('Please enter a valid amount (min ₹10)');
-      return;
-    }
-    setShowModal(true); // open modal instead of alert
+   
   };
 
+
+  if (isLoading) return (
+  <div className="text-center text-gray-700 dark:text-white p-6">
+    Loading...
+  </div>
+);
+
+
+if (isError || !campaign) return (
+  <div className="text-center text-gray-700 dark:text-white p-6">
+    Failed to load campaign. 
+  </div>
+);
 
   if (!campaign)
     return (
@@ -52,6 +54,7 @@ const Donate: React.FC = () => {
       </div>
     );
 
+    const percent = Math.min(Math.round((campaign.raised / campaign.goal) * 100), 100);
   return (
     <div className={`min-h-screen py-8 px-4 sm:px-2`}>
       {/* Theme Toggle */}
@@ -61,12 +64,13 @@ const Donate: React.FC = () => {
 
       <div className="max-w-4xl mx-auto">
         <button
-          onClick={() => navigate('/campaigns')}
+          onClick={() => navigate('/explore')}
           className="mb-6 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-white px-4 py-2 rounded-md transition"
         >
           ⬅ Back to Campaigns
         </button>
         <h1 className="text-3xl sm:text-4xl font-bold mb-4 text-purple-600 dark:text-white">{campaign.title} </h1>
+        <p>By: {campaign.user?.fullname || "Anonymous"}</p>
         <img
           src={campaign.image}
           alt="Campaign"
@@ -87,7 +91,8 @@ const Donate: React.FC = () => {
         <div className="w-full bg-gray-200 dark:bg-gray-700 h-4 rounded-full mb-2">
           <div
             className="h-4 bg-green-500 rounded-full transition-all"
-            style={{ width: `${campaign.percent}%` }}
+            style={{ width: `${percent}%` }}
+
           />
         </div>
 
@@ -108,7 +113,7 @@ const Donate: React.FC = () => {
 
         {/* Description */}
         <p className="text-gray-700 dark:text-gray-300 mb-6 leading-relaxed">
-          {campaign.description}
+          {campaign.location}
         </p>
 
         {/* Donation Form */}
@@ -136,11 +141,9 @@ const Donate: React.FC = () => {
             value={amount}
             onChange={(e) => {
               setAmount(e.target.value);
-              setError('');
             }}
           />
 
-          {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
 
           <button
             onClick={handleDonateClick}
@@ -152,9 +155,7 @@ const Donate: React.FC = () => {
       </div>
 
       {/* Payment Modal */}
-      {showModal && (
-        <PaynmentModal amount={amount} onClose={() => setShowModal(false)} />
-      )}
+      
     </div>
   );
 };

@@ -7,7 +7,7 @@ export interface Campaign {
   goal: number;
   donors: number;
   daysLeft?: number;
-  category: 'Medical' | 'Education' | 'Disaster Relief';
+  category: string;
   image: string;
   urgent?: boolean;
 }

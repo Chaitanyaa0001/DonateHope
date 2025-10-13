@@ -53,8 +53,9 @@ export const getAllCampaigns = async (_req: Request, res: Response) => {
 export const getCampaignById = async (req: Request, res: Response) => {
   try {
     const campaign = await campaignModel
-      .findById(req.params.id)
-      .populate("user", "fullname email role");
+  .findById(req.params.id)
+  .populate("user", "fullname email role"); // ensure 'fullname' exists in DB
+
 
     if (!campaign) return res.status(404).json({ message: "Campaign not found" });
 
@@ -127,3 +128,5 @@ export const deleteCampaign = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Error deleting campaign", error });
   }
 };
+
+

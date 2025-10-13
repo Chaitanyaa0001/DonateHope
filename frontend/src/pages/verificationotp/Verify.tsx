@@ -48,7 +48,7 @@ const Verify: React.FC = () => {
       dispatch(setRole(verify.role));
 
     if (verify.role === "donor") {
-      navigate("/campaigns");
+      navigate("/explore");
     } else {
       navigate("/register");
     }

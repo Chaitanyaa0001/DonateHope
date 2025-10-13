@@ -41,7 +41,7 @@ const App = (): React.JSX.Element => {
               <PaymentHistory />
             </Suspense>
           } />
-          <Route path="/paynment/:id" element={<Donate />} />
+          <Route path="/campaigns/:id" element={<Donate />} />
         </Route>
 
         {/* Funder Protected Routes */}

@@ -17,8 +17,9 @@ export const verifyOTP = async (identifier: string, otp: string) => {
   });
 };
 export  const logout = async () =>{
-  
+  return await callAPI({method:"post", url: "/auth/logout"}) 
 }
+
 export const refreshToken = async () => {
   return await callAPI<RefreshTokenResponse>({
     method: "get",

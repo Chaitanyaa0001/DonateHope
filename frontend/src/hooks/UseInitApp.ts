@@ -1,25 +1,15 @@
+// hooks/useInitApp.ts
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { setRole } from '@/redux/authSlice';
 import { setTheme } from '@/redux/themeSlice';
 
 export const useInitApp = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    // Initialize role
-    const storedRole = localStorage.getItem('role') as 'donor' | 'funder' | null;
-    if (storedRole) dispatch(setRole(storedRole));
-
-    // Initialize theme
     const storedTheme = localStorage.getItem('theme');
-    let isDark = false;
+    const isDark = storedTheme? storedTheme === 'dark': window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
 
-    if (storedTheme) {
-      isDark = storedTheme === 'dark';
-    } else {
-      isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-    }
-    dispatch(setTheme(isDark));
+    dispatch(setTheme(!!isDark));
   }, [dispatch]);
 };

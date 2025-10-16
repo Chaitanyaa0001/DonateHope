@@ -5,23 +5,26 @@ import api from '../CentralAPI/axios';
 interface AuthState {
   userId: string | null;
   role: 'donor' | 'funder' | null;
+  accessToken : string | null;
   loading: boolean;
 }
 
-const initialState: AuthState = { userId: null, role: null, loading: true };
+const initialState: AuthState = { userId: null, role: null, accessToken: null ,loading: true };
 
 const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    setAuth: (state, action: PayloadAction<{ role: 'donor' | 'funder'; userId: string }>) => {
+    setAuth: (state, action: PayloadAction<{ role: 'donor' | 'funder'; userId: string; accessToken : string }>) => {
       state.role = action.payload.role;
       state.userId = action.payload.userId;
+      state.accessToken = action.payload.accessToken;
       state.loading = false;
     },
     clearAuth: (state) => {
       state.role = null;
       state.userId = null;
+      state.accessToken = null
       state.loading = false;
     },
     setLoading: (state, action: PayloadAction<boolean>) => {
@@ -36,7 +39,7 @@ export const checkSession = () => async (dispatch: AppDispatch) => {
   dispatch(setLoading(true));
   try {
     const { data } = await api.get('/auth/refresh-token');
-    dispatch(setAuth({ role: data.role, userId: data.userId }));
+    dispatch(setAuth({ role: data.role, userId: data.userId, accessToken: data.accessToken! }));
   } catch {
     dispatch(clearAuth());
   }

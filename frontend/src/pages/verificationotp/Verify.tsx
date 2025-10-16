@@ -2,10 +2,8 @@ import React, { useState, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { FiMail /*, FiPhone */ } from 'react-icons/fi';
 import {  useDispatch } from 'react-redux';
-// import type { RootState } from '@/redux/store';
 import { verifyOTP } from '@/hooks/auth/uselogin';
-import { setRole } from '@/redux/authSlice';
-// import Togglebutton from '../ui/Togglebutton';
+import { setAuth } from '@/redux/authSlice';
 
 interface LocationState {
   method: 'email'; 
@@ -42,21 +40,20 @@ const Verify: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const enteredOtp = otp.join('');
-
     try {
-      const verify = await verifyOTP(destination,enteredOtp)
-      dispatch(setRole(verify.role));
-
-    if (verify.role === "donor") {
-      navigate("/explore");
-    } else {
-      navigate("/register");
-    }
-      
+      const verify = await verifyOTP(destination, enteredOtp);
+      if (!verify.userId || !verify.accessToken) return
+      console.error("Missing user info", verify);
+      dispatch(setAuth({ role: verify.role, userId: verify.userId, accessToken: verify.accessToken }));
+      if (verify.role === "donor"){
+        navigate("/explore");
+      }
+      else {
+        navigate("/register");
+      }
     } catch (err) {
-      console.error("Error while verifying OTP",err);
+      console.error("Error verifying OTP", err);
     }
-   
   };
 
   return (

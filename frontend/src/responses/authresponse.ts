@@ -6,11 +6,8 @@ export interface RequestOTPResponse  {
 export interface verifyOTPResponse {
     message: string,
     role: "donor" | "funder",
-    user:{
-        id: string,
-        email: string,
-        role: "donor" | "funder"
-    };
+    accessToken: string,
+    userId : string
 };
 
 export interface RefreshTokenResponse {

@@ -2,6 +2,10 @@ import { Request, Response } from 'express';
 import User from '../../models/user.model.js';
 import { generateAccessToken, generateRefreshToken } from '../../utils/generateToken.js';
 import redis from '../../config/redisClient.js';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
 
 export const verifyOTP = async (req: Request, res: Response) => {
   try {
@@ -16,6 +20,7 @@ export const verifyOTP = async (req: Request, res: Response) => {
     if (!savedOTP || savedOTP !== otp) {
       return res.status(400).json({ message: "Invalid OTP or identifier" });
     }
+
     // OTP verified
     const user = await User.findOne({ email: identifier });
     if (!user) return res.status(404).json({ message: "User not found" });
@@ -27,15 +32,21 @@ export const verifyOTP = async (req: Request, res: Response) => {
     const accessToken = generateAccessToken(user._id.toString(), user.role);
     const refreshToken = generateRefreshToken(user._id.toString(), user.role);
 
-  
+    // Cookie options
     res.cookie('refresh_token', refreshToken, {
       httpOnly: true,
-      secure: true,
-      sameSite: 'strict',
-      maxAge: 7 * 24 * 60 * 60 * 1000, 
+      secure: false,                // HTTPS in production
+      sameSite: 'lax', // cross-site for production
+      maxAge: 7 * 24 * 60 * 60 * 1000,  // 7 days
+      path: '/',
     });
 
-    res.status(200).json({ message: "OTP verified", role: user.role, userId: user._id.toString(), accessToken });
+    res.status(200).json({ 
+      message: "OTP verified", 
+      role: user.role, 
+      userId: user._id.toString(), 
+      accessToken 
+    });
   } catch (err) {
     console.error('OTP verification error', err);
     res.status(500).json({ message: "Internal server error" });

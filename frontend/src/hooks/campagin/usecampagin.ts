@@ -3,6 +3,10 @@ import { callAPI } from "../../CentralAPI/centralapi";
 import type { CampaignData } from "@/responses/campaign";
 import  type { NewCampaignData } from "../../responses/campaign";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useSelector } from 'react-redux';
+import type { RootState } from '@/redux/store';
+
+
 
 const campaignKeys = {
   all: ["campaigns"] as const,
@@ -11,7 +15,8 @@ const campaignKeys = {
 }
 
 export const useCampaigns = () => {
-
+  
+  const auth = useSelector((state: RootState) => state.auth);
   const queryclient = useQueryClient();
 
   const useAllCampaignsQuery = useQuery ({
@@ -22,11 +27,12 @@ export const useCampaigns = () => {
   });
 
  
-  const useMyCampaignQuery = useQuery ({
-    queryKey: campaignKeys.my,
-    queryFn:   async () => {
-      return await callAPI<CampaignData[]>({method: "get" , url : "/campaigns/my"})}
-  });
+  const useMyCampaignQuery = useQuery({
+  queryKey: campaignKeys.my,
+  queryFn: async () => callAPI<CampaignData[]>({ method: "get", url: "/campaigns/my" }),
+  enabled: auth.role === 'funder', // only fetch for funders
+});
+
 
   const useCampaignByIdQuery = (id: string) =>
   useQuery({
@@ -40,8 +46,6 @@ export const useCampaigns = () => {
     enabled: !!id, 
   });
 
-
-  
   const usePostCampaignQuery  = useMutation({
     mutationFn: async (data: NewCampaignData) =>{
       const formData   = new FormData();
@@ -61,7 +65,7 @@ export const useCampaigns = () => {
     onSuccess: () =>{
       queryclient.invalidateQueries({queryKey: campaignKeys.all});
     }
-  })
+  });
 
   const useEditCampaignQuery = useMutation({
     mutationFn: async ({id,data,}:{id:string,data: Partial<CampaignData>;}) =>{

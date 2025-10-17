@@ -1,3 +1,4 @@
+// redux/authSlice.ts
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import type { AppDispatch } from './store';
 import api from '../CentralAPI/axios';
@@ -5,17 +6,17 @@ import api from '../CentralAPI/axios';
 interface AuthState {
   userId: string | null;
   role: 'donor' | 'funder' | null;
-  accessToken : string | null;
+  accessToken: string | null;
   loading: boolean;
 }
 
-const initialState: AuthState = { userId: null, role: null, accessToken: null ,loading: true };
+const initialState: AuthState = { userId: null, role: null, accessToken: null, loading: true };
 
 const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    setAuth: (state, action: PayloadAction<{ role: 'donor' | 'funder'; userId: string; accessToken : string }>) => {
+    setAuth: (state, action: PayloadAction<{ role: 'donor' | 'funder'; userId: string; accessToken: string }>) => {
       state.role = action.payload.role;
       state.userId = action.payload.userId;
       state.accessToken = action.payload.accessToken;
@@ -24,7 +25,7 @@ const authSlice = createSlice({
     clearAuth: (state) => {
       state.role = null;
       state.userId = null;
-      state.accessToken = null
+      state.accessToken = null;
       state.loading = false;
     },
     setLoading: (state, action: PayloadAction<boolean>) => {
@@ -35,23 +36,35 @@ const authSlice = createSlice({
 
 export const { setAuth, clearAuth, setLoading } = authSlice.actions;
 
+// ✅ Check session using refresh token (httpOnly)
 export const checkSession = () => async (dispatch: AppDispatch) => {
   dispatch(setLoading(true));
   try {
-    const { data } = await api.get('/auth/refresh-token');
-    dispatch(setAuth({ role: data.role, userId: data.userId, accessToken: data.accessToken! }));
-  } catch {
+    const { data } = await api.get('/auth/refresh-token'); // refresh token sent automatically via cookie
+    if (data?.accessToken && data?.role && data?.userId) {
+      dispatch(setAuth({
+        accessToken: data.accessToken,
+        role: data.role,
+        userId: data.userId
+      }));
+    } else {
+      dispatch(clearAuth());
+    }
+  } catch (err) {
+    console.log(err, "error in check session ");
     dispatch(clearAuth());
+  } finally {
+    dispatch(setLoading(false));
   }
 };
 
+// ✅ Logout
 export const logout = () => async (dispatch: AppDispatch) => {
   try {
-    await api.post('/auth/logout'); 
+    await api.post('/auth/logout'); // clears refresh token cookie + Redis session
   } catch (err) {
-    console.warn('Logout API failed:', err);
+    console.warn('Logout failed:', err);
   } finally {
-    localStorage.removeItem('role'); // if you still used it elsewhere
     dispatch(clearAuth());
   }
 };

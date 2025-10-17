@@ -2,26 +2,16 @@ import { Request, Response } from 'express';
 import User from '../../models/user.model.js';
 import { generateAccessToken, generateRefreshToken } from '../../utils/generateToken.js';
 import redis from '../../config/redisClient.js';
-import dotenv from 'dotenv';
-
-dotenv.config();
-
 
 export const verifyOTP = async (req: Request, res: Response) => {
   try {
     const { identifier, otp } = req.body;
 
-    if (!identifier || !otp) {
-      return res.status(400).json({ message: "OTP and identifier are required" });
-    }
+    if (!identifier || !otp) return res.status(400).json({ message: "OTP and identifier required" });
 
-    // Check OTP in Redis
     const savedOTP = await redis.get(`otp:${identifier}`);
-    if (!savedOTP || savedOTP !== otp) {
-      return res.status(400).json({ message: "Invalid OTP or identifier" });
-    }
+    if (!savedOTP || savedOTP !== otp) return res.status(400).json({ message: "Invalid OTP" });
 
-    // OTP verified
     const user = await User.findOne({ email: identifier });
     if (!user) return res.status(404).json({ message: "User not found" });
 
@@ -30,25 +20,24 @@ export const verifyOTP = async (req: Request, res: Response) => {
     await redis.del(`otp:${identifier}`);
 
     const accessToken = generateAccessToken(user._id.toString(), user.role);
-    const refreshToken = generateRefreshToken(user._id.toString(), user.role);
+    const { token: refreshToken, sessionId } = generateRefreshToken(user._id.toString(), user.role);
 
-    // Cookie options
+    await redis.set(`session:${user._id}:${sessionId}`, 'valid', 'EX',60); // 7 days TTL
+
     res.cookie('refresh_token', refreshToken, {
       httpOnly: true,
-      secure: false,                // HTTPS in production
-      sameSite: 'lax', // cross-site for production
-      maxAge: 7 * 24 * 60 * 60 * 1000,  // 7 days
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
       path: '/',
     });
 
-    res.status(200).json({ 
-      message: "OTP verified", 
-      role: user.role, 
-      userId: user._id.toString(), 
-      accessToken 
+    res.status(200).json({message: "OTP verified",role: user.role,
+      userId: user._id.toString(),
+      accessToken,
     });
+
   } catch (err) {
-    console.error('OTP verification error', err);
+    console.error(err);
     res.status(500).json({ message: "Internal server error" });
   }
 };

@@ -18,7 +18,7 @@ createRoot(document.getElementById('root')!).render(
       <Provider store = {store}>
         <QueryClientProvider client={queryclient}>
           <AppInitializer>
-             <App />
+            <App />
           </AppInitializer>
         </QueryClientProvider>
       </Provider>

@@ -41,16 +41,19 @@ const Verify: React.FC = () => {
     e.preventDefault();
     const enteredOtp = otp.join('');
     try {
-      const verify = await verifyOTP(destination, enteredOtp);
-      if (!verify.userId || !verify.accessToken) return
-      console.error("Missing user info", verify);
-      dispatch(setAuth({ role: verify.role, userId: verify.userId, accessToken: verify.accessToken }));
-      if (verify.role === "donor"){
-        navigate("/explore");
-      }
-      else {
-        navigate("/register");
-      }
+      const res = await verifyOTP(destination, enteredOtp);
+if (!res || !res.userId || !res.accessToken) {
+  console.error('verifyOTP missing userId or accessToken', res);
+  // show the user an error toast/message here
+  return;
+}
+
+dispatch(setAuth({ role: res.role, userId: res.userId, accessToken: res.accessToken }));
+// optionally persist accessToken temporarily to localStorage for dev
+localStorage.setItem('accessToken', res.accessToken);
+if (res.role === 'donor') navigate('/explore');
+else navigate('/register');
+
     } catch (err) {
       console.error("Error verifying OTP", err);
     }

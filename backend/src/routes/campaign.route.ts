@@ -6,14 +6,17 @@ import { aurthorize } from "../middleware/authorize.middleware.ts";
 
 const router = Router();
 
-router.get('/', getAllCampaigns);
-router.post('/', verifyToken, upload.single("image"), postCampaign);
+// All users (donors/funders) can see all campaigns
+router.get('/', verifyToken, getAllCampaigns);
 
-router.get('/my', verifyToken, getMyCampaigns);
+// Funders only: create, edit, delete, and get their own campaigns
+router.post('/', verifyToken, aurthorize(['funder']), upload.single("image"), postCampaign);
+router.get('/my', verifyToken, aurthorize(['funder']), getMyCampaigns);
+router.put('/:id', verifyToken, aurthorize(['funder']), editCampaign);
+router.delete('/:id', verifyToken, aurthorize(['funder']), deleteCampaign);
 
-router.get('/:id', verifyToken ,getCampaignById);
+// Any logged-in user can see a campaign by ID
+router.get('/:id', verifyToken, getCampaignById);
 
-router.put('/:id', verifyToken, editCampaign);
-router.delete('/:id', verifyToken, deleteCampaign);
 
 export default router;

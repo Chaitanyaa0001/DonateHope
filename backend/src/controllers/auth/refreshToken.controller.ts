@@ -15,29 +15,33 @@ export const refreshAccessToken = async (req: Request, res: Response) => {
   }
 
   try {
+    // ✅ Verify the refresh token
     const decoded = jwt.verify(refreshToken, JWT_REFRESH_SECRET) as JwtPayload;
 
     if (!decoded || typeof decoded === 'string' || !decoded.userId || !decoded.role) {
+      // ❌ Invalid payload → clear cookie
       res.clearCookie('refresh_token', {
         httpOnly: true,
-        secure: false,
-        sameSite:'lax',
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
         path: '/',
       });
       return res.status(403).json({ message: 'Invalid refresh token payload' });
     }
 
+    // ✅ Check if user exists
     const user = await User.findById(decoded.userId);
     if (!user) {
       res.clearCookie('refresh_token', {
         httpOnly: true,
-        secure: false,
-        sameSite: 'lax',
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
         path: '/',
       });
       return res.status(401).json({ message: 'User no longer exists' });
     }
 
+    // ✅ Generate new access token (do NOT rotate refresh token)
     const accessToken = generateAccessToken(user._id.toString(), user.role);
 
     return res.status(200).json({
@@ -48,12 +52,13 @@ export const refreshAccessToken = async (req: Request, res: Response) => {
     });
   } catch (err) {
     console.error('Refresh token error', err);
+    // ❌ Invalid or expired refresh token → clear cookie
     res.clearCookie('refresh_token', {
       httpOnly: true,
-      secure: false,
-      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
       path: '/',
     });
-    res.status(403).json({ message: 'Invalid or expired refresh token' });
+    return res.status(403).json({ message: 'Invalid or expired refresh token' });
   }
 };

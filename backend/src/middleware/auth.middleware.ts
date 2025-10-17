@@ -7,7 +7,7 @@ import { TokenPayload } from '../utils/generateToken';
 dotenv.config();
 
 export const verifyToken = async (req: Request, res: Response, next: NextFunction) => {
-  const token = req.cookies?.access_token;
+  const token = req.cookies?.access_token || req.headers.authorization?.split(' ')[1];
 
   if (!token) {
     return res.status(401).json({ message: 'Unauthorized' });
@@ -18,7 +18,6 @@ export const verifyToken = async (req: Request, res: Response, next: NextFunctio
       return res.status(403).json({ message: 'Invalid token payload' });
     }
 
-    
     const user = await User.findById(decoded.userId);
     if (!user) {
       res.clearCookie('access_token');

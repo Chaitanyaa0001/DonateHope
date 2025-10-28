@@ -41,7 +41,6 @@ export const refreshAccessToken = async (req: Request, res: Response) => {
       return res.status(401).json({ message: 'User no longer exists' });
     }
 
-    // ✅ Generate new access token (do NOT rotate refresh token)
     const accessToken = generateAccessToken(user._id.toString(), user.role);
 
     return res.status(200).json({

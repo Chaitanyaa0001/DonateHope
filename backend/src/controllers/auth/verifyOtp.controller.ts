@@ -8,10 +8,10 @@ export const verifyOTP = async (req: Request, res: Response) => {
     const { identifier, otp } = req.body;
 
     if (!identifier || !otp) return res.status(400).json({ message: "OTP and identifier required" });
-
+    
     const savedOTP = await redis.get(`otp:${identifier}`);
     if (!savedOTP || savedOTP !== otp) return res.status(400).json({ message: "Invalid OTP" });
-
+    
     const user = await User.findOne({ email: identifier });
     if (!user) return res.status(404).json({ message: "User not found" });
 

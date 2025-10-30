@@ -8,9 +8,9 @@ export const sendotpemail = async (toEmail: string, otp: string) => {
     const response = await axios.post(
       "https://api.brevo.com/v3/smtp/email",
       {
-        sender: { name: "DonateHope", email: "chaitanyakhurana.workk@gmail.com" }, 
+        sender: { name: "MonitorAPI", email: "chaitanyakhurana.workk@gmail.com" }, 
         to: [{ email: toEmail }],
-        subject: "Your OTP for DonateHope",
+        subject: "Your OTP for MonitorAPI",
         htmlContent: `
           <div style="font-family:Arial,sans-serif;max-width:600px;margin:auto;padding:20px;border:1px solid #eee;border-radius:10px;">
             <h2 style="color:#4CAF50;">Email Verification</h2>

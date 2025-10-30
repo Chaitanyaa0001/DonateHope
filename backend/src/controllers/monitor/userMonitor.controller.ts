@@ -11,6 +11,11 @@ export const postMonitor = async (req: Request, res: Response) =>{
         if(!name || !endpoint || ! method || !interval){
             return res.status(400).json({message: "Name , endpoint, method and intevral is required"})
         };
+
+        let fileUrl = "";
+        if (req.file && "path" in req.file){
+          fileUrl = (req.file as any).path;
+        }
         const monitor = await monitorModel.create({
             user: user._id,
             name,
@@ -18,7 +23,7 @@ export const postMonitor = async (req: Request, res: Response) =>{
             method,
             headers: headers || {},
             body: body || {},
-            files:files || [],
+            files: fileUrl ? [fileUrl] : [],
             interval: interval || 5,
         });
 

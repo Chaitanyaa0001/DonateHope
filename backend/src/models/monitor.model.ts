@@ -49,7 +49,7 @@ const monitorSchema = new Schema<IMonitor>(
     },
     aiSummary:{
         type: String,
-        default: " "
+        default: ""
     },
     logs: [
       {

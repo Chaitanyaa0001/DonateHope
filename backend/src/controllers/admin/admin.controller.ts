@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import User from "../../models/user.model.js";
 import { generateAccessToken, generateRefreshToken } from "../../utils/generateToken.js";
 import { generateOTP } from "../../utils/otp.js";
-import { sendotpemail } from "../../service/emailservice.js";
+import { sendotpemail } from "../../service/email.service.js";
 import redis from "../../config/redisClient.js";
 import bcrypt from "bcrypt";
 

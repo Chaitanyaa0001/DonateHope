@@ -1,0 +1,37 @@
+import { Request, Response } from "express";
+import monitorModel from "../../models/monitor.model.js";
+import { stopMonitorJob } from "../../utils/monitorCron.js";
+
+export const getAllMonitors = async (req: Request, res: Response) => {
+  try {
+    const monitors = await monitorModel
+      .find()
+      .populate("user", "email fullname role")
+      .sort({ createdAt: -1 });
+
+    return res.status(200).json(monitors);
+  } catch (err) {
+    console.error("Error fetching all monitors:", err);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+export const deleteMonitorById = async (req: Request, res: Response) => {
+  try {
+    
+
+    const { id } = req.params;
+    const monitor = await monitorModel.findById(id);
+    if (!monitor) {
+      return res.status(404).json({ message: "Monitor not found" });
+    }
+
+    await monitorModel.findByIdAndDelete(id);
+    stopMonitorJob(id);
+
+    return res.status(200).json({ message: "Monitor deleted successfully" });
+  } catch (err) {
+    console.error("Error deleting monitor:", err);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+};

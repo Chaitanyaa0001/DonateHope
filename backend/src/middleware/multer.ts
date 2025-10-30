@@ -7,8 +7,8 @@ const storage = new CloudinaryStorage({
   cloudinary,
   params: async (_req, file) => {
     return {
-      folder: "donatehope/campaigns",
-      format: file.mimetype.split("/")[1], // auto-detect format
+      folder: "monitor/files",
+      format: file.mimetype.split("/")[1], 
       allowed_formats: ["jpg", "jpeg", "png", "webp"],
       transformation: [{ width: 800, height: 600, crop: "limit" }],
     };

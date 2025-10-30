@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import User from '../../models/user.model.js';
 import { generateOTP } from '../../utils/otp.js';
-import { sendotpemail } from '../../service/emailservice.js';
+import { sendotpemail } from '../../service/email.service.js';
 import redis from '../../config/redisClient.js';
 
 export const requestOTP = async (req: Request, res: Response) => {

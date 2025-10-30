@@ -37,7 +37,7 @@ const userSchema = new Schema<IUser>(
   },
   { timestamps: true }
 );
-
+ 
 userSchema.pre("save", async function (next) {
   const user = this as mongoose.Document & IUser & { isModified: (path: string) => boolean };
   if (!user.isModified("password") || !user.password) return next();

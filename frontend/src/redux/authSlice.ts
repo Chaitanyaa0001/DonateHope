@@ -5,7 +5,7 @@ import api from '../CentralAPI/axios';
 
 interface AuthState {
   userId: string | null;
-  role: 'donor' | 'funder' | null;
+  role: 'admin' | 'user' | null;
   accessToken: string | null;
   loading: boolean;
 }
@@ -16,7 +16,7 @@ const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    setAuth: (state, action: PayloadAction<{ role: 'donor' | 'funder'; userId: string; accessToken: string }>) => {
+    setAuth: (state, action: PayloadAction<{ role: 'admin' | 'user'; userId: string; accessToken: string }>) => {
       state.role = action.payload.role;
       state.userId = action.payload.userId;
       state.accessToken = action.payload.accessToken;
@@ -36,7 +36,7 @@ const authSlice = createSlice({
 
 export const { setAuth, clearAuth, setLoading } = authSlice.actions;
 
-// ✅ Check session using refresh token (httpOnly)
+// Check session using refresh token (httpOnly)
 export const checkSession = () => async (dispatch: AppDispatch) => {
   dispatch(setLoading(true));
   try {
@@ -58,7 +58,6 @@ export const checkSession = () => async (dispatch: AppDispatch) => {
   }
 };
 
-// ✅ Logout
 export const logout = () => async (dispatch: AppDispatch) => {
   try {
     await api.post('/auth/logout'); // clears refresh token cookie + Redis session

@@ -1,3 +1,4 @@
+// src/controllers/auth/sendOtp.controller.ts
 import { Request, Response } from 'express';
 import User from '../../models/user.model.js';
 import { generateOTP } from '../../utils/otp.js';
@@ -7,33 +8,33 @@ import redis from '../../config/redisClient.js';
 export const requestOTP = async (req: Request, res: Response) => {
   try {
     const { email, role, fullname } = req.body;
-    if (!email) {
-      return  res.status(400).json({ message: 'Email is required' });
-    }
 
+    if (!email) return res.status(400).json({ message: 'Email is required' });
+
+    // Rate limiting in Redis
     const rateLimiterKey = `otp_rate_limit:${email}`;
     const attemptsKey = `otp_attempts:${email}`;
     const isLimited = await redis.exists(rateLimiterKey);
 
     if (isLimited) {
       return res.status(429).json({ message: "Please wait 60 seconds before requesting a new OTP" });
-    }
+    };
 
-    await redis.set(rateLimiterKey, '1', 'EX', 60); // expires in 60 sec
-
+    await redis.set(rateLimiterKey, '1', 'EX', 60);
     const attempts = await redis.incr(attemptsKey);
-    if (attempts === 1) await redis.expire(attemptsKey, 600); // 10 minutes
-
+    if (attempts === 1) await redis.expire(attemptsKey, 600);
     if (attempts > 5) {
       return res.status(429).json({ message: "Too many OTP requests. Try again later." });
     }
 
     let user = await User.findOne({ email });
+
     if (!user) {
-      if (!role || !fullname) {
-        return res.status(400).json({ message: 'Role and full name are required for new users' });
-      }
-      user = new User({ email, role, fullname });
+      if (!fullname) {
+        return res.status(400).json({ message: 'Full name is required for new users' });
+      };
+      const assignedRole = role === "admin" ? "admin" : "user";
+      user = new User({ email, fullname, role: assignedRole });
       await user.save();
     } else if (role && user.role !== role) {
       return res.status(400).json({
@@ -41,10 +42,8 @@ export const requestOTP = async (req: Request, res: Response) => {
       });
     }
 
-    // 4️⃣ Generate OTP and store in Redis (5 min expiry)
     const otp = generateOTP();
-    await redis.setex(`otp:${email}`, 300, otp); 
-
+    await redis.setex(`otp:${email}`, 300, otp);
     await sendotpemail(email, otp);
 
     res.status(200).json({ message: 'OTP sent successfully' });
@@ -53,9 +52,3 @@ export const requestOTP = async (req: Request, res: Response) => {
     res.status(500).json({ message: 'Failed to send OTP', error: error.message });
   }
 };
-
-
-
-
-
-

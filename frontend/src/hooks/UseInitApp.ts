@@ -5,6 +5,8 @@ import { setTheme } from '@/redux/themeSlice';
 
 export const useInitApp = () => {
   const dispatch = useDispatch();
+  localStorage.removeItem('accessToken');
+  localStorage.removeItem('refreshToken');
 
   useEffect(() => {
     const storedTheme = localStorage.getItem('theme');

@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import monitorModel from "../../models/monitor.model";
 import { startMonitorJob } from "../../utils/monitorCron";
 import { aiAnalyzerService } from "../../service/aiAnalyzer.service";
+import redis from "../../config/redisClient";
 
 export const postMonitor = async (req: Request, res: Response) => {
   try {
@@ -67,11 +68,16 @@ export const getUserMonitors = async (req: Request, res: Response) => {
       return res.status(401).json({ message: "Unauthorized access" });
     }
 
-    const monitors = await monitorModel
-      .find({ user: user._id })
-      .populate("user", "email fullname role")
-      .sort({ createdAt: -1 });
+    const cachekey = `user_monitors_${user._id}`;
+    const cachedData = await redis.get(cachekey);
+    if (cachedData) {
+      return res.status(200).json({ source: "cache", data: JSON.parse(cachedData) });
+    }
 
+    const monitors = await monitorModel.find({ user: user._id }).populate("user", "email fullname role").sort({ createdAt: -1 });
+
+    await redis.set(cachekey, JSON.stringify(monitors), "EX", 60);
+    
     return res.status(200).json({ source: "db", data: monitors });
   } catch (err) {
     console.error("❌ Error fetching user monitors:", err);

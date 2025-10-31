@@ -1,24 +1,27 @@
-import React, { useState, useRef } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { FiMail /*, FiPhone */ } from 'react-icons/fi';
-import {  useDispatch } from 'react-redux';
-import { verifyOTP } from '@/hooks/auth/uselogin';
-import { setAuth } from '@/redux/authSlice';
+import React, { useState, useRef } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { FiMail } from "react-icons/fi";
+import { useDispatch } from "react-redux";
+import { useVerifyOTP, useVerifyAdminOTP } from "../../hooks/auth/uselogin";
+import { setAuth } from "@/redux/authSlice";
 
 interface LocationState {
-  method: 'email'; 
+  method: "email";
   destination: string;
+  role: "admin" | "user";
 }
 
 const Verify: React.FC = () => {
   const dispatch = useDispatch();
-
-  const location = useLocation();
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const {  destination } = location.state as LocationState;
+  const { destination, role } = location.state as LocationState;
 
-  const [otp, setOtp] = useState(Array(6).fill(''));
+  const verifyUserOTP = useVerifyOTP();
+  const verifyAdminOTP = useVerifyAdminOTP();
+
+  const [otp, setOtp] = useState(Array(6).fill(""));
   const inputRefs = useRef<HTMLInputElement[]>([]);
 
   const handleChange = (value: string, index: number) => {
@@ -26,34 +29,35 @@ const Verify: React.FC = () => {
     const updatedOtp = [...otp];
     updatedOtp[index] = value;
     setOtp(updatedOtp);
-    if (value && index < 5) {
-      inputRefs.current[index + 1]?.focus();
-    }
+    if (value && index < 5) inputRefs.current[index + 1]?.focus();
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
-    if (e.key === 'Backspace' && !otp[index] && index > 0) {
+    if (e.key === "Backspace" && !otp[index] && index > 0) {
       inputRefs.current[index - 1]?.focus();
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const enteredOtp = otp.join('');
+    const enteredOtp = otp.join("");
     try {
-      const res = await verifyOTP(destination, enteredOtp);
-if (!res || !res.userId || !res.accessToken) {
-  console.error('verifyOTP missing userId or accessToken', res);
-  // show the user an error toast/message here
-  return;
-}
-
-dispatch(setAuth({ role: res.role, userId: res.userId, accessToken: res.accessToken }));
-// optionally persist accessToken temporarily to localStorage for dev
-localStorage.setItem('accessToken', res.accessToken);
-if (res.role === 'donor') navigate('/explore');
-else navigate('/register');
-
+      let res;
+      if (role === "admin") {
+        res = await verifyAdminOTP.mutateAsync({ email: destination, otp: enteredOtp });
+      } else {
+        res = await verifyUserOTP.mutateAsync({ identifier: destination, otp: enteredOtp });
+      }
+      if (!res || !res.userId || !res.accessToken) {
+        console.error("OTP verification failed or missing fields", res);
+        return;
+      }
+      dispatch(setAuth({ role: res.role, userId: res.userId, accessToken: res.accessToken }));
+      if (res.role === "admin") {
+        navigate("/admin/dashboard");
+      } else if (res.role === "user") {
+        navigate("/explore");
+      }
     } catch (err) {
       console.error("Error verifying OTP", err);
     }
@@ -62,22 +66,14 @@ else navigate('/register');
   return (
     <div className="relative w-full h-screen overflow-hidden">
       <div className="absolute inset-0 flex justify-center items-center z-10">
-        <div className="w-[90%] sm:w-[60%] lg:w-[30%] mx-auto py-8 px-5 
+        <div
+          className="w-[90%] sm:w-[60%] lg:w-[30%] mx-auto py-8 px-5 
           bg-white/70 dark:bg-[#020817]/80 backdrop-blur-md
           rounded-[6px] border-[#9810FA] border-2 
-          shadow-md shadow-gray-600 dark:shadow-none flex flex-col items-center">
-
+          shadow-md shadow-gray-600 dark:shadow-none flex flex-col items-center"
+        >
           <div className="flex flex-row items-center justify-center relative w-full">
             <FiMail className="text-white text-5xl p-2 bg-purple-600 rounded-[6px] shadow-md hover:bg-purple-700 transition" />
-            {/* 
-            // 🔒 Only using email now
-            {method === 'email' ? (
-              <FiMail className="..." />
-            ) : (
-              <FiPhone className="..." />
-            )}
-            */}
-            {/* <Togglebutton /> */}
           </div>
 
           <h1 className="text-2xl font-semibold mt-6">Verify Email</h1>

@@ -5,13 +5,13 @@ export interface RequestOTPResponse  {
 
 export interface verifyOTPResponse {
     message: string,
-    role: "donor" | "funder",
+    role: "admin" | "user",
     accessToken: string,
     userId : string
 };
 
 export interface RefreshTokenResponse {
-  role?: 'donor' | 'funder';
+  role?: 'admin' | 'user';
   userId?: string;
   message?: string;
 }

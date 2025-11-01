@@ -8,13 +8,10 @@ import { useDebounce } from "../hooks/auth/useDebounce";
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
-  const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  // Debounce email check
   const debouncedEmail = useDebounce(email, 700);
-
   const { data: emailCheck, isLoading: isChecking } = useCheckEmail(debouncedEmail);
   const requestOTPMutation = useRequestOTP();
   const adminLoginMutation = useAdminLogin();
@@ -25,14 +22,14 @@ const Login: React.FC = () => {
     e.preventDefault();
     try {
       if (isAdmin) {
-        // Admin Login (password-based)
+        // Admin Login
         const res = await adminLoginMutation.mutateAsync({ email, password });
         if (res?.message) {
           navigate("/verify", { state: { destination: email, role: "admin" } });
         }
       } else {
-        // Normal user login or signup via OTP
-        const res = await requestOTPMutation.mutateAsync({ email, fullName });
+        // Normal user login/signup via OTP
+        const res = await requestOTPMutation.mutateAsync({ email });
         if (res?.message) {
           navigate("/verify", { state: { destination: email, role: "user" } });
         }
@@ -61,19 +58,6 @@ const Login: React.FC = () => {
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Full Name (not required for admin) */}
-          {!isAdmin && (
-            <input
-              type="text"
-              name="fullName"
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
-              placeholder="Full Name"
-              className="w-full p-3 rounded-md bg-[#f0f0f0] dark:bg-[#15132b] border border-gray-300 dark:border-purple-500 placeholder-gray-500 dark:placeholder-gray-400 text-sm text-black dark:text-white"
-              required
-            />
-          )}
-
           {/* Email Field */}
           <div className="relative">
             <input
@@ -90,7 +74,7 @@ const Login: React.FC = () => {
             )}
           </div>
 
-          {/* Password (visible only if admin detected) */}
+          {/* Password (only for admin) */}
           {isAdmin && (
             <input
               type="password"
@@ -116,21 +100,25 @@ const Login: React.FC = () => {
           </button>
         </form>
 
-        {/* Debounce visual feedback */}
+        {/* Status Feedback */}
         {email && !isChecking && (
           <p
             className={`text-xs mt-3 text-center ${
               emailCheck
                 ? emailCheck.role === "admin"
                   ? "text-purple-400"
-                  : "text-green-500"
+                  : emailCheck.role === "user"
+                  ? "text-green-500"
+                  : "text-yellow-500"
                 : "text-gray-400"
             }`}
           >
             {emailCheck
               ? emailCheck.role === "admin"
                 ? "Admin account detected"
-                : "User account detected (OTP login)"
+                : emailCheck.role === "user"
+                ? "Existing user detected (OTP login)"
+                : "New user detected — full name will be auto-generated"
               : "Checking email..."}
           </p>
         )}
@@ -140,4 +128,3 @@ const Login: React.FC = () => {
 };
 
 export default Login;
- 

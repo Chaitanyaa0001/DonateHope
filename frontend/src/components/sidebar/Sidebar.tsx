@@ -7,8 +7,7 @@ import {
   FiLogOut,
   FiMenu,
   FiX,
-  FiSearch,
-  FiCreditCard,
+  // FiSearch,
 } from "react-icons/fi";
 import { motion } from "framer-motion";
 import { useSelector } from "react-redux";
@@ -20,15 +19,11 @@ const Sidebar: React.FC = () => {
 
   const role = useSelector((state:RootState) => state.auth.role);
 
-  const navItems = role === "funder"
-    ? [
-        { name: "Dashboard", path: "/dashboard", icon: <FiHome /> },
-        { name: "Post a Campaign", path: "/register", icon: <FiPlusCircle /> },
-      ]
-    : [
-        { name: "Explore", path: "/explore", icon: <FiSearch /> },
-        { name: "Payment History", path: "/paymenthistory", icon: <FiCreditCard /> },
+  const navItems =role === "admin"? [{ name: "Admin Dashboard", path: "/admin/dashboard", icon: <FiHome /> },]: [
+        { name: "Dashboard", path: "/user/dashboard", icon: <FiHome /> },
+        { name: "Post a Monitor", path: "/user/add-monitor", icon: <FiPlusCircle /> },
       ];
+
 
   return (
     <>

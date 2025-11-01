@@ -56,7 +56,7 @@ const Verify: React.FC = () => {
       if (res.role === "admin") {
         navigate("/admin/dashboard");
       } else if (res.role === "user") {
-        navigate("/explore");
+        navigate("/user/dashboard");
       }
     } catch (err) {
       console.error("Error verifying OTP", err);

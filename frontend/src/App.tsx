@@ -1,4 +1,4 @@
-import React, { lazy, Suspense } from "react";
+import React from "react";
 import { Route, Routes } from "react-router-dom";
 import { useSelector } from "react-redux";
 
@@ -8,18 +8,16 @@ import Verify from "./pages/verificationotp/Verify";
 import type { RootState } from "./redux/store";
 import { useInitApp } from "./hooks/UseInitApp";
 
-import CampignExplore from "./pages/donar/CampignExplore";
-import Donate from "./pages/donar/Donate";
-import FunderDashboard from "./pages/funder/FunderDashboard";
-import RegisterCampign from "./pages/funder/RegisterCampign";
-import MyCampaigns from "./pages/funder/MyCampaigns";
+
 
 import ProtectedRoutes from "./protectedroutes/ProtectedRoute"; 
 import FunderLayout from "./layouts/FunderLayout";
 import DonorLayout from "./layouts/DonarLayout"; 
+import AdminDashboard from "./pages/admin/AdminDashBoard";
+import UserDashboard from "./pages/user/userDashboard";
+import RegisterMonitor from "./pages/user/RegisterMonitor";
 
 // Lazy-loaded pages
-const PaymentHistory = lazy(() => import("@/pages/donar/PaymentHistory"));
 
 const App = (): React.JSX.Element => {
   const isDark = useSelector((state: RootState) => state.theme.isDark);
@@ -34,21 +32,14 @@ const App = (): React.JSX.Element => {
         <Route path="/verify" element={<Verify />} />
 
         {/* Donor Protected Routes */}
-        <Route element={<ProtectedRoutes role="donor"><DonorLayout /></ProtectedRoutes>}>
-          <Route path="/explore" element={<CampignExplore />} />
-          <Route path="/paymenthistory" element={
-            <Suspense fallback={<div>Loading...</div>}>
-              <PaymentHistory />
-            </Suspense>
-          } />
-          <Route path="/campaigns/:id" element={<Donate />} />
+        <Route element={<ProtectedRoutes role="user"><DonorLayout /></ProtectedRoutes>}>
+          <Route path="/user/dashboard" element={<UserDashboard/>} />
+          <Route path="/user/add-monitor" element={<RegisterMonitor/>} />
         </Route>
 
         {/* Funder Protected Routes */}
-        <Route element={<ProtectedRoutes role="funder"><FunderLayout /></ProtectedRoutes>}>
-          <Route path="/dashboard" element={<FunderDashboard />} />
-          <Route path="/register" element={<RegisterCampign />} />
-          <Route path="/my-campaign/:id" element={<MyCampaigns />} />
+        <Route element={<ProtectedRoutes role="admin"><FunderLayout /></ProtectedRoutes>}>
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
         </Route>
 
         {/* 404 fallback */}

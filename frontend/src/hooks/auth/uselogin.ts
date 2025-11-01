@@ -2,7 +2,6 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { callAPI } from "@/CentralAPI/centralapi";
 import type { RefreshTokenResponse, RequestOTPResponse, verifyOTPResponse } from "@/responses/authresponse";
 
-// ✅ Check if email exists and what role
 export const useCheckEmail = (email: string) => {
   return useQuery({
     queryKey: ["checkEmail", email],
@@ -19,10 +18,9 @@ export const useCheckEmail = (email: string) => {
   });
 };
 
-// ✅ For user OTP request
 export const useRequestOTP = () => {
   return useMutation({
-    mutationFn: async (payload: { email: string; fullName: string; role?: string }) => {
+    mutationFn: async (payload: { email: string; role?: string }) => {
       const res = await callAPI<RequestOTPResponse, typeof payload>({
         method: "post",
         url: "/auth/request-otp",
@@ -33,7 +31,6 @@ export const useRequestOTP = () => {
   });
 };
 
-// ✅ For admin: verify password (and send OTP)
 export const useAdminLogin = () => {
   return useMutation({
     mutationFn: async (payload: { email: string; password: string }) => {

@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { FiClock, FiActivity, FiCpu, FiTrendingUp } from "react-icons/fi";
+import { FiClock, FiActivity, FiCpu, } from "react-icons/fi";
 
 interface MonitorCardProps {
   monitor: {
@@ -10,10 +10,8 @@ interface MonitorCardProps {
     endpoint: string;
     method: string;
     interval: number;
-    uptime: number;
-    latency: number;
-    score: number;
-    aiSummary?: string;
+    uptime?: number;
+    latency?: number;
     user?: {
       fullname: string;
       email: string;
@@ -22,13 +20,8 @@ interface MonitorCardProps {
   };
 }
 
+
 const MonitorCard: React.FC<MonitorCardProps> = ({ monitor }) => {
-  const healthColor =
-    monitor.score > 80
-      ? "text-green-400"
-      : monitor.score > 50
-      ? "text-yellow-400"
-      : "text-red-400";
 
   return (
     <motion.div
@@ -69,19 +62,11 @@ const MonitorCard: React.FC<MonitorCardProps> = ({ monitor }) => {
             <FiCpu className="text-pink-400" />
             <span>{monitor.latency} latency  ms</span>
           </div>
-          <div className="flex items-center gap-2">
-            <FiTrendingUp className={`${healthColor}`} />
-            <span>Score: {monitor.score}</span>
-          </div>
+          
         </div>
 
-        {monitor.aiSummary && (
-          <p className="text-xs text-gray-400 mt-1 italic border-t border-purple-900/50 pt-2 line-clamp-2">
-            🧠 {monitor.aiSummary}
-          </p>
-        )}
 
-        <Link to={`/monitors/${monitor._id}`}>
+        <Link to={`/user/monitor/${monitor._id}`}>
           <button
             type="button"
             className="mt-4 w-full bg-gradient-to-r from-fuchsia-600 to-purple-700 text-white hover:from-fuchsia-500 hover:to-purple-600 py-2 rounded-md font-semibold text-sm flex items-center justify-center gap-2 transition-all duration-200"

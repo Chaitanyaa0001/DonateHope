@@ -1,97 +1,124 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import Togglebutton from "@/components/ui/Togglebutton";
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
-
-// 🧩 Mock Monitor Data (replace with backend data later)
-const sampleMonitor = {
-  _id: "m1",
-  name: "User Authentication API",
-  endpoint: "https://api.example.com/auth/login",
-  method: "POST",
-  interval: 60,
-  uptime: 98.6,
-  latency: 350,
-  score: 85,
-  updatedAt: new Date().toISOString(),
-  aiSummary:
-    "The monitor shows stable performance with slight latency spikes during peak hours. Overall health is good.",
-  logs: Array.from({ length: 20 }, (_, i) => ({
-    timestamp: new Date(Date.now() - i * 60000).toISOString(),
-    responseTime: Math.floor(200 + Math.random() * 150),
-  })).reverse(),
-};
+import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
+import { useMonitors } from "@/hooks/monitors/useMonitor";
 
 const MonitorDetails: React.FC = () => {
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
-  const monitor = sampleMonitor;
+  const { useMonitorById, useMonitorLogsById } = useMonitors();
+  const { data: monitor, isLoading, error } = useMonitorById(id!);
+  const { data: logs = [] } = useMonitorLogsById(id!);
+
+  if (isLoading) return <div>Loading monitor details...</div>;
+  if (error) return <div>Error loading monitor details</div>;
 
   return (
-    <div className="min-h-screen py-8 px-4 sm:px-2">
-      {/* Dark/Light Mode Toggle */}
+    <div className="min-h-screen py-8 px-4 bg-gradient-to-br from-gray-50 to-purple-50 dark:from-[#181824] dark:to-[#260032]">
+      {/* Toggle */}
       <div className="flex justify-end mb-4">
         <Togglebutton />
       </div>
-
       <div className="max-w-5xl mx-auto">
         {/* Back Button */}
         <button
-          onClick={() => navigate("/monitors")}
-          className="mb-6 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-white px-4 py-2 rounded-md transition"
+          onClick={() => navigate("/user/dashboard")}
+          className="mb-6 bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 text-gray-900 dark:text-white px-4 py-2 rounded-md transition shadow"
         >
           ⬅ Back to Monitors
         </button>
-
-        {/* Header */}
-        <h1 className="text-3xl sm:text-4xl font-bold mb-4 text-purple-600 dark:text-white">
-          {monitor.name}
-        </h1>
-        <p className="text-gray-400 mb-2 break-all">{monitor.endpoint}</p>
-
-        {/* Stats Section */}
-        <div className="grid sm:grid-cols-2 gap-4 mb-8">
-          <div className="p-4 bg-gray-100 dark:bg-[#1a1a2e] rounded-xl shadow">
-            <p>📶 Uptime: <b>{monitor.uptime}%</b></p>
-            <p>⚡ Avg Latency: <b>{monitor.latency} ms</b></p>
-            <p>📊 Score: <b>{monitor.score}</b></p>
+        {/* Endpoint & Method */}
+        <div className="flex items-center gap-4 mb-3">
+          <span className="px-3 py-1 rounded-full bg-green-100 text-green-700 font-semibold border border-green-300 text-sm shadow">
+            {monitor?.method}
+          </span>
+          <span className="font-bold text-lg text-gray-800 dark:text-white break-all">{monitor?.endpoint}</span>
+        </div>
+        {/* API Name */}
+        <h1 className="text-3xl sm:text-4xl font-bold mb-4 text-purple-700 dark:text-white">{monitor?.name}</h1>
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-6">
+          <div className="bg-white dark:bg-[#262446] rounded-xl shadow-lg p-6 flex flex-col items-center">
+            <div className="text-xl font-bold text-green-600">{monitor?.uptime}%</div>
+            <div className="text-gray-700 dark:text-gray-300 mt-1 font-semibold">Uptime</div>
           </div>
-
-          <div className="p-4 bg-gray-100 dark:bg-[#1a1a2e] rounded-xl shadow">
-            <p>Method: <b>{monitor.method}</b></p>
-            <p>Interval: <b>{monitor.interval}s</b></p>
-            <p>Last Updated: <b>{new Date(monitor.updatedAt).toLocaleString()}</b></p>
+          <div className="bg-white dark:bg-[#262446] rounded-xl shadow-lg p-6 flex flex-col items-center">
+            <div className="text-xl font-bold text-blue-600">{monitor?.latency} ms</div>
+            <div className="text-gray-700 dark:text-gray-300 mt-1 font-semibold">Average Latency</div>
+          </div>
+          <div className="bg-white dark:bg-[#262446] rounded-xl shadow-lg p-6 flex flex-col items-center">
+            <div className="text-xl font-bold text-purple-600">{monitor?.score}/100</div>
+            <div className="text-gray-700 dark:text-gray-300 mt-1 font-semibold">Perf. Score</div>
           </div>
         </div>
-
-        {/* Response Time Chart */}
-        <h2 className="text-xl font-semibold mb-2">Response Time Trend</h2>
-        <ResponsiveContainer width="100%" height={250}>
-          <LineChart data={monitor.logs}>
-            <XAxis
-              dataKey="timestamp"
-              tickFormatter={(t) => new Date(t).toLocaleTimeString()}
-            />
-            <YAxis />
-            <Tooltip
-              labelFormatter={(t) => new Date(t).toLocaleTimeString()}
-              formatter={(value: number) => [`${value} ms`, "Response Time"]}
-            />
-            <Line
-              type="monotone"
-              dataKey="responseTime"
-              stroke="#C800DE"
-              strokeWidth={2}
-              dot={false}
-            />
-          </LineChart>
-        </ResponsiveContainer>
-
-        {/* AI Summary */}
-        {monitor.aiSummary && (
-          <div className="mt-6 bg-purple-50 dark:bg-[#140b24] p-4 rounded-xl">
-            <h3 className="font-semibold text-lg mb-2">AI Insights</h3>
-            <p className="text-gray-700 dark:text-gray-300">{monitor.aiSummary}</p>
+        {/* AI Insight */}
+        {monitor?.aiSummary && (
+          <div className="mb-7 bg-gradient-to-r from-purple-100 to-purple-50 dark:from-[#140b24] dark:to-[#23182e] p-5 rounded-xl border-l-4 border-purple-500 shadow">
+            <h3 className="font-semibold text-lg mb-2 text-purple-800 dark:text-purple-300">AI Insights</h3>
+            <p className="text-gray-700 dark:text-gray-200 text-sm">{monitor.aiSummary}</p>
+          </div>
+        )}
+            {/* Chart Section */}
+        <div className="bg-white dark:bg-[#141425] rounded-xl p-5 shadow-md">
+          <h2 className="text-xl font-semibold mb-3">Response Time (24h)</h2>
+          <ResponsiveContainer width="100%" height={280}>
+            <LineChart data={logs}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#333" />
+              <XAxis
+                dataKey="timestamp"
+                tickFormatter={(t) => new Date(t).toLocaleTimeString()}
+              />
+              <YAxis />
+              <Tooltip
+                labelFormatter={(t) => new Date(t).toLocaleString()}
+                formatter={(v: number) => [`${v} ms`, "Response Time"]}
+              />
+              <Line
+                type="monotone"
+                dataKey="responseTime"
+                stroke="#C800DE"
+                strokeWidth={2}
+                dot={false}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+        {/* Recent Logs Table */}
+        {logs.length > 0 && (
+          <div className="bg-white dark:bg-[#1c1c34] rounded-xl shadow p-6 overflow-x-auto mb-12">
+            <h3 className="font-semibold text-lg mb-3 text-purple-700 dark:text-purple-300">Recent Logs</h3>
+            <table className="w-full text-sm border-separate [border-spacing:0_8px]">
+              <thead>
+                <tr>
+                  <th className="py-2 px-4 bg-purple-50 dark:bg-[#332456] rounded-tl-xl">Time</th>
+                  <th className="py-2 px-4 bg-purple-50 dark:bg-[#332456]">Status</th>
+                  <th className="py-2 px-4 bg-purple-50 dark:bg-[#332456]">Response</th>
+                  <th className="py-2 px-4 bg-purple-50 dark:bg-[#332456] rounded-tr-xl">Message</th>
+                </tr>
+              </thead>
+              <tbody>
+                {logs.map((log, i) => (
+                  <tr key={i} className="bg-gray-50 dark:bg-[#24243e] text-gray-700 dark:text-gray-200 rounded-xl">
+                    <td className="py-2 px-4 rounded-l-xl">{new Date(log.timestamp).toLocaleString()}</td>
+                    <td className="py-2 px-4">
+                      <span
+                        className={`px-2 py-1 rounded font-bold ${
+                          log.statusCode >= 200 && log.statusCode < 300
+                            ? "bg-green-100 text-green-700"
+                            : "bg-red-100 text-red-700"
+                        }`}
+                      >
+                        {log.statusCode}
+                      </span>
+                    </td>
+                    <td className="py-2 px-4">{log.responseTime} ms</td>
+                    <td className="py-2 px-4 rounded-r-xl">{log.message || "—"}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         )}
       </div>

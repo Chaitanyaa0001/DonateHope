@@ -11,6 +11,7 @@ import {
   ResponsiveContainer,
   CartesianGrid,
 } from "recharts";
+import { useMonitors } from "@/hooks/monitors/useMonitor";
 
 const MonitorCard = lazy(() => import("@/components/cards/MonitorCard"));
 
@@ -26,59 +27,37 @@ const containerVariants = {
 const itemVariants = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } };
 
 const UserDashboard: React.FC = () => {
-  const monitors = [
-    {
-      _id: "m1",
-      name: "Auth API",
-      endpoint: "https://api.example.com/auth/login",
-      method: "POST",
-      uptime: 99.9,
-      latency: 45,
-      score: 95,
-      aiSummary: "Stable performance with consistent response time.",
-    },
-    {
-      _id: "m2",
-      name: "Payment Gateway",
-      endpoint: "https://api.stripe.com/v1",
-      method: "GET",
-      uptime: 99.7,
-      latency: 120,
-      score: 92,
-      aiSummary: "Excellent stability and low latency.",
-    },
-    {
-      _id: "m3",
-      name: "Email Service",
-      endpoint: "https://api.sendgrid.com",
-      method: "POST",
-      uptime: 97.5,
-      latency: 230,
-      score: 78,
-      aiSummary: "Slight performance degradation observed.",
-    },
-  ];
+  const { useUserMonitorsQuery, useUserMonitorLogsQuery } = useMonitors();
+const { data: monitors = [], isLoading, error } = useUserMonitorsQuery;
+const {data: responseData = [] } = useUserMonitorLogsQuery 
 
+if(isLoading){
+  return <div>loading ..</div>
+}
+if(error){
+  return <div>Error loading monitors</div>
+}
   // 🔹 Stats calculations
   const totalAPIs = monitors.length;
-  const avgUptime =
-    monitors.reduce((acc, cur) => acc + cur.uptime, 0) / monitors.length;
-  const avgLatency =
-    monitors.reduce((acc, cur) => acc + cur.latency, 0) / monitors.length;
-  const avgHealth =
-    monitors.reduce((acc, cur) => acc + cur.score, 0) / monitors.length;
+ // ✅ Safe average calculations
+const avgUptime =
+  monitors.length > 0
+    ? monitors.reduce((acc, cur) => acc + (cur.uptime ?? 0), 0) / monitors.length
+    : 0;
 
-  // 🔹 Dummy graph data
-  const responseData = [
-    { time: "00:00", latency: 40 },
-    { time: "04:00", latency: 55 },
-    { time: "08:00", latency: 90 },
-    { time: "12:00", latency: 120 },
-    { time: "16:00", latency: 95 },
-    { time: "20:00", latency: 65 },
-    { time: "23:59", latency: 50 },
-  ];
+const avgLatency =
+  monitors.length > 0
+    ? monitors.reduce((acc, cur) => acc + (cur.latency ?? 0), 0) / monitors.length
+    : 0;
 
+const avgHealth =
+  monitors.length > 0
+    ? monitors.reduce((acc, cur) => acc + (cur.score ?? 0), 0) / monitors.length
+    : 0;
+
+
+
+  
   return (
     <motion.div initial="hidden" animate="visible" variants={containerVariants}>
       {/* Title */}
@@ -148,7 +127,6 @@ const UserDashboard: React.FC = () => {
         </div>
       </motion.div>
 
-      {/* ====== Response Time Trend Graph ====== */}
       <motion.div
         className="w-[90%] sm:w-[85%] mx-auto mb-14 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-sm p-6"
         variants={itemVariants}

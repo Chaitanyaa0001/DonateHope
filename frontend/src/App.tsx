@@ -35,9 +35,8 @@ const App = (): React.JSX.Element => {
         {/* Donor Protected Routes */}
         <Route element={<ProtectedRoutes role="user"><DonorLayout /></ProtectedRoutes>}>
           <Route path="/user/dashboard" element={<UserDashboard/>} />
+          <Route path="/user/add-monitor" element={<RegisterMonitor/>} />
           <Route path="/user/monitor/:id" element={<MonitorDetails/>} />
-          <Route path="/user/add-monitor" element={<RegisterMonitor/>} />
-          <Route path="/user/add-monitor" element={<RegisterMonitor/>} />
 
         </Route>
 

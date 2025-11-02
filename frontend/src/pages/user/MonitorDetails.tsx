@@ -5,7 +5,7 @@ import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "rec
 
 // 🧩 Mock Monitor Data (replace with backend data later)
 const sampleMonitor = {
-  _id: "m123",
+  _id: "m1",
   name: "User Authentication API",
   endpoint: "https://api.example.com/auth/login",
   method: "POST",

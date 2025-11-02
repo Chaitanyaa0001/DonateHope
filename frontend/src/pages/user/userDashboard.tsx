@@ -1,8 +1,16 @@
-import React, { lazy, Suspense, useState } from "react";
-import { FiSearch } from "react-icons/fi";
-import Togglebutton from "@/components/ui/Togglebutton";
+// src/pages/UserDashboard.tsx
+import React, { lazy, Suspense } from "react";
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import { Network, Clock, Gauge, HeartPulse } from "lucide-react";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+} from "recharts";
 
 const MonitorCard = lazy(() => import("@/components/cards/MonitorCard"));
 
@@ -18,145 +26,167 @@ const containerVariants = {
 const itemVariants = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } };
 
 const UserDashboard: React.FC = () => {
-  const navigate = useNavigate();
-  const [searchText, setSearchText] = useState("");
-  const [methodFilter, setMethodFilter] = useState("All");
-  const [sortOption, setSortOption] = useState("Highest Score");
-
-  // 🔹 Dummy monitor data for frontend display
   const monitors = [
     {
       _id: "m1",
-      name: "Auth API Monitor",
+      name: "Auth API",
       endpoint: "https://api.example.com/auth/login",
       method: "POST",
-      interval: 30,
       uptime: 99.9,
-      latency: 120,
-      score: 92,
+      latency: 45,
+      score: 95,
       aiSummary: "Stable performance with consistent response time.",
-      user: { fullname: "Chaitanya", email: "chai@dev.com", role: "Developer" },
     },
     {
       _id: "m2",
-      name: "Products API",
-      endpoint: "https://api.example.com/products",
+      name: "Payment Gateway",
+      endpoint: "https://api.stripe.com/v1",
       method: "GET",
-      interval: 60,
-      uptime: 97.4,
-      latency: 230,
-      score: 78,
-      aiSummary: "Slight increase in latency detected last 24 hours.",
-      user: { fullname: "Riya", email: "riya@team.com", role: "Engineer" },
+      uptime: 99.7,
+      latency: 120,
+      score: 92,
+      aiSummary: "Excellent stability and low latency.",
     },
     {
       _id: "m3",
-      name: "Payment Gateway",
-      endpoint: "https://api.example.com/payments",
+      name: "Email Service",
+      endpoint: "https://api.sendgrid.com",
       method: "POST",
-      interval: 45,
-      uptime: 95.6,
-      latency: 340,
-      score: 63,
-      aiSummary: "Occasional timeouts observed — needs optimization.",
-      user: { fullname: "Chaitanya", email: "chai@dev.com", role: "Developer" },
+      uptime: 97.5,
+      latency: 230,
+      score: 78,
+      aiSummary: "Slight performance degradation observed.",
     },
   ];
 
-  // 🔹 Filter + sort logic (frontend only)
-  const filteredMonitors = monitors
-    .filter(
-      (m) =>
-        m.name.toLowerCase().includes(searchText.toLowerCase()) &&
-        (methodFilter === "All" || m.method === methodFilter)
-    )
-    .sort((a, b) => {
-      if (sortOption === "Highest Score") return b.score - a.score;
-      if (sortOption === "Lowest Latency") return a.latency - b.latency;
-      if (sortOption === "Highest Uptime") return b.uptime - a.uptime;
-      return 0;
-    });
+  // 🔹 Stats calculations
+  const totalAPIs = monitors.length;
+  const avgUptime =
+    monitors.reduce((acc, cur) => acc + cur.uptime, 0) / monitors.length;
+  const avgLatency =
+    monitors.reduce((acc, cur) => acc + cur.latency, 0) / monitors.length;
+  const avgHealth =
+    monitors.reduce((acc, cur) => acc + cur.score, 0) / monitors.length;
+
+  // 🔹 Dummy graph data
+  const responseData = [
+    { time: "00:00", latency: 40 },
+    { time: "04:00", latency: 55 },
+    { time: "08:00", latency: 90 },
+    { time: "12:00", latency: 120 },
+    { time: "16:00", latency: 95 },
+    { time: "20:00", latency: 65 },
+    { time: "23:59", latency: 50 },
+  ];
 
   return (
     <motion.div initial="hidden" animate="visible" variants={containerVariants}>
-      {/* Header */}
-      <motion.div
-        className="w-[90%] sm:w-[85%] mx-auto flex justify-between items-center mt-8"
-        variants={itemVariants}
-      >
-        <Togglebutton />
-        <button
-          onClick={() => navigate("/dashboard")}
-          className="bg-green-500 text-white px-4 py-2 rounded-md font-semibold shadow-md hover:scale-105 transition"
-        >
-          Dashboard
-        </button>
-      </motion.div>
-
       {/* Title */}
       <motion.div
-        className="w-[90%] sm:w-[85%] mx-auto mb-16 flex flex-col sm:items-center text-center gap-2"
+        className="w-[90%] sm:w-[85%] mx-auto mb-12 flex flex-col sm:items-start text-center gap-2 mt-10"
         variants={itemVariants}
       >
-        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold">
-          Active <span className="text-purple-600 drop-shadow-sm">Monitors</span>
+        <h1 className="text-4xl font-bold">
+          Monitor <span className="text-purple-600">Dashboard</span>
         </h1>
-        <p className="text-gray-700 dark:text-gray-300 sm:text-base">
-          Track uptime, latency, and AI-powered performance insights for your APIs.
+        <p className="text-gray-600 dark:text-gray-400 text-base">
+          Monitor all your APIs in real-time 🚀
         </p>
       </motion.div>
 
-      {/* Filters */}
+      {/* ====== Top Metric Cards ====== */}
       <motion.div
-        className="w-[90%] sm:w-[85%] mx-auto flex flex-col md:flex-row gap-4 mb-10"
+        className="w-[90%] sm:w-[85%] mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12"
         variants={itemVariants}
       >
-        {/* Search */}
-        <div className="flex items-center border-2 border-green-400 focus-within:border-purple-500 rounded-md px-3 py-2 bg-white dark:bg-[#1a1a2e] w-full transition">
-          <FiSearch className="text-green-500 mr-2" />
-          <input
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
-            type="text"
-            placeholder="Search monitors"
-            className="bg-transparent outline-none text-sm w-full text-gray-800 dark:text-gray-100"
-          />
+        {/* Total APIs */}
+        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl p-5 shadow-sm flex flex-col gap-2">
+          <div className="flex items-center gap-3">
+            <Network className="text-purple-600" />
+            <h2 className="text-gray-700 dark:text-gray-200 font-semibold">
+              Total APIs
+            </h2>
+          </div>
+          <h3 className="text-3xl font-bold">{totalAPIs}</h3>
+          <p className="text-gray-500 text-sm">Being monitored</p>
         </div>
 
-        {/* Method Filter */}
-        <select
-          aria-label="method"
-          value={methodFilter}
-          onChange={(e) => setMethodFilter(e.target.value)}
-          className="bg-white dark:bg-[#1a1a2e] border-2 border-green-500 rounded-md px-3 py-2 text-sm w-full md:w-auto"
-        >
-          <option>All</option>
-          <option>GET</option>
-          <option>POST</option>
-          <option>PUT</option>
-          <option>DELETE</option>
-        </select>
+        {/* Avg Uptime */}
+        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl p-5 shadow-sm flex flex-col gap-2">
+          <div className="flex items-center gap-3">
+            <Clock className="text-green-500" />
+            <h2 className="text-gray-700 dark:text-gray-200 font-semibold">
+              Avg Uptime
+            </h2>
+          </div>
+          <h3 className="text-3xl font-bold">{avgUptime.toFixed(1)}%</h3>
+          <p className="text-green-500 text-sm">+2.3% from last week</p>
+        </div>
 
-        {/* Sort Filter */}
-        <select
-          aria-label="sort"
-          value={sortOption}
-          onChange={(e) => setSortOption(e.target.value)}
-          className="bg-white dark:bg-[#1a1a2e] border-2 border-green-500 rounded-md px-3 py-2 text-sm w-full md:w-auto"
-        >
-          <option>Highest Score</option>
-          <option>Lowest Latency</option>
-          <option>Highest Uptime</option>
-        </select>
+        {/* Avg Latency */}
+        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl p-5 shadow-sm flex flex-col gap-2">
+          <div className="flex items-center gap-3">
+            <Gauge className="text-yellow-500" />
+            <h2 className="text-gray-700 dark:text-gray-200 font-semibold">
+              Avg Latency
+            </h2>
+          </div>
+          <h3 className="text-3xl font-bold">{avgLatency.toFixed(0)}ms</h3>
+          <p className="text-yellow-500 text-sm">Within threshold</p>
+        </div>
+
+        {/* Health Score */}
+        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl p-5 shadow-sm flex flex-col gap-2">
+          <div className="flex items-center gap-3">
+            <HeartPulse className="text-blue-500" />
+            <h2 className="text-gray-700 dark:text-gray-200 font-semibold">
+              Health Score
+            </h2>
+          </div>
+          <h3 className="text-3xl font-bold">{avgHealth.toFixed(0)}/100</h3>
+          <p className="text-green-500 text-sm">Excellent</p>
+        </div>
       </motion.div>
 
-      {/* Monitor Cards */}
+      {/* ====== Response Time Trend Graph ====== */}
+      <motion.div
+        className="w-[90%] sm:w-[85%] mx-auto mb-14 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-sm p-6"
+        variants={itemVariants}
+      >
+        <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-4">
+          Response Time Trend
+        </h2>
+        <ResponsiveContainer width="100%" height={300}>
+          <LineChart data={responseData}>
+            <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.1} />
+            <XAxis dataKey="time" stroke="#9ca3af" />
+            <YAxis stroke="#9ca3af" />
+            <Tooltip
+              contentStyle={{
+                backgroundColor: "#1f2937",
+                border: "none",
+                borderRadius: "10px",
+                color: "#fff",
+              }}
+            />
+            <Line
+              type="monotone"
+              dataKey="latency"
+              stroke="#8b5cf6"
+              strokeWidth={3}
+              dot={false}
+              activeDot={{ r: 6 }}
+            />
+          </LineChart>
+        </ResponsiveContainer>
+      </motion.div>
+
       <motion.div
         className="w-[90%] sm:w-[85%] mx-auto grid md:grid-cols-2 lg:grid-cols-3 gap-6"
         variants={containerVariants}
       >
-        {filteredMonitors.length > 0 ? (
-          filteredMonitors.map((monitor) => (
+        {monitors.length > 0 ? (
+          monitors.map((monitor) => (
             <motion.div key={monitor._id} variants={itemVariants}>
               <Suspense
                 fallback={
@@ -168,10 +198,7 @@ const UserDashboard: React.FC = () => {
             </motion.div>
           ))
         ) : (
-          <motion.div
-            className="col-span-full flex flex-col items-center justify-center text-center py-16"
-            variants={itemVariants}
-          >
+          <div className="col-span-full flex flex-col items-center justify-center text-center py-16">
             <img
               src="https://cdn-icons-png.flaticon.com/512/7486/7486814.png"
               alt="No Monitors"
@@ -181,9 +208,9 @@ const UserDashboard: React.FC = () => {
               No monitors found
             </h2>
             <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
-              Try adjusting your search or filters to find results.
+              Try adjusting your filters or add new monitors.
             </p>
-          </motion.div>
+          </div>
         )}
       </motion.div>
     </motion.div>

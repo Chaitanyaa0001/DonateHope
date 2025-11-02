@@ -13,5 +13,4 @@ export interface IMonitor extends Document {
   latency: number;
   score: number;
   aiSummary: string;
-  logs: { timestamp: Date; statusCode: number; responseTime: number; message: string }[];
 }

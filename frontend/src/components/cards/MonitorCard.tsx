@@ -1,5 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
+import { FiClock, FiActivity, FiCpu, FiTrendingUp } from "react-icons/fi";
 
 interface MonitorCardProps {
   monitor: {
@@ -29,54 +31,66 @@ const MonitorCard: React.FC<MonitorCardProps> = ({ monitor }) => {
       : "text-red-400";
 
   return (
-    <div className="dark:bg-[#0d0b1d] rounded-2xl border-2 overflow-hidden border-[#C800DE] hover:shadow-lg transition duration-300 flex flex-col">
+    <motion.div
+      whileHover={{ scale: 1.02, boxShadow: "0 0 25px rgba(200, 0, 222, 0.4)" }}
+      className="dark:bg-[#0d0b1d] rounded-2xl border border-[#C800DE]/60 hover:border-[#C800DE] transition duration-300 flex flex-col overflow-hidden"
+    >
       {/* Header */}
       <div className="px-4 pt-3 flex justify-between items-center">
-        <p className="inline-block bg-green-300 text-green-800 text-xs font-semibold px-3 py-1 rounded-full">
+        <p className="inline-block bg-gradient-to-r from-fuchsia-500 to-purple-600 text-white text-xs font-semibold px-3 py-1 rounded-full shadow">
           {monitor.method}
         </p>
         {monitor.user && (
-          <span className="text-sm text-purple-500 font-medium">
-            By: {monitor.user.fullname}
+          <span className="text-xs text-purple-400 font-medium">
+            {monitor.user.fullname}
           </span>
         )}
       </div>
 
-      {/* Main content */}
+      {/* Body */}
       <div className="p-4 flex flex-col justify-between flex-grow">
-        <h2 className="font-semibold text-[#9810FA] sm:text-xl text-lg mb-1">
+        <h2 className="font-semibold text-[#C800DE] sm:text-lg text-base mb-1 line-clamp-1">
           {monitor.name}
         </h2>
-        <p className="text-sm opacity-70 italic mb-2 break-all">
+        <p className="text-xs opacity-70 italic mb-3 break-all">
           {monitor.endpoint}
         </p>
 
-        <div className="flex justify-between text-sm mb-2">
-          <span>⏱ Interval: {monitor.interval}s</span>
-          <span className={healthColor}>Score: {monitor.score}</span>
-        </div>
-
-        <div className="flex justify-between text-sm mb-1">
-          <span>⚡ Latency: {monitor.latency} ms</span>
-          <span>📶 Uptime: {monitor.uptime}%</span>
+        <div className="grid grid-cols-2 gap-y-2 text-sm mb-3">
+          <div className="flex items-center gap-2">
+            <FiClock className="text-purple-400" />
+            <span>{monitor.interval}interval!</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <FiActivity className="text-green-400" />
+            <span>{monitor.uptime} uptinme%</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <FiCpu className="text-pink-400" />
+            <span>{monitor.latency} latency  ms</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <FiTrendingUp className={`${healthColor}`} />
+            <span>Score: {monitor.score}</span>
+          </div>
         </div>
 
         {monitor.aiSummary && (
-          <p className="text-xs text-gray-400 mt-2 italic line-clamp-2">
-            {monitor.aiSummary}
+          <p className="text-xs text-gray-400 mt-1 italic border-t border-purple-900/50 pt-2 line-clamp-2">
+            🧠 {monitor.aiSummary}
           </p>
         )}
 
         <Link to={`/monitors/${monitor._id}`}>
           <button
             type="button"
-            className="mt-4 w-full text-white bg-fuchsia-500 hover:bg-fuchsia-600 py-2 rounded-md font-semibold text-sm flex items-center justify-center gap-2"
+            className="mt-4 w-full bg-gradient-to-r from-fuchsia-600 to-purple-700 text-white hover:from-fuchsia-500 hover:to-purple-600 py-2 rounded-md font-semibold text-sm flex items-center justify-center gap-2 transition-all duration-200"
           >
             🔍 View Details
           </button>
         </Link>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

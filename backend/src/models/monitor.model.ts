@@ -9,12 +9,12 @@ const monitorSchema = new Schema<IMonitor>(
       required: true,
     },
     name: {
-        type: String,
-        required: true
+      type: String,
+      required: true
     },
     endpoint: {
-        type: String, 
-        required: true
+      type: String, 
+      required: true
     },
     method: {
       type: String,
@@ -22,15 +22,15 @@ const monitorSchema = new Schema<IMonitor>(
       default: "GET",
     },
     headers: {
-        type: Object,
-        default: {}
+      type: Object,
+      default: {}
     },
     body: {
-        type: Object,
-        default: {}
+      type: Object,
+      default: {}
     },
     files:
-        [{ type: String}],
+    [{ type: String}],
     interval: {
         type: Number,
         default: 5
@@ -49,16 +49,8 @@ const monitorSchema = new Schema<IMonitor>(
     },
     aiSummary:{
         type: String,
-        default: ""
+        default:""
     },
-    logs: [
-      {
-        timestamp: { type: Date, default: Date.now },
-        statusCode: Number,
-        responseTime: Number,
-        message: String,
-      },
-    ],
   },
   { timestamps: true }
 );

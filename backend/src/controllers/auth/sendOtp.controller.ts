@@ -7,7 +7,7 @@ import redis from '../../config/redisClient.js';
 
 export const requestOTP = async (req: Request, res: Response) => {
   try {
-    const { email, role, fullname } = req.body;
+    const { email, role} = req.body;
 
     if (!email) return res.status(400).json({ message: 'Email is required' });
 
@@ -30,17 +30,18 @@ export const requestOTP = async (req: Request, res: Response) => {
     let user = await User.findOne({ email });
 
     if (!user) {
-      if (!fullname) {
-        return res.status(400).json({ message: 'Full name is required for new users' });
-      };
-      const assignedRole = role === "admin" ? "admin" : "user";
-      user = new User({ email, fullname, role: assignedRole });
-      await user.save();
-    } else if (role && user.role !== role) {
-      return res.status(400).json({
-        message: `User already registered as ${user.role}. Cannot log in as ${role} with same email.`,
-      });
-    }
+        const nameFromEmail = email.split('@')[0]
+        .replace(/[._-]/g, ' ')        // replace dots, underscores, dashes with space
+        .replace(/\b\w/g, (c: string) => c.toUpperCase());
+        const assignedRole = 'user';
+        user = new User({ email, fullname: nameFromEmail, role: assignedRole });
+        await user.save();
+      } else if (role && user.role !== role) {
+        return res.status(400).json({
+          message: `User already registered as ${user.role}. Cannot log in as ${role} with same email.`,
+        });
+      }
+
 
     const otp = generateOTP();
     await redis.setex(`otp:${email}`, 300, otp);

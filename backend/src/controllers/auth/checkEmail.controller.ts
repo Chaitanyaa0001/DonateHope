@@ -10,7 +10,7 @@ export const checkEmailController = async (req: Request, res: Response) => {
     }
     const user = await userModel.findOne({ email });
     if (!user) {
-      return res.status(404).json({ message: "User not found", role: "none" });
+      return res.status(200).json({ message: "User not found", role: "none" });
     }
     return res.status(200).json({
       message: "User found",

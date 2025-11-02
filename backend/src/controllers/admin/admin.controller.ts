@@ -13,6 +13,7 @@ export const adminLogin = async (req: Request, res: Response) => {
     const admin = await User.findOne({ email, role: "admin" }).select("+password");
     if (!admin) return res.status(404).json({ message: "Admin not found" });
 
+    
     if (!admin.password) return res.status(500).json({ message: "Password not set" });
 
     const isMatch = await bcrypt.compare(password, admin.password);

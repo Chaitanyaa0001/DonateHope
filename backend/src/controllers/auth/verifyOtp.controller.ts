@@ -17,12 +17,14 @@ export const verifyOTP = async (req: Request, res: Response) => {
 
     user.isVerified = true;
     await user.save();
+    // cache delete 
     await redis.del(`otp:${identifier}`);
-
+    await redis.del(`otp_attempts:${identifier}`); 
+    await redis.del(`otp_rate_limit:${identifier}`);
+    // tokens 
     const accessToken = generateAccessToken(user._id.toString(), user.role);
     const { token: refreshToken, sessionId } = generateRefreshToken(user._id.toString(), user.role);
-
-    await redis.set(`session:${user._id}:${sessionId}`, 'valid', 'EX',60); // 7 days TTL
+    await redis.set(`session:${user._id}:${sessionId}`, 'valid', 'EX', 60 * 60 * 24 * 7); // 7 days
 
     res.cookie('refresh_token', refreshToken, {
       httpOnly: true,

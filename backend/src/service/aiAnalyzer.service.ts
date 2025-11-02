@@ -1,37 +1,43 @@
-import { GoogleGenAI } from "@google/genai";
-
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import dotenv from "dotenv";
+
 dotenv.config();
 
-const ai = new GoogleGenAI({apiKey: process.env.GEMINI_API_KEY!} );
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
-export const aiAnalyzerService = async(logs: any[]) =>{
+export const aiAnalyzerService = async (logs: any[]) => {
+  if (!Array.isArray(logs) || logs.length === 0) {
+    throw new Error("No logs provided for analysis");
+  }
 
-    const logText = logs
+  const logText = logs
     .map(
       (log) =>
         `Timestamp: ${log.timestamp}, Status Code: ${log.statusCode}, Response Time: ${log.responseTime}ms, Message: ${log.message}`
     )
     .join("\n");
-    const prompt = `
-        You are an expert server performance analyst and monitoring specialist.
-        Analyze the following server monitor logs and provide:
-        1. Summary of server performance
-        2. Any detected issues or anomalies
-        3. Actionable recommendations to improve reliability and performance
-        4. Summarize in 2–3 sentences with uptime and stability insights
-        ${logText}`;
-    try {
-     const result = await ai.models.generateContent({
-        model: "gemini-2.5-flash",
-        contents: prompt,
-       });
-       return result.text;
-    } catch (err) {
-     console.log("error in ai analyzer service", err);
-     throw new Error("Ai analysis error");
-    }
-}
 
+  const performancePrompt = `
+You are an expert server performance analyst and monitoring specialist.
+Analyze the following API logs and provide:
+ A short 2–3 sentence overall stability insight.
 
+Logs:
+${logText}
+`;
 
+  try {
+    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+
+    // 🔧 generateContent() returns a result object with .response and .text()
+    const result = await model.generateContent(performancePrompt);
+
+    // ✅ Correct way to access the text output
+    const text = result.response.text();
+
+    return text;
+  } catch (error: any) {
+    console.error("❌ AI Analyzer error:", error.message);
+    throw new Error("Failed to analyze logs with Gemini");
+  }
+};

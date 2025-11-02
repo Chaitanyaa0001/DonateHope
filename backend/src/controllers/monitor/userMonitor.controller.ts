@@ -1,9 +1,12 @@
 import { Request, Response } from "express";
 import monitorModel from "../../models/monitor.model";
-import { startMonitorJob } from "../../utils/monitorCron";
-import { aiAnalyzerService } from "../../service/aiAnalyzer.service";
+import { performMonitorCheck, startMonitorJob ,deleteMonitorLogs} from "../../utils/monitorCron";
 import redis from "../../config/redisClient";
 
+
+
+
+// ✅ Create monitor
 export const postMonitor = async (req: Request, res: Response) => {
   try {
     const user = req.user;
@@ -15,51 +18,49 @@ export const postMonitor = async (req: Request, res: Response) => {
         .json({ message: "Name, endpoint, method and interval are required" });
     }
 
-    let fileUrl = "";
-    if (req.file && "path" in req.file) {
-      fileUrl = (req.file as any).path;
-    }
-
     const monitor = await monitorModel.create({
       user: user._id,
       name,
       endpoint,
       method,
-      headers: headers || {},
-      body: body || {},
-      files: fileUrl ? [fileUrl] : [],
+      headers: typeof headers === "string" ? JSON.parse(headers) : headers,
+      body: typeof body === "string" ? JSON.parse(body) : body,
       interval: interval || 5,
     });
 
+    // ⚡ Instant API check + AI summary at creation
+    await performMonitorCheck(monitor, true);
+
+    // 🕒 Start recurring cron job
     startMonitorJob(monitor);
 
-    return res
-      .status(201)
-      .json({ message: "Monitor created successfully", monitor });
+    return res.status(201).json({
+      message: "Monitor created successfully",
+      monitor,
+    });
   } catch (err) {
     console.error("❌ Error creating monitor:", err);
     return res.status(500).json({ message: "Internal server error" });
   }
 };
 
-export const analyzerMonitor = async (req: Request, res: Response) => {
+export const deleteMonitor = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const monitor = await monitorModel.findById(id);
-
     if (!monitor) {
       return res.status(404).json({ message: "Monitor not found" });
-    }
+    };
+    await deleteMonitorLogs(id);
+    await monitorModel.findByIdAndDelete(id);
 
-    const logs = monitor.logs.slice(-20);
-    const analysis = await aiAnalyzerService(logs);
-
-    return res.status(200).json({ monitor: monitor.name, analysis });
+    return res.status(200).json({ message: "Monitor and logs deleted successfully" });
   } catch (err) {
-    console.error("❌ Error in analyzer monitor:", err);
+    console.error("❌ Error deleting monitor:", err);
     return res.status(500).json({ message: "Internal server error" });
   }
 };
+
 
 export const getUserMonitors = async (req: Request, res: Response) => {
   try {
@@ -77,10 +78,25 @@ export const getUserMonitors = async (req: Request, res: Response) => {
     const monitors = await monitorModel.find({ user: user._id }).populate("user", "email fullname role").sort({ createdAt: -1 });
 
     await redis.set(cachekey, JSON.stringify(monitors), "EX", 60);
-    
     return res.status(200).json({ source: "db", data: monitors });
   } catch (err) {
     console.error("❌ Error fetching user monitors:", err);
     return res.status(500).json({ message: "Internal server error" });
   }
 };
+
+export const getMonitorById = async (req: Request, res: Response) => {      
+  try {
+    const { id } = req.params;
+    const monitor = await monitorModel.findById(id).populate("user", "email fullname role");
+    if (!monitor) {
+      return res.status(404).json({ message: "Monitor not found" });
+    };
+    return res.status(200).json({ data: monitor });
+  } catch (err) {
+    console.error("❌ Error fetching monitor by ID:", err);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+

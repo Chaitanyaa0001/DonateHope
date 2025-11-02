@@ -6,7 +6,7 @@ dotenv.config();
 
 const JWT_SECRET = process.env.JWT_SECRET as string;
 const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET as string;
-const ACCESS_EXPIRE = process.env.ACCESS_EXPIRE || '15m';
+const ACCESS_EXPIRE = process.env.ACCESS_EXPIRE || '80m';
 const REFRESH_EXPIRE = process.env.REFRESH_EXPIRE || '7d';
 
 export interface TokenPayload {

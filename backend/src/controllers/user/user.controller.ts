@@ -1,63 +1,115 @@
-// src/controllers/admin.controller.ts
 import { Request, Response } from "express";
 import User from "../../models/user.model.js";
 import Monitor from "../../models/monitor.model.js";
 import redis from "../../config/redisClient.js";
-import bcrypt from "bcrypt";
 
-export const listUsers = async (req: Request, res: Response) => {
+
+const CACHE_TTL = 60; 
+
+
+export const getAllUsers = async (req: Request, res: Response) => {
   try {
+    if (req.user?.role !== "admin") {
+      return res.status(403).json({ message: "Access denied" });
+    }
+
+    const cacheKey = "users:all";
+    const cachedUsers = await redis.get(cacheKey);
+
+    if (cachedUsers) {
+      console.log("✅ Serving from Redis cache");
+      return res.status(200).json(JSON.parse(cachedUsers));
+    };
     const users = await User.find().select("email fullname role isVerified createdAt");
-     return res.status(200).json({ users });
-  } catch (err: any) {
-    console.error(err);
-    res.status(500).json({ message: "Failed to fetch users" });
+    // Store in cache
+    await redis.set(cacheKey, JSON.stringify({ users }), "EX", CACHE_TTL);
+
+    return res.status(200).json({ users });
+  } catch (err) {
+    console.error("Error fetching users:", err);
+    return res.status(500).json({ message: "Internal server error" });
   }
 };
 
-export const createUserByAdmin = async (req: Request, res: Response) => {
+export const getUserById = async (req: Request, res: Response) => {
   try {
-    const { email, fullname, role, password } = req.body;
-    if (!email || !fullname || !role) return res.status(400).json({ message: "Missing fields" });
+    if (req.user?.role !== "admin") {
+      return res.status(403).json({ message: "Access denied" });
+    };
 
-    const exists = await User.findOne({ email });
-    if (exists) return res.status(400).json({ message: "User already exists" });
+    const { id } = req.params;
+    const cacheKey = `user:${id}`;
 
-    const hashed = password ? await bcrypt.hash(password, 12) : undefined;
-    const user = await User.create({
-      email,
-      fullname,
-      role,
-      password: hashed || "temporary123", // if you want to force password reset flow
-      isVerified: true,
-    });
+    const cached = await redis.get(cacheKey);
+    if (cached) {
+      console.log("User served from Redis");
+      return res.status(200).json(JSON.parse(cached));
+    }
 
-    res.status(201).json({ message: "User created", user });
-  } catch (err: any) {
-    console.error(err);
-    res.status(500).json({ message: "Create user failed", error: err.message });
+    const user = await User.findById(id).select("-password");
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    const monitors = await Monitor.find({ user: id }).select("name endpoint method interval uptime latency score createdAt");
+    const data = { user, monitors };
+    await redis.set(cacheKey, JSON.stringify(data), "EX", CACHE_TTL);
+    return res.status(200).json(data);
+  } catch (err) {
+    console.error("Error fetching user:", err);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const getCurrentUser = async (req: Request, res: Response) => {
+  try {
+    const userId = req.user?._id;
+    if (!userId) return res.status(401).json({ message: "Unauthorized" });
+
+    const cacheKey = `user:${userId}`;
+    const cached = await redis.get(cacheKey);
+    if (cached) {
+      console.log("Current user served from Redis");
+      return res.status(200).json(JSON.parse(cached));
+    }
+
+    const user = await User.findById(userId).select("-password");
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    const monitors = await Monitor.find({ user: userId }).select(
+      "name endpoint method interval uptime latency score createdAt"
+    );
+    const data = { user, monitors };
+    await redis.set(cacheKey, JSON.stringify(data), "EX", CACHE_TTL);
+    return res.status(200).json(data);
+  } catch (err) {
+    console.error("❌ Error fetching current user:", err);
+    return res.status(500).json({ message: "Internal server error" });
   }
 };
 
 export const deleteUserByAdmin = async (req: Request, res: Response) => {
   try {
+    if (req.user?.role !== "admin") {
+      return res.status(403).json({ message: "Access denied" });
+    }
+
     const { id } = req.params;
     const user = await User.findById(id);
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    // remove monitors
-    await Monitor.deleteMany({ user: user._id });
+    // Delete user's monitors
+    await Monitor.deleteMany({ user: id });
 
-    // remove any sessions in redis matching session:${userId}:*
-    const keys = await redis.keys(`session:${user._id}:*`);
-    if (keys.length) {
-      await redis.del(...keys);
-    }
+    // Delete all Redis data related to this user
+    const keys = await redis.keys(`session:${id}:*`);
+    if (keys.length) await redis.del(...keys);
+    await redis.del(`user:${id}`);
+    await redis.del("users:all"); // invalidate cached user list
 
-    await user.remove();
-    res.status(200).json({ message: "User and related monitors removed" });
-  } catch (err: any) {
-    console.error(err);
-    res.status(500).json({ message: "Delete user failed", error: err.message });
+    await User.findByIdAndDelete(id);
+
+    return res.status(200).json({ message: "User and all related data deleted" });
+  } catch (err) {
+    console.error("❌ Error deleting user by admin:", err);
+    return res.status(500).json({ message: "Internal server error" });
   }
 };

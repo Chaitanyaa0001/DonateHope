@@ -17,7 +17,7 @@ const monitorLogSchema = new Schema<IMonitorLog>(
     responseTime: Number,
     message: String,
   },
-  { timestamps: true }
+  { timestamps: true }  
 );
 
-export default mongoose.model<IMonitorLog>("MonitorLog", monitorLogSchema);
+export default mongoose.model<IMonitorLog>("MonitorLogs", monitorLogSchema);

@@ -75,21 +75,9 @@ export const useVerifyOTP = () => {
   });
 };
 
-// ✅ For token refresh
 export const refreshToken = async () => {
   return await callAPI<RefreshTokenResponse>({
     method: "get",
-    url: "/auth/refresh-token",
+    url: "/auth/refresh-token"
   });
 };
-
-
-
-
-
-// export const refreshToken = async () => {
-//   return await callAPI<RefreshTokenResponse>({
-//     method: "get",
-//     url: "/auth/refresh-token"
-//   });
-// };

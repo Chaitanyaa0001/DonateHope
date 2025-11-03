@@ -9,19 +9,17 @@ const CACHE_TTL = 60;
 
 export const getAllUsers = async (req: Request, res: Response) => {
   try {
-    if (req.user?.role !== "admin") {
-      return res.status(403).json({ message: "Access denied" });
+    if(!req.user){
+      return res.status(401).json({ message: "Unauthorized admin get all users " });
     }
-
     const cacheKey = "users:all";
     const cachedUsers = await redis.get(cacheKey);
 
     if (cachedUsers) {
-      console.log("✅ Serving from Redis cache");
       return res.status(200).json(JSON.parse(cachedUsers));
     };
+
     const users = await User.find().select("email fullname role isVerified createdAt");
-    // Store in cache
     await redis.set(cacheKey, JSON.stringify({ users }), "EX", CACHE_TTL);
 
     return res.status(200).json({ users });
@@ -88,22 +86,20 @@ export const getCurrentUser = async (req: Request, res: Response) => {
 
 export const deleteUserByAdmin = async (req: Request, res: Response) => {
   try {
-    if (req.user?.role !== "admin") {
-      return res.status(403).json({ message: "Access denied" });
+    if (!req.user) {
+      return res.status(401).json({ message: "Access denied" });
     }
 
     const { id } = req.params;
     const user = await User.findById(id);
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    // Delete user's monitors
     await Monitor.deleteMany({ user: id });
 
-    // Delete all Redis data related to this user
     const keys = await redis.keys(`session:${id}:*`);
     if (keys.length) await redis.del(...keys);
     await redis.del(`user:${id}`);
-    await redis.del("users:all"); // invalidate cached user list
+    await redis.del("users:all"); 
 
     await User.findByIdAndDelete(id);
 

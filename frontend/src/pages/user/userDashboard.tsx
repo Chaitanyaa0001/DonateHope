@@ -2,6 +2,7 @@
 import React, { lazy, Suspense } from "react";
 import { motion } from "framer-motion";
 import { Network, Clock, Gauge, HeartPulse } from "lucide-react";
+
 import {
   LineChart,
   Line,
@@ -27,17 +28,15 @@ const containerVariants = {
 const itemVariants = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } };
 
 const UserDashboard: React.FC = () => {
+
   const { useUserMonitorsQuery, useUserMonitorLogsQuery } = useMonitors();
 const { data: monitors = [], isLoading, error } = useUserMonitorsQuery;
 const {data: responseData = [] } = useUserMonitorLogsQuery 
 
-if(isLoading){
-  return <div>loading ..</div>
-}
-if(error){
-  return <div>Error loading monitors</div>
-}
-  // 🔹 Stats calculations
+
+  if (isLoading) return <div>Loading monitors...</div>;
+  if (error) return <div>Error loading monitors</div>;
+
   const totalAPIs = monitors.length;
  // ✅ Safe average calculations
 const avgUptime =
@@ -171,7 +170,7 @@ const avgHealth =
                   <div className="h-[400px] bg-gray-200 dark:bg-gray-800 rounded-lg animate-pulse" />
                 }
               >
-                <MonitorCard monitor={monitor} />
+                <MonitorCard monitor={monitor}  />
               </Suspense>
             </motion.div>
           ))

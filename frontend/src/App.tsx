@@ -17,6 +17,7 @@ import AdminDashboard from "./pages/admin/AdminDashBoard";
 import UserDashboard from "./pages/user/userDashboard";
 import RegisterMonitor from "./pages/user/RegisterMonitor";
 import MonitorDetails from "./pages/user/MonitorDetails";
+import UserDetails from "./pages/admin/UserDetails";
 
 // Lazy-loaded pages
 
@@ -40,9 +41,10 @@ const App = (): React.JSX.Element => {
 
         </Route>
 
-        {/* Funder Protected Routes */}
+        {/* admin Protected Routes */}
         <Route element={<ProtectedRoutes role="admin"><FunderLayout /></ProtectedRoutes>}>
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          <Route path="/admin/user/:id" element={<UserDetails />} />
         </Route>
 
         {/* 404 fallback */}

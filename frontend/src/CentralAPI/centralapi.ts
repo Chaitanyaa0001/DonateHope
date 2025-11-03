@@ -24,7 +24,7 @@ export const callAPI = async <TResponse, TData = undefined>({
 
 
 
-// // CentralAPI/callAPI.ts
+// CentralAPI/callAPI.ts
 // import { store } from "@/redux/store";
 // import api from "./axios";
 // import { clearAuth, setAuth } from "@/redux/authSlice";

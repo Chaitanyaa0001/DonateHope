@@ -43,6 +43,10 @@ export const refreshAccessToken = async (req: Request, res: Response) => {
 
     const accessToken = generateAccessToken(user._id.toString(), user.role);
 
+    console.log("User role:", user.role);
+    console.log("User ID:", user._id.toString());
+    
+
     return res.status(200).json({
       message: "Access token refreshed successfully",
       accessToken,

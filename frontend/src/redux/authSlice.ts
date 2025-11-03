@@ -36,7 +36,6 @@ const authSlice = createSlice({
 
 export const { setAuth, clearAuth, setLoading } = authSlice.actions;
 
-// Check session using refresh token (httpOnly)
 export const checkSession = () => async (dispatch: AppDispatch) => {
   dispatch(setLoading(true));
   try {

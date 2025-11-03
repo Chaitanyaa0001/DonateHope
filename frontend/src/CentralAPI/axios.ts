@@ -79,9 +79,9 @@ export default api;
 
 
 
-// // CentralAPI/axios.ts
-// import axios from "axios";
 // import { store } from "@/redux/store";
+// CentralAPI/axios.ts
+// import axios from "axios";
 
 // const BASE_URL = import.meta.env.VITE_API_URL;
 
@@ -90,13 +90,5 @@ export default api;
 //   withCredentials: true, // ✅ send cookies
 // });
 
-// // ✅ Attach access token automatically
-// api.interceptors.request.use((config) => {
-//   const token = store.getState().auth.accessToken;
-//   if (token) {
-//     config.headers.Authorization = `Bearer ${token}`;
-//   }
-//   return config;
-// });
 
 // export default api;

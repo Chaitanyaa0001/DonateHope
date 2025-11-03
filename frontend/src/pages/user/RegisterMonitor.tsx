@@ -1,5 +1,5 @@
+import { useMonitors } from "@/hooks/monitors/useMonitor";
 import React, { useState } from "react";
-import axios from "axios";
 
 const RegisterMonitor: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -12,9 +12,11 @@ const RegisterMonitor: React.FC = () => {
     file: null as File | null,
   });
 
+  const { usePostMonitorMutation } = useMonitors();
+  const { mutate: postMonitor } = usePostMonitorMutation;
+
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // ✅ Handle form input
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
@@ -25,54 +27,69 @@ const RegisterMonitor: React.FC = () => {
     }));
   };
 
-  // ✅ File change handler
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
     setFormData((prev) => ({ ...prev, file }));
   };
 
-  // ✅ Submit Monitor
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
 
     try {
-      setIsSubmitting(true);
-
-      const token = localStorage.getItem("token"); // make sure your token is stored here
-      const data = new FormData();
-      data.append("name", formData.name);
-      data.append("endpoint", formData.endpoint);
-      data.append("method", formData.method);
-      data.append("interval", String(formData.interval));
-
-      if (formData.headers) data.append("headers", formData.headers);
-      if (formData.body) data.append("body", formData.body);
-      if (formData.file) data.append("file", formData.file);
-
-      const res = await axios.post("/api/monitors", data, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data",
+      let parsedHeaders = undefined;
+      let parsedBody = undefined;
+      if (formData.headers) {
+        try {
+          parsedHeaders = JSON.parse(formData.headers);
+        } catch {
+          alert("❌ Invalid JSON in headers");
+          setIsSubmitting(false);
+          return;
+        }
+      }
+      if (formData.body) {
+        try {
+          parsedBody = JSON.parse(formData.body);
+        } catch {
+          alert("❌ Invalid JSON in body");
+          setIsSubmitting(false);
+          return;
+        }
+      }
+      postMonitor(
+        {
+          name: formData.name,
+          endpoint: formData.endpoint,
+          method: formData.method,
+          interval: formData.interval,
+          headers: parsedHeaders,
+          body: parsedBody,
+          file: formData.file,
         },
-      });
-
-      alert("✅ Monitor created successfully!");
-      console.log(res.data);
-
-      // reset form
-      setFormData({
-        name: "",
-        endpoint: "",
-        method: "GET",
-        interval: 5,
-        headers: "",
-        body: "",
-        file: null,
-      });
+        {
+          onSuccess: () => {
+            alert("✅ Monitor created successfully!");
+            setFormData({
+              name: "",
+              endpoint: "",
+              method: "GET",
+              interval: 5,
+              headers: "",
+              body: "",
+              file: null,
+            });
+          },
+          onError: (error) => {
+            console.error("❌ Error creating monitor:", error);
+            alert("Failed to create monitor.");
+          },
+          onSettled: () => setIsSubmitting(false),
+        }
+      );
     } catch (error) {
-      console.error("❌ Error creating monitor:", error);
-      alert("Failed to create monitor.");
-    } finally {
+      console.error(" Unexpected error:", error);
+      alert("Something went wrong.");
       setIsSubmitting(false);
     }
   };

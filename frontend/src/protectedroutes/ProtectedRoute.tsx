@@ -10,7 +10,9 @@ interface ProtectedRouteProps {
 
 const ProtectedRoutes = ({ role, children }: ProtectedRouteProps) => {
   const { role: currentRole, loading } = useSelector((state: RootState) => state.auth);
-  if (loading) return <div className="text-center mt-20">Loading proetcted routes  session...</div>;
+  console.log(currentRole);
+  if (loading) return <div className="text-center mt-20">Loading protected routes session...</div>;
+
   if (!currentRole) return <Navigate to="/" replace />;
   if (currentRole !== role) return <Navigate to="/" replace />;
   return <>{children}</>;

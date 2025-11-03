@@ -17,7 +17,6 @@ router.delete("/:id", verifyToken,  deleteMonitor);
 
 
 
-// admin 
 // import { getAllMonitors, deleteMonitorById } from "../controllers/monitor/adminMonitor.controller.js";
 // router.get("/", verifyToken, getAllMonitors);
 // router.delete("/:id", verifyToken, deleteMonitorById);

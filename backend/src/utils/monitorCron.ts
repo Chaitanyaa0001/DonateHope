@@ -2,10 +2,11 @@
 import axios from "axios";
 import cron, { ScheduledTask } from "node-cron";
 import monitorModel from "../models/monitor.model.js";
-import MonitorLog from "../models/monitorLogs.model.js";
+import MonitorLogs from "../models/monitorLogs.model.js";
 import { aiAnalyzerService } from "../service/aiAnalyzer.service.js";
 
 const activeJobs = new Map<string, ScheduledTask>();
+const jobTimers = new Map<string, NodeJS.Timeout>();
 const MAX_LOGS_PER_MONITOR = 8;
 
 // ✅ Perform one monitor check (used both for instant + cron jobs)
@@ -30,7 +31,7 @@ export const performMonitorCheck = async (monitor: any, instantCheck = false) =>
     message = "Success";
 
     // 🔹 Create log
-    await MonitorLog.create({
+    await MonitorLogs.create({
       monitorId: monitor._id,
       statusCode,
       responseTime: latency,
@@ -48,7 +49,7 @@ export const performMonitorCheck = async (monitor: any, instantCheck = false) =>
     message = err?.message || "Request failed";
     statusCode = err?.response?.status || 500;
 
-    await MonitorLog.create({
+    await MonitorLogs.create({
       monitorId: monitor._id,
       statusCode,
       responseTime: latency,
@@ -65,13 +66,12 @@ export const performMonitorCheck = async (monitor: any, instantCheck = false) =>
     console.log(`❌ [${monitor.name}] failed (${message})`);
   }
 
-  // ✅ Maintain only last N logs (delete oldest)
   try {
-    const count = await MonitorLog.countDocuments({ monitorId: monitor._id });
+    const count = await MonitorLogs.countDocuments({ monitorId: monitor._id });
     if (count > MAX_LOGS_PER_MONITOR) {
       const toDelete = count - MAX_LOGS_PER_MONITOR;
-      await MonitorLog.find({ monitorId: monitor._id })
-        .sort({ timestamp: 1 }) // oldest first
+      await MonitorLogs.find({ monitorId: monitor._id })
+        .sort({ timestamp: 1 }) 
         .limit(toDelete)
         .deleteMany();
       console.log(`🧹 Trimmed logs for ${monitor.name} (kept ${MAX_LOGS_PER_MONITOR})`);
@@ -80,11 +80,11 @@ export const performMonitorCheck = async (monitor: any, instantCheck = false) =>
     console.error(`⚠️ Log cleanup failed for ${monitor.name}:`, err.message);
   }
 
-  // ✅ Generate AI summary only once initially or every 5th check
+  // Generate AI summary only once initially or every 5th check
   try {
-    const logCount = await MonitorLog.countDocuments({ monitorId: monitor._id });
+    const logCount = await MonitorLogs.countDocuments({ monitorId: monitor._id });
     if (instantCheck || logCount % 5 === 0) {
-      const logs = await MonitorLog.find({ monitorId: monitor._id })
+      const logs = await MonitorLogs.find({ monitorId: monitor._id })
         .sort({ timestamp: -1 })
         .limit(10);
 
@@ -103,7 +103,6 @@ export const performMonitorCheck = async (monitor: any, instantCheck = false) =>
   }
 };
 
-// ✅ Start monitor cron job
 export const startMonitorJob = (monitor: any) => {
   const interval = monitor.interval || 5; // minutes
   const cronExp = `*/${interval} * * * *`;
@@ -119,10 +118,18 @@ export const startMonitorJob = (monitor: any) => {
 
   job.start();
   activeJobs.set(monitor._id.toString(), job);
+
+  // stop in 12 hours 
+      const timeout = setTimeout(() => {
+        stopMonitorJob(monitor._id.toString());
+        console.log(`🕒 Auto-stopped monitor ${monitor.name} after 12 hours`);
+      }, 12 * 60 * 60 * 1000);
+    
+      jobTimers.set(monitor._id.toString(), timeout);
+
   console.log(`🕒 Started job for ${monitor.name} every ${interval} min`);
 };
 
-// ✅ Stop monitor job
 export const stopMonitorJob = (monitorId: string) => {
   const job = activeJobs.get(monitorId);
   if (job) {
@@ -132,7 +139,6 @@ export const stopMonitorJob = (monitorId: string) => {
   }
 };
 
-// ✅ Restart all jobs (on server boot)
 export const restartAllMonitorJobs = async () => {
   const monitors = await monitorModel.find();
   for (const monitor of monitors) {
@@ -141,9 +147,8 @@ export const restartAllMonitorJobs = async () => {
   console.log(`♻️ Restarted ${monitors.length} monitor jobs`);
 };
 
-// ✅ Delete all logs related to a monitor (for cleanup)
 export const deleteMonitorLogs = async (monitorId: string) => {
-  await MonitorLog.deleteMany({ monitorId });
+  await MonitorLogs.deleteMany({ monitorId });
   stopMonitorJob(monitorId);
   console.log(`🗑️ Deleted all logs for monitor ${monitorId}`);
 };

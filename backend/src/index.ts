@@ -6,6 +6,7 @@ import cookieParser from 'cookie-parser';
 import authroutes from './routes/auth.route.ts';
 import adminroutes from './routes/admin.route.ts';
 import monitorroutes from './routes/monitor.route.ts';
+import userroutes from './routes/user.route.ts';
 
 
 dotenv.config();
@@ -27,6 +28,7 @@ app.use(cookieParser());
 app.use('/api/auth', authroutes);
 app.use('/api/admin', adminroutes);
 app.use('/api/monitor', monitorroutes);
+app.use('/api/users', userroutes);
 
 
 app.get('/', (req, res) => {

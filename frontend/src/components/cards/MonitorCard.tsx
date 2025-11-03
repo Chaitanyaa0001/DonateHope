@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { FiClock, FiActivity, FiCpu, } from "react-icons/fi";
+import { FiClock, FiActivity, FiCpu } from "react-icons/fi";
 
 interface MonitorCardProps {
   monitor: {
@@ -18,15 +18,14 @@ interface MonitorCardProps {
       role: string;
     };
   };
+ 
 }
 
-
 const MonitorCard: React.FC<MonitorCardProps> = ({ monitor }) => {
-
   return (
     <motion.div
       whileHover={{ scale: 1.02, boxShadow: "0 0 25px rgba(200, 0, 222, 0.4)" }}
-      className="dark:bg-[#0d0b1d] rounded-2xl border border-[#C800DE]/60 hover:border-[#C800DE] transition duration-300 flex flex-col overflow-hidden"
+      className="dark:bg-[#0d0b1d] bg-white rounded-2xl border border-[#C800DE]/60 hover:border-[#C800DE] transition duration-300 flex flex-col overflow-hidden"
     >
       {/* Header */}
       <div className="px-4 pt-3 flex justify-between items-center">
@@ -45,35 +44,32 @@ const MonitorCard: React.FC<MonitorCardProps> = ({ monitor }) => {
         <h2 className="font-semibold text-[#C800DE] sm:text-lg text-base mb-1 line-clamp-1">
           {monitor.name}
         </h2>
-        <p className="text-xs opacity-70 italic mb-3 break-all">
-          {monitor.endpoint}
-        </p>
+        <p className="text-xs opacity-70 italic mb-3 break-all">{monitor.endpoint}</p>
 
         <div className="grid grid-cols-2 gap-y-2 text-sm mb-3">
           <div className="flex items-center gap-2">
             <FiClock className="text-purple-400" />
-            <span>{monitor.interval}interval!</span>
+            <span>{monitor.interval} min</span>
           </div>
           <div className="flex items-center gap-2">
             <FiActivity className="text-green-400" />
-            <span>{monitor.uptime} uptinme%</span>
+            <span>{monitor.uptime ?? "—"}%</span>
           </div>
           <div className="flex items-center gap-2">
             <FiCpu className="text-pink-400" />
-            <span>{monitor.latency} latency  ms</span>
+            <span>{monitor.latency ?? "—"} ms</span>
           </div>
-          
         </div>
 
-
-        <Link to={`/user/monitor/${monitor._id}`}>
-          <button
-            type="button"
-            className="mt-4 w-full bg-gradient-to-r from-fuchsia-600 to-purple-700 text-white hover:from-fuchsia-500 hover:to-purple-600 py-2 rounded-md font-semibold text-sm flex items-center justify-center gap-2 transition-all duration-200"
-          >
-            🔍 View Details
-          </button>
-        </Link>
+        
+          <Link to={`/user/monitor/${monitor._id}`}>
+            <button
+              type="button"
+              className="mt-4 w-full bg-gradient-to-r from-fuchsia-600 to-purple-700 text-white hover:from-fuchsia-500 hover:to-purple-600 py-2 rounded-md font-semibold text-sm flex items-center justify-center gap-2 transition-all duration-200"
+            >
+              🔍 View Details
+            </button>
+          </Link>
       </div>
     </motion.div>
   );

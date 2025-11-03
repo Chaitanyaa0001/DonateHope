@@ -4,13 +4,32 @@ import Togglebutton from "@/components/ui/Togglebutton";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
 import { useMonitors } from "@/hooks/monitors/useMonitor";
 
+
 const MonitorDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
-  const { useMonitorById, useMonitorLogsById } = useMonitors();
+  const { useMonitorById, useMonitorLogsById , useDeleteMonitorMutation} = useMonitors();
   const { data: monitor, isLoading, error } = useMonitorById(id!);
   const { data: logs = [] } = useMonitorLogsById(id!);
+  const deleteMutation = useDeleteMonitorMutation;
+
+const handleDelete = async () => {
+  if (!id) return;
+
+  const confirmDelete = window.confirm("Are you sure you want to delete this monitor?");
+  if (!confirmDelete) return;
+
+  try {
+    await deleteMutation.mutateAsync(id);
+    alert("Monitor deleted successfully!");
+    navigate("/user/dashboard");
+  } catch (err) {
+    console.error("Failed to delete monitor:", err);
+    alert("Failed to delete monitor. Please try again.");
+  }
+};
+
 
   if (isLoading) return <div>Loading monitor details...</div>;
   if (error) return <div>Error loading monitor details</div>;
@@ -23,12 +42,23 @@ const MonitorDetails: React.FC = () => {
       </div>
       <div className="max-w-5xl mx-auto">
         {/* Back Button */}
-        <button
-          onClick={() => navigate("/user/dashboard")}
-          className="mb-6 bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 text-gray-900 dark:text-white px-4 py-2 rounded-md transition shadow"
-        >
-          ⬅ Back to Monitors
-        </button>
+        <div className="flex items-center justify-between mb-6">
+  <button
+    onClick={() => navigate("/user/dashboard")}
+    className="bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 text-gray-900 dark:text-white px-4 py-2 rounded-md transition shadow"
+  >
+    ⬅ Back to Monitors
+  </button>
+
+  <button
+    onClick={handleDelete}
+    disabled={deleteMutation.isPending}
+    className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md transition shadow disabled:opacity-50"
+  >
+    {deleteMutation.isPending ? "Deleting..." : "🗑 Delete Monitor"}
+  </button>
+</div>
+
         {/* Endpoint & Method */}
         <div className="flex items-center gap-4 mb-3">
           <span className="px-3 py-1 rounded-full bg-green-100 text-green-700 font-semibold border border-green-300 text-sm shadow">

@@ -22,13 +22,11 @@ const Login: React.FC = () => {
     e.preventDefault();
     try {
       if (isAdmin) {
-        // Admin Login
         const res = await adminLoginMutation.mutateAsync({ email, password });
         if (res?.message) {
           navigate("/verify", { state: { destination: email, role: "admin" } });
         }
       } else {
-        // Normal user login/signup via OTP
         const res = await requestOTPMutation.mutateAsync({ email });
         if (res?.message) {
           navigate("/verify", { state: { destination: email, role: "user" } });

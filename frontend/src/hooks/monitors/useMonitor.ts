@@ -15,8 +15,10 @@ export const useMonitors = () => {
   const auth = useSelector((state: RootState) => state.auth);
 
   const useUserMonitorsQuery = useQuery({
+    
     queryKey: monitorKeys.user,
     queryFn: async () => {
+      console.log(auth.accessToken);
       const res = await callAPI<{ data: MonitorData[] }>({
         method: "get",
         url: "/monitor",

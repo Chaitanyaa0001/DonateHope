@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import monitorModel from "../../models/monitor.model";
-import monitorLogModel from "../../models/monitorLogs.model";
+import MonitorLogs from "../../models/monitorLogs.model";
 import {
   performMonitorCheck,
   startMonitorJob,
@@ -52,24 +52,22 @@ export const postMonitor = async (req: Request, res: Response) => {
       body: parsedBody || {},
       interval: interval || 5,
     });
+    res.status(201).json({message: "Monitor created successfully",monitor,});
+redis.del(`user_monitors_${user._id}`)
+  .catch(err => console.error("Redis delete failed:", err));
 
-    // ⚡ Perform initial check + AI summary
-    await performMonitorCheck(monitor, true);
 
-    // 🕒 Start cron job for recurring checks
-    startMonitorJob(monitor);
 
-    return res.status(201).json({
-      message: "Monitor created successfully",
-      monitor,
-    });
+  performMonitorCheck(monitor, true)
+  .then(() => startMonitorJob(monitor))
+  .catch((err) => console.error("Monitor init error:", err));
+
   } catch (err) {
     console.error("❌ Error creating monitor:", err);
     return res.status(500).json({ message: "Internal server error" });
   }
 };
 
-// ✅ Delete Monitor
 export const deleteMonitor = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
@@ -81,6 +79,8 @@ export const deleteMonitor = async (req: Request, res: Response) => {
 
     await deleteMonitorLogs(id);
     await monitorModel.findByIdAndDelete(id);
+    redis.del(`user_monitors_${monitor.user}`)
+    .catch(err => console.error("Redis delete failed:", err));
 
     return res
       .status(200)
@@ -113,7 +113,7 @@ export const getUserMonitors = async (req: Request, res: Response) => {
       .populate("user", "email fullname role")
       .sort({ createdAt: -1 });
 
-    await redis.set(cacheKey, JSON.stringify(monitors), "EX", 60);
+    await redis.set(cacheKey, JSON.stringify(monitors), "EX", 10);
     return res.status(200).json({ source: "db", data: monitors });
   } catch (err) {
     console.error("❌ Error fetching user monitors:", err);
@@ -151,7 +151,7 @@ export const getUserMonitorLogs = async (req: Request, res: Response) => {
     const monitors = await monitorModel.find({ user: user._id }).select("_id");
     const monitorIds = monitors.map((m) => m._id);
 
-    const logs = await monitorLogModel
+    const logs = await MonitorLogs
       .find({ monitorId: { $in: monitorIds } })
       .sort({ timestamp: 1 })
       .limit(1000);
@@ -184,7 +184,7 @@ export const getLogsByMonitorId = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
-    const logs = await monitorLogModel
+    const logs = await MonitorLogs
       .find({ monitorId: id })
       .sort({ timestamp: -1 }) // newest first
       .limit(1000);
@@ -193,7 +193,6 @@ export const getLogsByMonitorId = async (req: Request, res: Response) => {
       return res.status(200).json({ data: [] });
     }
 
-    // include everything you want to show on frontend
     const formatted = logs.map((log) => ({
       timestamp: log.timestamp,
       responseTime: log.responseTime,

@@ -1,5 +1,9 @@
 import mongoose, { Schema } from "mongoose";
 import { IMonitor } from "../types/monitor.type";
+import MonitorLogs from "./monitorLogs.model.js";
+import { stopMonitorJob } from "../utils/monitorCron";
+
+
 
 const monitorSchema = new Schema<IMonitor>(
   {
@@ -54,6 +58,22 @@ const monitorSchema = new Schema<IMonitor>(
   },
   { timestamps: true }
 );
+
+monitorSchema.post("findOneAndDelete", async function (doc) {
+  if (doc) {
+    const monitorId = doc._id.toString();
+
+    // 🧹 Delete related logs
+    await MonitorLogs.deleteMany({ monitorId });
+    console.log(`🗑️ Logs deleted for monitor ${monitorId}`);
+
+    stopMonitorJob(monitorId);
+    console.log(`⏹️ Stopped cron for deleted monitor ${monitorId}`);
+  }
+});
+
+// (Optional) Also cover direct remove()
+
 
 monitorSchema.index({ user: 1 });
 monitorSchema.index({ endpoint: 1 });

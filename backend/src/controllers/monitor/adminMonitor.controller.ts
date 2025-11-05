@@ -1,23 +1,7 @@
 import { Request, Response } from "express";
 import monitorModel from "../../models/monitor.model.js";
 import { stopMonitorJob } from "../../utils/monitorCron.js";
-import redis from "../../config/redisClient.js";
 
-
-
-const getMonitorByAdminById = async (req: Request, res: Response) => {
-  try {
-    const { id } = req.params;
-    const monitor = await monitorModel.findById(id).populate("user", "email fullname role");
-    if (!monitor) {
-      return res.status(404).json({ message: "Monitor not found" });
-    }
-    return res.status(200).json({ data: monitor });
-  } catch (err) {
-    console.error("❌ Error fetching monitor by ID:", err);
-    return res.status(500).json({ message: "Internal Server Error" });
-  }
-};
 
 export const deleteMonitorById = async (req: Request, res: Response) => {
   try {
@@ -30,13 +14,12 @@ export const deleteMonitorById = async (req: Request, res: Response) => {
 
     const deletedMonitor = await monitorModel.findByIdAndDelete(id);
     stopMonitorJob(id);
-
     return res.status(200).json({
       message: "Monitor deleted successfully",
       deletedMonitor,
     });
   } catch (err) {
-    console.error("❌ Error deleting monitor:", err);
+    console.error(" Error deleting monitor:", err);
     return res.status(500).json({ message: "Internal Server Error" });
   }
 };

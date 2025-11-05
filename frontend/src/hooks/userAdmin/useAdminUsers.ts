@@ -4,6 +4,7 @@ import type { userResponse } from "@/responses/userresponse";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/redux/store";
+import type { MonitorData } from "@/responses/MonitorResponse";
 
 export const useGetUsers = () => {
   const auth = useSelector((state: RootState) => state.auth);
@@ -43,13 +44,13 @@ export const useGetUserById = (id: string) => {
   return useQuery({
     queryKey: ["admin-user", id],
     queryFn: async () => {
-      const res = await callAPI<{ user: userResponse }>({
+      const res = await callAPI<{ user: userResponse, monitors: MonitorData[] }>({
         method: "get",
         url: `/users/${id}`,
       });
-      return res.user;
+      return res;
     },
-    enabled: !!id && !!auth.accessToken, // ✅ added
+    enabled: !!id && !!auth.accessToken, 
   });
 };
 
@@ -65,6 +66,6 @@ export const useGetCurrentUser = () => {
       });
       return res.user;
     },
-    enabled: !!auth.accessToken, // ✅ added
+    enabled: !!auth.accessToken, 
   });
 };

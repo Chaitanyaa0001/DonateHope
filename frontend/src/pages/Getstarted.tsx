@@ -38,7 +38,6 @@ const GetStarted: React.FC = () => {
     <div>
       <Navbar />
       <div className="dark:bg-[#090821] min-h-screen w-[95%] mx-auto px-4 py-8">
-        {/* Hero Section */}
         <div className="text-center mb-16">
           <h1 className="text-4xl md:text-6xl font-bold text-black dark:text-white mb-6">
             Monitor APIs with <span className="text-purple-400">AI Precision</span>
@@ -48,26 +47,15 @@ const GetStarted: React.FC = () => {
             and AI-powered insights. Stay ahead of downtime and ensure your APIs perform flawlessly.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button
-              type="button"
-              className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors"
-            >
-              Start Monitoring
-            </button>
-            <button
-              type="button"
-              className="bg-transparent border border-purple-600 text-purple-400 hover:bg-purple-600 hover:text-white px-8 py-3 rounded-lg font-semibold transition-colors"
-            >
+            <button type="button" className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors">Start Monitoring</button>
+            <button type="button" className="bg-transparent border border-purple-600 text-purple-400 hover:bg-purple-600 hover:text-white px-8 py-3 rounded-lg font-semibold transition-colors">
               Learn More
             </button>
           </div>
         </div>
 
-        {/* Features Section */}
         <div className="text-center mb-12">
-          <h1 className="text-3xl md:text-4xl font-bold dark:text-white mb-4">
-            Why Choose <span className="text-purple-400">PulseWatch</span>?
-          </h1>
+          <h1 className="text-3xl md:text-4xl font-bold dark:text-white mb-4">Why Choose <span className="text-purple-400">PulseWatch</span>?</h1>
           <p className="text-gray-700 text-lg dark:text-gray-300 max-w-2xl mx-auto mb-12">
             Built for developers who care about reliability, performance, and actionable insights.
           </p>

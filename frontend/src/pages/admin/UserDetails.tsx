@@ -10,6 +10,8 @@ import {
   FiClock,
 } from "react-icons/fi";
 import Togglebutton from "@/components/ui/Togglebutton";
+import { useGetUserById } from "@/hooks/userAdmin/useAdminUsers";
+import { useParams } from "react-router-dom";
 
 const container = {
   hidden: {},
@@ -17,41 +19,12 @@ const container = {
 };
 
 const UserDetails: React.FC = () => {
-  // 🧩 demo user
-  const user = {
-    _id: "1",
-    fullname: "Chaitanya Singh",
-    email: "chai@demo.com",
-    role: "admin",
-    isVerified: true,
-    createdAt: "2024-07-12",
-  };
 
-  // 🧩 demo monitors
-  const monitors = [
-    {
-      _id: "m1",
-      name: "API Monitor - Auth Service",
-      endpoint: "https://api.demo.com/auth",
-      method: "POST",
-      interval: 5,
-      uptime: 99.9,
-      latency: 230,
-      score: 95,
-      createdAt: "2024-09-21",
-    },
-    {
-      _id: "m2",
-      name: "User Service",
-      endpoint: "https://api.demo.com/users",
-      method: "GET",
-      interval: 10,
-      uptime: 98.7,
-      latency: 320,
-      score: 91,
-      createdAt: "2024-09-25",
-    },
-  ];
+  const {id} = useParams();
+
+  const {data,   isLoading, isError} = useGetUserById(id as string);
+  if (isLoading) return <div>Loading user...</div>;
+  if (isError) return <div>Error loading user</div>;
 
   const handleDeleteMonitor = (id: string) => {
     console.log("Delete monitor:", id);
@@ -68,7 +41,7 @@ const UserDetails: React.FC = () => {
           >
             <FiArrowLeft /> Back
           </button>
-          <h1 className="text-3xl font-bold">👤 {user.fullname}</h1>
+          <h1 className="text-3xl font-bold"> {data?.user.fullname}</h1>
         </div>
         <div className="flex items-center gap-4 mt-4 sm:mt-0">
           <Togglebutton />
@@ -88,19 +61,19 @@ const UserDetails: React.FC = () => {
       >
         <div className="grid sm:grid-cols-2 gap-4 text-sm text-gray-700 dark:text-gray-300">
           <p className="flex items-center gap-2">
-            <FiMail className="text-purple-400" /> {user.email}
+            <FiMail className="text-purple-400" /> {data?.user.email}
           </p>
           <p className="flex items-center gap-2">
             <FiUser className="text-purple-400" /> Role:{" "}
-            <span className="font-medium text-purple-500">{user.role}</span>
+            <span className="font-medium text-purple-500">{data?.user.role}</span>
           </p>
           <p className="flex items-center gap-2">
             <FiCalendar className="text-purple-400" /> Joined:{" "}
-            {new Date(user.createdAt).toDateString()}
+            {new Date(data?.user.createdAt ?? "").toDateString()}
           </p>
           <p className="flex items-center gap-2">
             Status:{" "}
-            {user.isVerified ? (
+            {data?.user.isVerified ? (
               <span className="text-green-400 font-semibold">✅ Verified</span>
             ) : (
               <span className="text-red-400 font-semibold">❌ Not Verified</span>
@@ -121,7 +94,7 @@ const UserDetails: React.FC = () => {
           animate="show"
           className="grid grid-cols-1 sm:grid-cols-2 gap-6"
         >
-          {monitors.map((monitor) => (
+          {data?.monitors.map((monitor) => (
             <motion.div
               key={monitor._id}
               whileHover={{ scale: 1.02 }}

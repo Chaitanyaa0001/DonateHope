@@ -1,14 +1,9 @@
 import { Request, Response } from "express";
 import monitorModel from "../../models/monitor.model";
 import MonitorLogs from "../../models/monitorLogs.model";
-import {
-  performMonitorCheck,
-  startMonitorJob,
-  deleteMonitorLogs,
-} from "../../utils/monitorCron";
+import {performMonitorCheck,startMonitorJob,deleteMonitorLogs,} from "../../utils/monitorCron";
 import redis from "../../config/redisClient";
 
-// ✅ Create Monitor
 export const postMonitor = async (req: Request, res: Response) => {
   try {
     const user = req.user;
@@ -19,15 +14,12 @@ export const postMonitor = async (req: Request, res: Response) => {
     }
 
     if (!name || !endpoint || !method || !interval) {
-      return res.status(400).json({
-        message: "Name, endpoint, method, and interval are required",
-      });
+      return res.status(400).json({message: "Name, endpoint, method, and interval are required",});
     }
 
     let parsedHeaders = headers;
     let parsedBody = body;
 
-    // ✅ Safely parse JSON from frontend or Postman
     try {
       if (typeof headers === "string" && headers.trim() !== "") {
         parsedHeaders = JSON.parse(headers);
@@ -36,13 +28,12 @@ export const postMonitor = async (req: Request, res: Response) => {
         parsedBody = JSON.parse(body);
       }
     } catch (err) {
-      console.error("❌ Invalid JSON in headers/body:", err);
+      console.error("Invalid JSON in headers/body:", err);
       return res.status(400).json({
         message: "Invalid JSON format in headers or body. Must be valid JSON.",
       });
     }
 
-    // ✅ Create and save monitor
     const monitor = await monitorModel.create({
       user: user._id,
       name,
@@ -53,17 +44,15 @@ export const postMonitor = async (req: Request, res: Response) => {
       interval: interval || 5,
     });
     res.status(201).json({message: "Monitor created successfully",monitor,});
-redis.del(`user_monitors_${user._id}`)
+    redis.del(`user_monitors_${user._id}`)
   .catch(err => console.error("Redis delete failed:", err));
-
-
 
   performMonitorCheck(monitor, true)
   .then(() => startMonitorJob(monitor))
   .catch((err) => console.error("Monitor init error:", err));
 
-  } catch (err) {
-    console.error("❌ Error creating monitor:", err);
+  }catch (err) {
+    console.error("Error creating monitor:", err);
     return res.status(500).json({ message: "Internal server error" });
   }
 };

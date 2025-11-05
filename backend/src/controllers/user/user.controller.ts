@@ -48,7 +48,9 @@ export const getUserById = async (req: Request, res: Response) => {
     if (!user) return res.status(404).json({ message: "User not found" });
 
     const monitors = await Monitor.find({ user: id }).select("name endpoint method interval uptime latency score createdAt");
+
     const data = { user, monitors };
+    
     await redis.set(cacheKey, JSON.stringify(data), "EX", CACHE_TTL);
     return res.status(200).json(data);
   } catch (err) {

@@ -15,11 +15,9 @@ export const refreshAccessToken = async (req: Request, res: Response) => {
   }
 
   try {
-    // ✅ Verify the refresh token
     const decoded = jwt.verify(refreshToken, JWT_REFRESH_SECRET) as JwtPayload;
 
     if (!decoded || typeof decoded === 'string' || !decoded.userId || !decoded.role) {
-      // ❌ Invalid payload → clear cookie
       res.clearCookie('refresh_token', {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
@@ -29,7 +27,6 @@ export const refreshAccessToken = async (req: Request, res: Response) => {
       return res.status(403).json({ message: 'Invalid refresh token payload' });
     }
 
-    // ✅ Check if user exists
     const user = await User.findById(decoded.userId);
     if (!user) {
       res.clearCookie('refresh_token', {
@@ -55,7 +52,6 @@ export const refreshAccessToken = async (req: Request, res: Response) => {
     });
   } catch (err) {
     console.error('Refresh token error', err);
-    // ❌ Invalid or expired refresh token → clear cookie
     res.clearCookie('refresh_token', {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',

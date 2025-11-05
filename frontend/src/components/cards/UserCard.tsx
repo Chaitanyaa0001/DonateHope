@@ -17,7 +17,7 @@ interface UserCardProps {
     email: string;
     role: string;
     isVerified: boolean;
-    createdAt: string;
+    createdAt?: string;
   };
   onDelete: (id: string) => void;
 }

@@ -35,8 +35,11 @@ api.interceptors.response.use(
   async (error: AxiosError) => {
     const originalRequest: any = error.config;
 
-    // Skip refresh if already trying to refresh
-    if (error.response?.status === 401 && !originalRequest._retry && !originalRequest.url.includes("/auth/refresh-token")) {
+    const status = error.response?.status;
+    const isAuthEndpoint = (url?: string) =>
+      !!url && (url.includes('/auth/refresh-token') || url.includes('/auth/refresh-token'));
+
+    if ((status === 401 || status === 403) && !originalRequest?._retry && !isAuthEndpoint(originalRequest?.url)) {
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });
@@ -52,7 +55,7 @@ api.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        const { data } = await api.get("/auth/refresh-token");
+        const { data } = await api.get('/auth/refresh-token'); // cookie sent via withCredentials
         store.dispatch(setAuth({
           accessToken: data.accessToken,
           userId: data.userId,
@@ -69,9 +72,11 @@ api.interceptors.response.use(
         return Promise.reject(refreshError);
       }
     }
+
     return Promise.reject(error);
   }
 );
+
 
 export default api;
 

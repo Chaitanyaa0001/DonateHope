@@ -11,7 +11,7 @@ const container: Variants = {
 
 const AdminDashboard: React.FC = () => {
 
-  const {data: users, isLoading, isError} = useGetUsers();
+  const {data: users = [], isLoading, isError} = useGetUsers();
   const {mutateAsync: deleteUser} = useDeleteUser();
   if (isLoading) return <div>Loading users...</div>;
   if (isError) return <div>Error loading users</div>; 
@@ -39,7 +39,7 @@ const AdminDashboard: React.FC = () => {
           animate="show"
           className="grid gap-5"
         >
-          {users.map((user) => (
+          {users?.map((user) => (
             <UserCard key={user._id} user={user} onDelete={handleDeleteUser} />
           ))}
         </motion.div>

@@ -18,7 +18,7 @@ export const useGetUsers = () => {
       });
       return res.users;
     },
-    enabled: !!auth.accessToken, // ✅ ensures token is loaded first
+    enabled: !!auth.accessToken, 
   });
 };
 

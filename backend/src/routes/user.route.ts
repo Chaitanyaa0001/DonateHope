@@ -7,7 +7,6 @@ const router = express.Router();
 router.get('/',verifyToken,aurthorize(['admin']),getAllUsers);
 router.get('/:id',verifyToken,aurthorize(['admin']) ,getUserById);
 router.delete("/:id",verifyToken,aurthorize(['admin']) ,deleteUserByAdmin);
-
 router.get('/me', getCurrentUser);
 
 

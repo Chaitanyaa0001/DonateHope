@@ -11,7 +11,6 @@ export const requestOTP = async (req: Request, res: Response) => {
 
     if (!email) return res.status(400).json({ message: 'Email is required' });
 
-    // Rate limiting in Redis
     const rateLimiterKey = `otp_rate_limit:${email}`;
     const attemptsKey = `otp_attempts:${email}`;
     const isLimited = await redis.exists(rateLimiterKey);
@@ -28,10 +27,9 @@ export const requestOTP = async (req: Request, res: Response) => {
     }
 
     let user = await User.findOne({ email });
-
     if (!user) {
         const nameFromEmail = email.split('@')[0]
-        .replace(/[._-]/g, ' ')        // replace dots, underscores, dashes with space
+        .replace(/[._-]/g, ' ')       
         .replace(/\b\w/g, (c: string) => c.toUpperCase());
         const assignedRole = 'user';
         user = new User({ email, fullname: nameFromEmail, role: assignedRole });
@@ -41,8 +39,6 @@ export const requestOTP = async (req: Request, res: Response) => {
           message: `User already registered as ${user.role}. Cannot log in as ${role} with same email.`,
         });
       }
-
-
     const otp = generateOTP();
     await redis.setex(`otp:${email}`, 300, otp);
     await sendotpemail(email, otp);

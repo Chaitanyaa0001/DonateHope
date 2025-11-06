@@ -44,7 +44,6 @@ export const useAdminLogin = () => {
   });
 };
 
-// ✅ For admin: verify OTP after password check
 export const useVerifyAdminOTP = () => {
   return useMutation({
     mutationFn: async (payload: { email: string; otp: string }) => {
@@ -61,7 +60,18 @@ export const useVerifyAdminOTP = () => {
   });
 };
 
-// ✅ For normal user: verify OTP
+export const useLogout = () => {
+  return useMutation({
+    mutationFn: async () => {
+      const res = await callAPI<{ message: string }>({
+        method: "post",
+        url: "/auth/logout",
+      });
+      return res;
+    },
+  });
+};
+
 export const useVerifyOTP = () => {
   return useMutation({
     mutationFn: async (payload: { identifier: string; otp: string }) => {

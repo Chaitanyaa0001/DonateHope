@@ -23,11 +23,10 @@ const Navbar: React.FC = () => {
             <FiHeart className="text-white w-6 h-6" />
           </div>
           <span className="text-xl font-bold text-transparent sm:text-2xl bg-clip-text bg-gradient-to-r from-[#AF2BD9] to-[#8C36E7]">
-            Pulse watch
+            UptimeIQ
           </span>
         </div>
 
-        {/* Right: Desktop Menu */}
         <div className="hidden md:flex items-center gap-6">
           <button
             type="button"

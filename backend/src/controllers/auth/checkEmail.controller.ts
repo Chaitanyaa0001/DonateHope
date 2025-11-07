@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import userModel from "../../models/user.model";
+import userModel from "../../models/user.model.js";
 
 export const checkEmailController = async (req: Request, res: Response) => {
   try {

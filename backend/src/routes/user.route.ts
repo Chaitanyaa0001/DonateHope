@@ -1,7 +1,7 @@
 import express from 'express';
-import {   getAllUsers,deleteUserByAdmin, getCurrentUser, getUserById } from '../controllers/user/user.controller';
-import { aurthorize } from '../middleware/authorize.middleware';
-import { verifyToken } from '../middleware/auth.middleware';
+import {   getAllUsers,deleteUserByAdmin, getCurrentUser, getUserById } from '../controllers/user/user.controller.js';
+import { aurthorize } from '../middleware/authorize.middleware.js';
+import { verifyToken } from '../middleware/auth.middleware.js';
 const router = express.Router();
 
 router.get('/',verifyToken,aurthorize(['admin']),getAllUsers);

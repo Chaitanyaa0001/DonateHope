@@ -1,7 +1,7 @@
 import mongoose, { Schema } from "mongoose";
-import { IMonitor } from "../types/monitor.type";
+import { IMonitor } from "../types/monitor.type.js";
 import MonitorLogs from "./monitorLogs.model.js";
-import { stopMonitorJob } from "../utils/monitorCron";
+import { stopMonitorJob } from "../utils/monitorCron.js";
 
 
 

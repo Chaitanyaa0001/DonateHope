@@ -1,12 +1,14 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
-import { connectDB } from './config/DB.ts';
+import { connectDB } from './config/DB.js';
 import cookieParser from 'cookie-parser';
-import authroutes from './routes/auth.route.ts';
-import adminroutes from './routes/admin.route.ts';
-import monitorroutes from './routes/monitor.route.ts';
-import userroutes from './routes/user.route.ts';
+import authroutes from './routes/auth.route.js';
+import adminroutes from './routes/admin.route.js';
+import monitorroutes from './routes/monitor.route.js';
+import userroutes from './routes/user.route.js';
+import { restartAllMonitorJobs } from './utils/monitorCron.js';
+import './config/cloudinary.js';
 
 
 dotenv.config();
@@ -15,8 +17,6 @@ const app = express();
 const PORT = process.env.PORT || 5201;
 
 connectDB();
-import './config/cloudinary.ts';
-import { restartAllMonitorJobs } from './utils/monitorCron.ts';
 app.use(cors({
   origin:   process.env.FRONTEN_URL,
   credentials: true,

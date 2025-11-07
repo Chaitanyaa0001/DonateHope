@@ -1,7 +1,8 @@
-
-import Redis from "ioredis";
+import * as RedisPkg from "ioredis";
 import dotenv from "dotenv";
 dotenv.config();
+
+const Redis = (RedisPkg as any).default || (RedisPkg as any);
 
 const redis = new Redis({
   host: process.env.REDIS_HOST,
@@ -11,11 +12,11 @@ const redis = new Redis({
 });
 
 redis.on("connect", () => {
-  console.log("Connected to Redis Cloud via TLS");
+  console.log("✅ Connected to Redis Cloud via TLS");
 });
 
-redis.on("error", (err) => {
-  console.error("Redis connection error:", err);
+redis.on("error", (err: unknown) => {
+  console.error("❌ Redis connection error:", err);
 });
 
 export default redis;

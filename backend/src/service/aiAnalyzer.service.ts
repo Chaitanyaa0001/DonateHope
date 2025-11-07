@@ -29,15 +29,13 @@ ${logText}
   try {
     const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
-    // 🔧 generateContent() returns a result object with .response and .text()
     const result = await model.generateContent(performancePrompt);
 
-    // ✅ Correct way to access the text output
     const text = result.response.text();
 
     return text;
   } catch (error: any) {
-    console.error("❌ AI Analyzer error:", error.message);
+    console.error(" AI Analyzer error:", error.message);
     throw new Error("Failed to analyze logs with Gemini");
   }
 };

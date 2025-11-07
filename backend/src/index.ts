@@ -18,7 +18,7 @@ connectDB();
 import './config/cloudinary.ts';
 import { restartAllMonitorJobs } from './utils/monitorCron.ts';
 app.use(cors({
-  origin: "http://localhost:5173",
+  origin:   process.env.FRONTEN_URL,
   credentials: true,
 }));
 

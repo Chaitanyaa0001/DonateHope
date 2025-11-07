@@ -1,5 +1,4 @@
 import { Request, Response } from 'express';
-import jwt from 'jsonwebtoken';
 import redis from '../../config/redisClient.js';
 import { verifyRefreshToken } from '../../utils/generateToken.js';
 
@@ -16,8 +15,8 @@ export const logout = async (req: Request, res: Response) => {
 
     res.clearCookie('refresh_token', {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      secure: true,
+      sameSite: 'none',
       path: '/',
     });
 

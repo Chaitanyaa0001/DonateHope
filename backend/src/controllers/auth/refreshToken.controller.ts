@@ -18,8 +18,8 @@ export const refreshAccessToken = async (req: Request, res: Response) => {
     if (!decoded || typeof decoded === 'string' || !decoded.userId || !decoded.role) {
       res.clearCookie('refresh_token', {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+        secure: true,
+        sameSite:'none' ,
         path: '/',
       });
       return res.status(403).json({ message: 'Invalid refresh token payload' });
@@ -28,8 +28,8 @@ export const refreshAccessToken = async (req: Request, res: Response) => {
     if (!user) {
       res.clearCookie('refresh_token', {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+        secure: true,
+        sameSite:'none',
         path: '/',
       });
       return res.status(401).json({ message: 'User no longer exists' });
@@ -41,8 +41,8 @@ export const refreshAccessToken = async (req: Request, res: Response) => {
     console.error('Refresh token error', err);
     res.clearCookie('refresh_token', {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      secure: true,
+      sameSite:  'none' ,
       path: '/',
     });
     return res.status(403).json({ message: 'Invalid or expired refresh token' });

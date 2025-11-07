@@ -4,7 +4,7 @@ import Monitor from "../../models/monitor.model.js";
 import redis from "../../config/redisClient.js";
 
 
-const CACHE_TTL = 60; 
+const CACHE_TTL = 20; 
 
 
 export const getAllUsers = async (req: Request, res: Response) => {
@@ -46,7 +46,8 @@ export const getUserById = async (req: Request, res: Response) => {
 
     const user = await User.findById(id).select("-password");
     if (!user) return res.status(404).json({ message: "User not found" });
-
+    console.log("user sevrved form database");
+    
     const monitors = await Monitor.find({ user: id }).select("name endpoint method interval uptime latency score createdAt");
 
     const data = { user, monitors };
@@ -81,7 +82,7 @@ export const getCurrentUser = async (req: Request, res: Response) => {
     await redis.set(cacheKey, JSON.stringify(data), "EX", CACHE_TTL);
     return res.status(200).json(data);
   } catch (err) {
-    console.error("❌ Error fetching current user:", err);
+    console.error("Error fetching current user:", err);
     return res.status(500).json({ message: "Internal server error" });
   }
 };
@@ -107,7 +108,7 @@ export const deleteUserByAdmin = async (req: Request, res: Response) => {
 
     return res.status(200).json({ message: "User and all related data deleted" });
   } catch (err) {
-    console.error("❌ Error deleting user by admin:", err);
+    console.error(" Error deleting user by admin:", err);
     return res.status(500).json({ message: "Internal server error" });
   }
 };

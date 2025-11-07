@@ -28,15 +28,12 @@ export const verifyOTP = async (req: Request, res: Response) => {
 
     res.cookie('refresh_token', refreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      secure: true,
+      sameSite: 'none',
       path: '/',
     });
 
-    res.status(200).json({message: "OTP verified",role: user.role,
-      userId: user._id.toString(),
-      accessToken,
-    });
+    return  res.status(200).json({message: "OTP verified",role: user.role,userId: user._id.toString(),accessToken,});
 
   } catch (err) {
     console.error(err);

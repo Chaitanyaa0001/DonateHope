@@ -32,17 +32,18 @@
     "node-cron": "^4.2.1",
     "nodemailer": "^7.0.5",
     "razorpay": "^2.9.6",
-    "uuid": "^13.0.0"
-  },
-  "devDependencies": {
-    "@types/bcrypt": "^5.0.2",
-    "@types/cookie-parser": "^1.4.10",
-    "@types/cors": "^2.8.19",
+    "uuid": "^13.0.0",
+
     "@types/express": "^4.17.25",
     "@types/jsonwebtoken": "^9.0.10",
-    "@types/multer": "^2.0.0",
     "@types/node": "^24.10.0",
+    "@types/multer": "^2.0.0",
     "@types/nodemailer": "^6.4.21",
+    "@types/cors": "^2.8.19",
+    "@types/cookie-parser": "^1.4.10",
+    "@types/bcrypt": "^5.0.2"
+  },
+  "devDependencies": {
     "nodemon": "^3.1.10",
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",

@@ -3,6 +3,7 @@ import jwt, { JwtPayload } from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import { generateAccessToken } from '../../utils/generateToken.js';
 import User from '../../models/user.model.js';
+import redis from '../../config/redisClient.js';
 
 dotenv.config();
 
@@ -13,36 +14,58 @@ export const refreshAccessToken = async (req: Request, res: Response) => {
   if (!refreshToken) {
     return res.status(401).json({ message: 'No refresh token provided' });
   }
+
   try {
     const decoded = jwt.verify(refreshToken, JWT_REFRESH_SECRET) as JwtPayload;
-    if (!decoded || typeof decoded === 'string' || !decoded.userId || !decoded.role) {
+
+    if (!decoded || typeof decoded === 'string' || !decoded.userId || !decoded.role || !decoded.sessionId) {
       res.clearCookie('refresh_token', {
         httpOnly: true,
-        secure: true,
-        sameSite:'none' ,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'none',
         path: '/',
       });
       return res.status(403).json({ message: 'Invalid refresh token payload' });
     }
+
+    //  Check Redis session
+    const isSessionValid = await redis.get(`session:${decoded.userId}:${decoded.sessionId}`);
+    if (!isSessionValid) {
+      res.clearCookie('refresh_token', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'none',
+        path: '/',
+      });
+      return res.status(403).json({ message: 'Session expired or invalid' });
+    }
+
     const user = await User.findById(decoded.userId);
     if (!user) {
       res.clearCookie('refresh_token', {
         httpOnly: true,
-        secure: true,
-        sameSite:'none',
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'none',
         path: '/',
       });
       return res.status(401).json({ message: 'User no longer exists' });
     }
+
+    // Generate new access token
     const accessToken = generateAccessToken(user._id.toString(), user.role);
 
-    return res.status(200).json({message: "Access token refreshed successfully",accessToken,role: user.role,userId: user._id.toString(),});
+    return res.status(200).json({
+      message: 'Access token refreshed successfully',
+      accessToken,
+      role: user.role,
+      userId: user._id.toString(),
+    });
   } catch (err) {
-    console.error('Refresh token error', err);
+    console.error('Refresh token error:', err);
     res.clearCookie('refresh_token', {
       httpOnly: true,
-      secure: true,
-      sameSite:  'none' ,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'none',
       path: '/',
     });
     return res.status(403).json({ message: 'Invalid or expired refresh token' });

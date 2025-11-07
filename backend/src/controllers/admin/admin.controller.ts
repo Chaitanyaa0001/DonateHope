@@ -39,25 +39,37 @@ export const verifyAdminOTP = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "Invalid or expired OTP" });
 
     const admin = await User.findOne({ email, role: "admin" });
-    if (!admin) return res.status(404).json({ message: "Admin not found" });
+    if (!admin)
+      return res.status(404).json({ message: "Admin not found" });
 
     await redis.del(`otp_admin:${email}`);
 
     const accessToken = generateAccessToken(admin._id.toString(), admin.role);
     const { token: refreshToken, sessionId } = generateRefreshToken(admin._id.toString(), admin.role);
 
-    await redis.set(`session:${admin._id}:${sessionId}`, "valid", "EX", 7 * 24 * 60 * 60);
+    await redis.set(
+      `session:${admin._id}:${sessionId}`,
+      "valid",
+      "EX",
+      7 * 24 * 60 * 60
+    );
 
     res.cookie("refresh_token", refreshToken, {
       httpOnly: true,
-      secure: true,
+      secure: process.env.NODE_ENV === "production",
       sameSite: "none",
       path: "/",
+      maxAge: 7 * 24 * 60 * 60 * 1000, 
     });
 
-     return res.status(200).json({message: "Admin logged in successfully",accessToken,role: admin.role,userId: admin._id,});
+    return res.status(200).json({
+      message: "Admin logged in successfully",
+      accessToken,
+      role: admin.role,
+      userId: admin._id,
+    });
   } catch (err) {
-    console.error(err);
+    console.error("verifyAdminOTP error:", err);
     res.status(500).json({ message: "Server error" });
   }
 };

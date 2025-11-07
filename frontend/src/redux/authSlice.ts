@@ -39,7 +39,7 @@ export const { setAuth, clearAuth, setLoading } = authSlice.actions;
 export const checkSession = () => async (dispatch: AppDispatch) => {
   dispatch(setLoading(true));
   try {
-    const { data } = await api.get('/auth/refresh-token'); // refresh token sent automatically via cookie
+    const { data } = await api.get('/api/auth/refresh-token'); // refresh token sent automatically via cookie
     if (data?.accessToken && data?.role && data?.userId) {
       dispatch(setAuth({
         accessToken: data.accessToken,
@@ -59,7 +59,7 @@ export const checkSession = () => async (dispatch: AppDispatch) => {
 
 export const logout = () => async (dispatch: AppDispatch) => {
   try {
-    await api.post('/auth/logout'); // clears refresh token cookie + Redis session
+    await api.post('/api/auth/logout'); // clears refresh token cookie + Redis session
   } catch (err) {
     console.warn('Logout failed:', err);
   } finally {

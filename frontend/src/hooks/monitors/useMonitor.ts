@@ -21,7 +21,7 @@ export const useMonitors = () => {
     queryFn: async () => {
       const res = await callAPI<{ data: MonitorData[] }>({
         method: "get",
-        url: "/monitor",
+        url: "/api/monitor",
       });
       return res.data;
     },
@@ -34,7 +34,7 @@ export const useMonitors = () => {
       queryFn: async () => {
         const res = await callAPI<{ data: MonitorData }>({
           method: "get",
-          url: `/monitor/${id}`,
+          url: `/api/monitor/${id}`,
         });
         return res.data;
       },
@@ -54,7 +54,7 @@ export const useMonitors = () => {
 
       return await callAPI({
         method: "post",
-        url: "/monitor",
+        url: "/api/monitor",
         data: formData,
       });
     },
@@ -70,7 +70,7 @@ export const useMonitors = () => {
   queryFn: async () => {
     const res = await callAPI<{ data: { time: string; latency: number }[] }>({
       method: "get",
-      url: "/monitor/logs",
+      url: "/api/monitor/logs",
     });
     return res.data;
   },
@@ -90,7 +90,7 @@ const useMonitorLogsById = (id: string) =>
         }[];
       }>({
         method: "get",
-        url: `/monitor/logs/${id}`,
+        url: `/api/monitor/logs/${id}`,
       });
       return res.data;
     },
@@ -101,7 +101,7 @@ const useMonitorLogsById = (id: string) =>
     mutationFn: async (id: string) => {
       await callAPI({
         method: "delete",
-        url: `/monitor/${id}`,
+        url: `/api/monitor/${id}`,
       });
     },
     onSuccess: () => {
@@ -116,7 +116,7 @@ const useMonitorLogsById = (id: string) =>
   mutationFn : async (id: string) =>{
     await callAPI({
       method: "delete",
-      url : `/monitor/admin/${id}`
+      url : `/api/monitor/admin/${id}`
     });
   },
   onSuccess : () =>{

@@ -9,7 +9,7 @@ export const useCheckEmail = (email: string) => {
       if (!email) return null;
       const res = await callAPI<{ message: string; role: "admin" | "user" | "none" }>({
         method: "get",
-        url: `/auth/check-email?email=${email}`,
+        url: `/api/auth/check-email?email=${email}`,
       });
       return res;
     },
@@ -23,7 +23,7 @@ export const useRequestOTP = () => {
     mutationFn: async (payload: { email: string; role?: string }) => {
       const res = await callAPI<RequestOTPResponse, typeof payload>({
         method: "post",
-        url: "/auth/request-otp",
+        url: "/api/auth/request-otp",
         data: payload,
       });
       return res;
@@ -36,7 +36,7 @@ export const useAdminLogin = () => {
     mutationFn: async (payload: { email: string; password: string }) => {
       const res = await callAPI<{ message: string }, { email: string; password: string }>({
         method: "post",
-        url: "/admin/admin-login",
+        url: "/api/admin/admin-login",
         data: payload,
       });
       return res;
@@ -52,7 +52,7 @@ export const useVerifyAdminOTP = () => {
         { email: string; otp: string }
       >({
         method: "post",
-        url: "/admin/verify-admin-otp",
+        url: "/api/admin/verify-admin-otp",
         data: payload,
       });
       return res;
@@ -65,7 +65,7 @@ export const useLogout = () => {
     mutationFn: async () => {
       const res = await callAPI<{ message: string }>({
         method: "post",
-        url: "/auth/logout",
+        url: "/api/auth/logout",
       });
       return res;
     },
@@ -77,7 +77,7 @@ export const useVerifyOTP = () => {
     mutationFn: async (payload: { identifier: string; otp: string }) => {
       const res = await callAPI<verifyOTPResponse, typeof payload>({
         method: "post",
-        url: "/auth/verify-otp",
+        url: "/api/auth/verify-otp",
         data: payload,
       });
       return res;
@@ -88,6 +88,6 @@ export const useVerifyOTP = () => {
 export const refreshToken = async () => {
   return await callAPI<RefreshTokenResponse>({
     method: "get",
-    url: "/auth/refresh-token"
+    url: "/api/auth/refresh-token"
   });
 };

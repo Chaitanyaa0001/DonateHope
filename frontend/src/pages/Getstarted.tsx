@@ -44,7 +44,7 @@ const GetStarted: React.FC = () => {
             Monitor APIs with <span className="text-purple-400">AI Precision</span>
           </h1>
           <p className="text-gray-800 dark:text-gray-300 text-lg md:text-xl max-w-4xl mx-auto mb-8">
-            PulseWatch helps developers monitor, analyze, and optimize their APIs using real-time data
+            UptimeIQ helps developers monitor, analyze, and optimize their APIs using real-time data
             and AI-powered insights. Stay ahead of downtime and ensure your APIs perform flawlessly.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -56,7 +56,7 @@ const GetStarted: React.FC = () => {
         </div>
 
         <div className="text-center mb-12">
-          <h1 className="text-3xl md:text-4xl font-bold dark:text-white mb-4">Why Choose <span className="text-purple-400">PulseWatch</span>?</h1>
+          <h1 className="text-3xl md:text-4xl font-bold dark:text-white mb-4">Why Choose <span className="text-purple-400">UptimeIQ</span>?</h1>
           <p className="text-gray-700 text-lg dark:text-gray-300 max-w-2xl mx-auto mb-12">
             Built for developers who care about reliability, performance, and actionable insights.
           </p>

@@ -7,7 +7,7 @@ export const useAdminPasswordVerify = () => {
       const res = await callAPI<{ message: string; accessToken: string; userId: string; role: "admin" },{ email: string; password: string }
       >({
         method: "post",
-        url: "/admin/admin-login", 
+        url: "/api/admin/admin-login", 
         data: payload,
       });
       return res;

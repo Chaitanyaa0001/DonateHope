@@ -13,7 +13,7 @@ export const useGetUsers = () => {
     queryFn: async () => {
       const res = await callAPI<{ users: userResponse[] }>({
         method: "get",
-        url: "/users",
+        url: "/api/users",
       });
       return res.users;
     },
@@ -27,7 +27,7 @@ export const useDeleteUser = () => {
     mutationFn: async (id: string) => {
       await callAPI({
         method: "delete",
-        url: `/users/${id}`,
+        url: `/api/users/${id}`,
       });
     },
     onSuccess: () => {
@@ -44,7 +44,7 @@ export const useGetUserById = (id: string) => {
     queryFn: async () => {
       const res = await callAPI<{ user: userResponse, monitors: MonitorData[] }>({
         method: "get",
-        url: `/users/${id}`,
+        url: `/api/users/${id}`,
       });
       return res;
     },
@@ -60,7 +60,7 @@ export const useGetCurrentUser = () => {
     queryFn: async () => {
       const res = await callAPI<{ user: userResponse }>({
         method: "get",
-        url: "/users/me",
+        url: "/api/users/me",
       });
       return res.user;
     },

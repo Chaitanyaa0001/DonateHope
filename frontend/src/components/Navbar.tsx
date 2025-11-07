@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { FiHeart, FiMenu, FiX, FiSun, FiMoon } from 'react-icons/fi';
+import {  FiMenu, FiX, FiSun, FiMoon, FiCircle } from 'react-icons/fi';
 import { toggleTheme } from '@/redux/themeSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import type { RootState } from '@/redux/store';
@@ -20,7 +20,7 @@ const Navbar: React.FC = () => {
         {/* Left: Logo */}
         <div className="flex items-center gap-2">
           <div className='bg-[#B462E7] p-2 rounded-[7px]'>
-            <FiHeart className="text-white w-6 h-6" />
+            <FiCircle className="text-white w-6 h-6" />
           </div>
           <span className="text-xl font-bold text-transparent sm:text-2xl bg-clip-text bg-gradient-to-r from-[#AF2BD9] to-[#8C36E7]">
             UptimeIQ

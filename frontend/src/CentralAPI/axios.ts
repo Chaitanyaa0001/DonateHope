@@ -37,7 +37,7 @@ api.interceptors.response.use(
 
     const status = error.response?.status;
     const isAuthEndpoint = (url?: string) =>
-      !!url && (url.includes('/auth/refresh-token') || url.includes('/auth/refresh-token'));
+      !!url && (url.includes('/auth/refresh-token') || url.includes('/api/auth/refresh-token'));
 
     if ((status === 401 || status === 403) && !originalRequest?._retry && !isAuthEndpoint(originalRequest?.url)) {
       if (isRefreshing) {
@@ -55,7 +55,7 @@ api.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        const { data } = await api.get('/auth/refresh-token'); // cookie sent via withCredentials
+        const { data } = await api.get('/api/auth/refresh-token'); 
         store.dispatch(setAuth({
           accessToken: data.accessToken,
           userId: data.userId,

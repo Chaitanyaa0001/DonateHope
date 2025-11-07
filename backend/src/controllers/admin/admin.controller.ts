@@ -50,17 +50,12 @@ export const verifyAdminOTP = async (req: Request, res: Response) => {
 
     res.cookie("refresh_token", refreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      secure: true,
+      sameSite: "none",
       path: "/",
     });
 
-    res.status(200).json({
-      message: "Admin logged in successfully",
-      accessToken,
-      role: admin.role,
-      userId: admin._id,
-    });
+     return res.status(200).json({message: "Admin logged in successfully",accessToken,role: admin.role,userId: admin._id,});
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error" });

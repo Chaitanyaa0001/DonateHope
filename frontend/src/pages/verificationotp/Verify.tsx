@@ -1,5 +1,6 @@
 import React, { useState, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import { FiMail } from "react-icons/fi";
 import { useDispatch } from "react-redux";
 import { useVerifyOTP, useVerifyAdminOTP } from "../../hooks/auth/uselogin";
@@ -41,6 +42,7 @@ const Verify: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const enteredOtp = otp.join("");
+
     try {
       let res;
       if (role === "admin") {
@@ -49,17 +51,16 @@ const Verify: React.FC = () => {
         res = await verifyUserOTP.mutateAsync({ identifier: destination, otp: enteredOtp });
       }
       if (!res || !res.userId || !res.accessToken) {
-        console.error("OTP verification failed or missing fields", res);
+        toast.error("Invalid OTP or verification failed!");
         return;
       }
+      toast.success("OTP verified successfully!");
       dispatch(setAuth({ role: res.role, userId: res.userId, accessToken: res.accessToken }));
-      if (res.role === "admin") {
-        navigate("/admin/dashboard");
-      } else if (res.role === "user") {
-        navigate("/user/dashboard");
-      }
-    } catch (err) {
-      console.error("Error verifying OTP", err);
+      if (res.role === "admin") navigate("/admin/dashboard");
+      else if (res.role === "user") navigate("/user/dashboard");
+    }catch (err) {
+      toast.error("Something went wrong during verification!");
+      console.log(err);
     }
   };
 

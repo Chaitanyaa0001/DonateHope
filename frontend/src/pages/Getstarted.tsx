@@ -1,6 +1,7 @@
 import React from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '@/components/Footer';
+import { Link } from 'react-router-dom';
 
 interface FeatureCard {
   id: number;
@@ -83,7 +84,6 @@ const GetStarted: React.FC = () => {
           </div>
         </div>
 
-        {/* Call to Action Section */}
         <div className="bg-gradient-to-r from-purple-600 via-purple-500 to-pink-500 rounded-3xl p-12 text-center text-white mb-16 w-[100%]">
           <div className="flex justify-center mb-6">
             {[...Array(5)].map((_, i) => (
@@ -104,22 +104,16 @@ const GetStarted: React.FC = () => {
             Start tracking your APIs in minutes and let AI handle the rest.
           </p>
           <p className="text-base md:text-lg mb-8 max-w-2xl mx-auto opacity-90">
-            PulseWatch — your reliable partner for uptime, insights, and performance analytics.
+            UptimeIQ — your reliable partner for uptime, insights, and performance analytics.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button
-              type="button"
-              className="bg-white text-purple-600 hover:bg-gray-100 px-8 py-3 rounded-lg font-semibold transition-colors"
-            >
-              Go to Dashboard
-            </button>
-            <button
-              type="button"
-              className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-purple-600 px-8 py-3 rounded-lg font-semibold transition-colors"
-            >
-              Add API Monitor
-            </button>
+            <Link to='/user/dashboard'>
+              <button type="button" className="bg-white text-purple-600 hover:bg-gray-100 px-8 py-3 rounded-lg font-semibold transition-colors">Go to Dashboard</button>
+            </Link>
+            <Link to='/user/dashboard'>
+              <button type="button" className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-purple-600 px-8 py-3 rounded-lg font-semibold transition-colors">Add API Monitor</button>
+            </Link>
           </div>
         </div>
       </div>

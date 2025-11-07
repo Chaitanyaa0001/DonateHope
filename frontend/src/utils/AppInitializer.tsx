@@ -12,7 +12,7 @@ const AppInitializer: React.FC<{ children: React.ReactNode }> = ({ children }) =
     dispatch(checkSession());
   }, [dispatch]);
 
-  if (loading) return <div className="text-center mt-20">Loading AppInitializer session...</div>;
+  if (loading) return <div className="text-center mt-20">hehe</div>;
 //   if (!role) return <Navigate to="/" replace />;
   return <>{children}</>;
 };

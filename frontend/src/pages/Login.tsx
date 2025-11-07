@@ -5,6 +5,8 @@ import { Loader2 } from "lucide-react";
 import Togglebutton from "@/components/ui/Togglebutton";
 import { useCheckEmail, useRequestOTP, useAdminLogin } from "../hooks/auth/uselogin";
 import { useDebounce } from "../hooks/auth/useDebounce";
+import { toast } from "react-toastify"; 
+
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
@@ -24,18 +26,21 @@ const Login: React.FC = () => {
       if (isAdmin) {
         const res = await adminLoginMutation.mutateAsync({ email, password });
         if (res?.message) {
-          navigate("/verify", { state: { destination: email, role: "admin" } });
-        }
-      } else {
+        toast.success("Admin login successful! Redirecting...");
+        navigate("/verify", { state: { destination: email, role: "admin" } });
+    }
+      }else {
         const res = await requestOTPMutation.mutateAsync({ email });
         if (res?.message) {
-          navigate("/verify", { state: { destination: email, role: "user" } });
+        toast.info("OTP sent to your email!");
+        navigate("/verify", { state: { destination: email, role: "user" } });
         }
       }
     } catch (err) {
-      console.error("Error submitting:", err);
-    }
+      toast.error("Login failed. Please check credentials or try again.");
+      console.log("Login error:", err);
   };
+}
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#f0f0f0] to-[#e2e2e2] dark:from-[#0f0c29] dark:via-[#302b63] dark:to-[#24243e] px-4">
@@ -49,14 +54,13 @@ const Login: React.FC = () => {
         </div>
 
         <h2 className="text-center text-2xl font-bold mb-1">
-          {isAdmin ? "Admin Login" : "Welcome to DonateHope"}
+          {isAdmin ? "Admin Login" : "Welcome to UptimeIQ"}
         </h2>
         <p className="text-center text-sm text-gray-500 dark:text-gray-400 mb-6">
           {isAdmin ? "Sign in with your password" : "Continue using OTP verification"}
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Email Field */}
           <div className="relative">
             <input
               type="email"
@@ -72,7 +76,6 @@ const Login: React.FC = () => {
             )}
           </div>
 
-          {/* Password (only for admin) */}
           {isAdmin && (
             <input
               type="password"
@@ -98,7 +101,6 @@ const Login: React.FC = () => {
           </button>
         </form>
 
-        {/* Status Feedback */}
         {email && !isChecking && (
           <p
             className={`text-xs mt-3 text-center ${

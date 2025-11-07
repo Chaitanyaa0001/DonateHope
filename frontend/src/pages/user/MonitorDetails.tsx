@@ -3,6 +3,9 @@ import { useParams, useNavigate } from "react-router-dom";
 import Togglebutton from "@/components/ui/Togglebutton";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
 import { useMonitors } from "@/hooks/monitors/useMonitor";
+import { toast } from "react-toastify";
+import ErrorState from "@/components/ErrorState";
+
 
 
 const MonitorDetails: React.FC = () => {
@@ -16,23 +19,21 @@ const MonitorDetails: React.FC = () => {
 
 const handleDelete = async () => {
   if (!id) return;
-
   const confirmDelete = window.confirm("Are you sure you want to delete this monitor?");
   if (!confirmDelete) return;
-
   try {
     await deleteMutation.mutateAsync(id);
-    alert("Monitor deleted successfully!");
+    toast.success("Monitor deleted successfully!");
     navigate("/user/dashboard");
   } catch (err) {
     console.error("Failed to delete monitor:", err);
-    alert("Failed to delete monitor. Please try again.");
+    toast.error("Failed to delete monitor. Please try again.");
   }
-};
-
+  };
 
   if (isLoading) return <div>Loading monitor details...</div>;
-  if (error) return <div>Error loading monitor details</div>;
+  if (error)
+  return (<ErrorState title="Error Loading Monitor" message="We couldn’t fetch this monitor’s data. Try again later."actionText="Go Back" onActionClick={() => navigate("/user/dashboard")}/>);
 
   return (
     <div className="min-h-screen py-8 px-4 bg-gradient-to-br from-gray-50 to-purple-50 dark:from-[#181824] dark:to-[#260032]">

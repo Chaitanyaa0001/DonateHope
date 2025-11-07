@@ -1,5 +1,7 @@
-import { useMonitors } from "@/hooks/monitors/useMonitor";
 import React, { useState } from "react";
+import { toast } from "react-toastify";
+import { useMonitors } from "@/hooks/monitors/useMonitor";
+
 
 const RegisterMonitor: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -43,7 +45,7 @@ const RegisterMonitor: React.FC = () => {
         try {
           parsedHeaders = JSON.parse(formData.headers);
         } catch {
-          alert("❌ Invalid JSON in headers");
+          alert("Invalid JSON in headers");
           setIsSubmitting(false);
           return;
         }
@@ -52,7 +54,7 @@ const RegisterMonitor: React.FC = () => {
         try {
           parsedBody = JSON.parse(formData.body);
         } catch {
-          alert("❌ Invalid JSON in body");
+          alert("Invalid JSON in body");
           setIsSubmitting(false);
           return;
         }
@@ -69,7 +71,7 @@ const RegisterMonitor: React.FC = () => {
         },
         {
           onSuccess: () => {
-            alert("✅ Monitor created successfully!");
+            toast.success("✅ Monitor created successfully!");
             setFormData({
               name: "",
               endpoint: "",
@@ -81,15 +83,15 @@ const RegisterMonitor: React.FC = () => {
             });
           },
           onError: (error) => {
-            console.error("❌ Error creating monitor:", error);
-            alert("Failed to create monitor.");
+            console.error("Error creating monitor:", error);
+            toast.error("Failed to create monitor.");
           },
           onSettled: () => setIsSubmitting(false),
         }
       );
     } catch (error) {
-      console.error(" Unexpected error:", error);
-      alert("Something went wrong.");
+      console.error("Unexpected error:", error);
+      toast.error("Something went wrong.");
       setIsSubmitting(false);
     }
   };

@@ -118,3 +118,19 @@
     @apply bg-background text-foreground;
   }
 }
+.Toastify__toast-theme--dark {
+  background: #0e0d1f !important;
+  color: #fff !important;
+  border: 1px solid #7c3aed;
+}
+.Toastify__progress-bar--dark {
+  background: #a855f7 !important;
+}
+.Toastify__toast-theme--light {
+  background: #fff !important;
+  color: #000 !important;
+  border: 1px solid #7c3aed;
+}
+.Toastify__progress-bar--light {
+  background: #a855f7 !important;
+}

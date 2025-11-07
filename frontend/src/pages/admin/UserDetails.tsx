@@ -27,12 +27,12 @@ const UserDetails: React.FC = () => {
   const navigate = useNavigate();
 
   const { data, isLoading, isError } = useGetUserById(id as string);
-  const { useDeleteMonitorMutation } = useMonitors();
+  const { useDeleteMonitorByAdmin } = useMonitors();
+  const { mutateAsync: deleteMonitor } = useDeleteMonitorByAdmin;
   const { mutateAsync: deleteUser } = useDeleteUser();
 
-  const deleteMonitorMutation = useDeleteMonitorMutation;
+  const handleBack = () => navigate("/admin/dashboard");
 
-  // 🌀 Loading & Error states
   if (isLoading) return <Loader />;
   if (isError)
     return (
@@ -54,32 +54,27 @@ const UserDetails: React.FC = () => {
       />
     );
 
-  // 🧹 Delete Monitor
   const handleDeleteMonitor = async (monitorId: string) => {
     try {
-      await deleteMonitorMutation.mutateAsync(monitorId);
-      toast.success("Monitor deleted successfully ✅");
-      navigate(0); // refresh page
+      await deleteMonitor(monitorId);
+      toast.success("Monitor deleted successfully");
+      navigate("/admin/dashboard");
     } catch (err) {
       console.error("Failed to delete monitor", err);
-      toast.error("Failed to delete monitor ❌");
+      toast.error("Failed to delete monitor ");
     }
   };
 
-  // 🧹 Delete User
   const handleDeleteUser = async () => {
     try {
       await deleteUser(data.user._id);
-      toast.success("User deleted successfully ✅");
+      toast.success("User deleted successfully ");
       navigate("/admin/dashboard");
     } catch (err) {
       console.error("Failed to delete user", err);
-      toast.error("Failed to delete user ❌");
+      toast.error("Failed to delete user ");
     }
   };
-
-  // ⬅ Back
-  const handleBack = () => navigate("/admin/dashboard");
 
   return (
     <div className="min-h-screen p-4 sm:p-6 text-gray-900 dark:text-gray-100 bg-gray-100 dark:bg-[#0c0c1d]">
@@ -136,15 +131,17 @@ const UserDetails: React.FC = () => {
       {/* User’s Monitors */}
       <section>
         <h2 className="text-2xl font-semibold mb-4 text-purple-500">
-          📊 User’s Monitors
+           User’s Monitors
         </h2>
 
-        {data.monitors.length === 0 ? (
-          <ErrorState
-            title="No Monitors Found"
-            message="This user doesn’t have any registered monitors."
-            imageUrl="https://illustrations.popsy.co/violet/empty-state.svg"
-          />
+        {data.monitors.length === 0 ? (<div className="flex flex-col items-center justify-center py-20 bg-white dark:bg-[#0d0b1d] rounded-2xl border border-[#C800DE]/30 shadow-sm">
+    <p className="text-lg font-medium text-gray-700 dark:text-gray-300">
+       No monitors found for this user
+    </p>
+    <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+      Once added, all monitors will appear here.
+    </p>
+  </div>
         ) : (
           <motion.div
             variants={container}
@@ -187,24 +184,26 @@ const UserDetails: React.FC = () => {
                   <p>
                     Uptime:{" "}
                     <span className="font-medium text-green-400">
-                      {monitor.uptime}%
+                      {monitor.uptime ?? 0}%
                     </span>
                   </p>
                   <p>
                     Latency:{" "}
                     <span className="font-medium text-yellow-400">
-                      {monitor.latency} ms
+                      {monitor.latency ?? 0} ms
                     </span>
                   </p>
                   <p>
                     Score:{" "}
                     <span className="font-medium text-blue-400">
-                      {monitor.score}
+                      {monitor.score ?? "-"}
                     </span>
                   </p>
                   <p className="flex items-center gap-1">
                     <FiClock className="text-purple-400" />{" "}
-                    {new Date(monitor.createdAt).toDateString()}
+                    {monitor.createdAt
+                      ? new Date(monitor.createdAt).toDateString()
+                      : "Unknown"}
                   </p>
                 </div>
               </motion.div>

@@ -13,8 +13,8 @@ import { useInitApp } from "./hooks/UseInitApp";
 
 
 import ProtectedRoutes from "./protectedroutes/ProtectedRoute"; 
-import FunderLayout from "./layouts/FunderLayout";
-import DonorLayout from "./layouts/DonarLayout"; 
+import FunderLayout from "./layouts/AdminLayout";
+import DonorLayout from "./layouts/UserLayout"; 
 import AdminDashboard from "./pages/admin/AdminDashBoard";
 import UserDashboard from "./pages/user/userDashboard";
 import RegisterMonitor from "./pages/user/RegisterMonitor";

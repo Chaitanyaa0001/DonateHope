@@ -7,6 +7,7 @@ import type { MonitorData, NewMonitorData } from "@/responses/MonitorResponse";
 const monitorKeys = {
   all: ["monitors"] as const,
   user: ["monitors", "user"] as const,
+  admin: ["monitors", "admin"] as const,
   detail: (id: string) => ["monitor", id] as const,
 };
 
@@ -18,7 +19,6 @@ export const useMonitors = () => {
     
     queryKey: monitorKeys.user,
     queryFn: async () => {
-      console.log(auth.accessToken);
       const res = await callAPI<{ data: MonitorData[] }>({
         method: "get",
         url: "/monitor",
@@ -63,17 +63,8 @@ export const useMonitors = () => {
     },
   });
 
-  const useDeleteMonitorMutation = useMutation({
-    mutationFn: async (id: string) => {
-      await callAPI({
-        method: "delete",
-        url: `/monitor/${id}`,
-      });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: monitorKeys.user });
-    },
-  });
+
+
   const useUserMonitorLogsQuery = useQuery({
   queryKey: ["monitorLogs"],
   queryFn: async () => {
@@ -85,6 +76,7 @@ export const useMonitors = () => {
   },
   enabled: !!auth.accessToken,
 });
+
 const useMonitorLogsById = (id: string) =>
   useQuery({
     queryKey: ["monitorLogs", id],
@@ -105,8 +97,34 @@ const useMonitorLogsById = (id: string) =>
     enabled: !!auth.accessToken && !!id,
   });
 
+  const useDeleteMonitorMutation = useMutation({
+    mutationFn: async (id: string) => {
+      await callAPI({
+        method: "delete",
+        url: `/monitor/${id}`,
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: monitorKeys.user });
+    },
+  });
 
 
+
+  // for admin 
+ const useDeleteMonitorByAdmin = useMutation({
+  mutationFn : async (id: string) =>{
+    await callAPI({
+      method: "delete",
+      url : `/monitor/admin/${id}`
+    });
+  },
+  onSuccess : () =>{
+    queryClient.invalidateQueries({queryKey: monitorKeys.admin})
+  }
+ })
+
+  
 
   return {
     useUserMonitorsQuery,
@@ -114,6 +132,7 @@ const useMonitorLogsById = (id: string) =>
     usePostMonitorMutation,
     useDeleteMonitorMutation,
     useUserMonitorLogsQuery,
-    useMonitorLogsById
-  };
+    useMonitorLogsById,
+    useDeleteMonitorByAdmin
+  }
 };

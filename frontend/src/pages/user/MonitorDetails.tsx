@@ -5,6 +5,9 @@ import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianG
 import { useMonitors } from "@/hooks/monitors/useMonitor";
 import { toast } from "react-toastify";
 import ErrorState from "@/components/ErrorState";
+import { confirmAlert } from "react-confirm-alert";
+import "react-confirm-alert/src/react-confirm-alert.css";
+import Loader from "@/components/Loader";
 
 
 
@@ -17,21 +20,37 @@ const MonitorDetails: React.FC = () => {
   const { data: logs = [] } = useMonitorLogsById(id!);
   const deleteMutation = useDeleteMonitorMutation;
 
-const handleDelete = async () => {
-  if (!id) return;
-  const confirmDelete = window.confirm("Are you sure you want to delete this monitor?");
-  if (!confirmDelete) return;
-  try {
-    await deleteMutation.mutateAsync(id);
-    toast.success("Monitor deleted successfully!");
-    navigate("/user/dashboard");
-  } catch (err) {
-    console.error("Failed to delete monitor:", err);
-    toast.error("Failed to delete monitor. Please try again.");
-  }
+const handleDelete = () => {
+    if (!id) return;
+
+    confirmAlert({
+      title: "Confirm Monitor Deletion",
+      message: "Are you sure you want to delete this monitor? This action cannot be undone.",
+      buttons: [
+        {
+          label: "Yes, Delete",
+          onClick: async () => {
+            try {
+              await deleteMutation.mutateAsync(id);
+              toast.success("Monitor deleted successfully ");
+              navigate("/user/dashboard");
+            } catch (err) {
+              console.error("Failed to delete monitor:", err);
+              toast.error("Failed to delete monitor ");
+            }
+          },
+        },
+        {
+          label: "Cancel",
+          onClick: () => {}, 
+        },
+      ],
+      closeOnEscape: true,
+      closeOnClickOutside: true,
+    });
   };
 
-  if (isLoading) return <div>Loading monitor details...</div>;
+  if (isLoading) return <div><Loader/></div>;
   if (error)
   return (<ErrorState title="Error Loading Monitor" message="We couldn’t fetch this monitor’s data. Try again later."actionText="Go Back" onActionClick={() => navigate("/user/dashboard")}/>);
 
@@ -44,29 +63,20 @@ const handleDelete = async () => {
       <div className="max-w-5xl mx-auto">
         {/* Back Button */}
         <div className="flex items-center justify-between mb-6">
-  <button
-    onClick={() => navigate("/user/dashboard")}
-    className="bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 text-gray-900 dark:text-white px-4 py-2 rounded-md transition shadow"
-  >
-    ⬅ Back to Monitors
-  </button>
+          <button onClick={() => navigate("/user/dashboard")} className="bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 text-gray-900 dark:text-white px-4 py-2 rounded-md transition shadow">Back to Monitors</button>
 
-  <button
-    onClick={handleDelete}
-    disabled={deleteMutation.isPending}
-    className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md transition shadow disabled:opacity-50"
-  >
-    {deleteMutation.isPending ? "Deleting..." : "🗑 Delete Monitor"}
-  </button>
-</div>
+          <button onClick={handleDelete} disabled={deleteMutation.isPending} className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md transition shadow disabled:opacity-50">
+            {deleteMutation.isPending ? "Deleting..." : "🗑 Delete Monitor"}
+          </button>
+        </div>
 
         {/* Endpoint & Method */}
-        <div className="flex items-center gap-4 mb-3">
-          <span className="px-3 py-1 rounded-full bg-green-100 text-green-700 font-semibold border border-green-300 text-sm shadow">
-            {monitor?.method}
-          </span>
-          <span className="font-bold text-lg text-gray-800 dark:text-white break-all">{monitor?.endpoint}</span>
-        </div>
+      <div className="flex items-center gap-4 mb-3">
+        <span className="px-3 py-1 rounded-full bg-green-100 text-green-700 font-semibold border border-green-300 text-sm shadow">
+          {monitor?.method}
+        </span>
+        <span className="font-bold text-lg text-gray-800 dark:text-white break-all">{monitor?.endpoint}</span>
+      </div>
         {/* API Name */}
         <h1 className="text-3xl sm:text-4xl font-bold mb-4 text-purple-700 dark:text-white">{monitor?.name}</h1>
         {/* Stats Cards */}

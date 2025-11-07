@@ -50,7 +50,7 @@ export const checkSession = () => async (dispatch: AppDispatch) => {
       dispatch(clearAuth());
     }
   } catch (err) {
-    console.log(err, "error in check session ");
+    console.log("UnAuthorize Kindly Login ",err);
     dispatch(clearAuth());
   } finally {
     dispatch(setLoading(false));

@@ -7,9 +7,7 @@ import type { RootState } from "@/redux/store";
 import type { MonitorData } from "@/responses/MonitorResponse";
 
 export const useGetUsers = () => {
-  const auth = useSelector((state: RootState) => state.auth);
-  console.log(auth.accessToken);
-  
+  const auth = useSelector((state: RootState) => state.auth);  
   return useQuery({
     queryKey: ["admin-users"],
     queryFn: async () => {

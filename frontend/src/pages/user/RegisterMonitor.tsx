@@ -71,7 +71,7 @@ const RegisterMonitor: React.FC = () => {
         },
         {
           onSuccess: () => {
-            toast.success("✅ Monitor created successfully!");
+            toast.success("Monitor created successfully!");
             setFormData({
               name: "",
               endpoint: "",

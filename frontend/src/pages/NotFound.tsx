@@ -1,8 +1,7 @@
 // src/pages/NotFound.tsx
 import React from "react";
-import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import NotFoundImage from "../assets/NotFoundImage.png"; // Make sure to have a 404 image in assets
+import NotFoundImage from "../assets/NotFoundImage.png"; 
 
 const NotFound: React.FC = () => {
   return (
@@ -43,9 +42,7 @@ const NotFound: React.FC = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.9 }}
-        >
-          <Link to="/"className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 rounded-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-purple-500/30">Back to Home</Link>
-          
+        >          
         </motion.div>
       </div>
     </div>

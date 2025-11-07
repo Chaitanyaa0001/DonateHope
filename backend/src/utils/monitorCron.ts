@@ -9,7 +9,7 @@ const activeJobs = new Map<string, ScheduledTask>();
 const jobTimers = new Map<string, NodeJS.Timeout>();
 const MAX_LOGS_PER_MONITOR = 8;
 
-// ✅ Perform one monitor check (used both for instant + cron jobs)
+//  Perform one monitor check (used both for instant + cron jobs)
 export const performMonitorCheck = async (monitor: any, instantCheck = false) => {
   const start = Date.now();
   let latency = 0;
@@ -17,7 +17,6 @@ export const performMonitorCheck = async (monitor: any, instantCheck = false) =>
   let message = "";
 
   try {
-    // 🔹 Send API request
     const response = await axios({
       url: monitor.endpoint,
       method: monitor.method,
@@ -30,7 +29,7 @@ export const performMonitorCheck = async (monitor: any, instantCheck = false) =>
     statusCode = response.status;
     message = "Success";
 
-    // 🔹 Create log
+    // Create log
     await MonitorLogs.create({
       monitorId: monitor._id,
       statusCode,
@@ -38,7 +37,7 @@ export const performMonitorCheck = async (monitor: any, instantCheck = false) =>
       message,
     });
 
-    // 🔹 Update monitor stats
+    // Update monitor stats
     await monitorModel.findByIdAndUpdate(monitor._id, {
       $set: { latency, uptime: 100 },
     });
@@ -63,7 +62,7 @@ export const performMonitorCheck = async (monitor: any, instantCheck = false) =>
       },
     });
 
-    console.log(`❌ [${monitor.name}] failed (${message})`);
+    console.log(` [${monitor.name}] failed (${message})`);
   }
 
   try {
@@ -77,7 +76,7 @@ export const performMonitorCheck = async (monitor: any, instantCheck = false) =>
       console.log(`🧹 Trimmed logs for ${monitor.name} (kept ${MAX_LOGS_PER_MONITOR})`);
     }
   } catch (err: any) {
-    console.error(`⚠️ Log cleanup failed for ${monitor.name}:`, err.message);
+    console.error(` Log cleanup failed for ${monitor.name}:`, err.message);
   }
 
   // Generate AI summary only once initially or every 5th check
@@ -95,11 +94,11 @@ export const performMonitorCheck = async (monitor: any, instantCheck = false) =>
       });
 
       console.log(
-        `🧠 AI summary ${instantCheck ? "(initial)" : "(auto)"} updated for ${monitor.name}`
+        ` AI summary ${instantCheck ? "(initial)" : "(auto)"} updated for ${monitor.name}`
       );
     }
   } catch (err: any) {
-    console.error(`❌ AI summary failed for ${monitor.name}:`, err.message);
+    console.error(` AI summary failed for ${monitor.name}:`, err.message);
   }
 };
 
@@ -108,7 +107,7 @@ export const startMonitorJob = (monitor: any) => {
   const cronExp = `*/${interval} * * * *`;
 
   if (activeJobs.has(monitor._id.toString())) {
-    console.log(`⚙️ Job already running for ${monitor.name}`);
+    console.log(` Job already running for ${monitor.name}`);
     return;
   }
 
@@ -122,12 +121,12 @@ export const startMonitorJob = (monitor: any) => {
   // stop in 12 hours 
       const timeout = setTimeout(() => {
         stopMonitorJob(monitor._id.toString());
-        console.log(`🕒 Auto-stopped monitor ${monitor.name} after 12 hours`);
+        console.log(` Auto-stopped monitor ${monitor.name} after 12 hours`);
       }, 12 * 60 * 60 * 1000);
     
       jobTimers.set(monitor._id.toString(), timeout);
 
-  console.log(`🕒 Started job for ${monitor.name} every ${interval} min`);
+  console.log(` Started job for ${monitor.name} every ${interval} min`);
 };
 
 export const stopMonitorJob = (monitorId: string) => {
@@ -135,7 +134,7 @@ export const stopMonitorJob = (monitorId: string) => {
   if (job) {
     job.stop();
     activeJobs.delete(monitorId);
-    console.log(`🛑 Stopped job for monitor ${monitorId}`);
+    console.log(` Stopped job for monitor ${monitorId}`);
   }
 };
 
@@ -144,11 +143,11 @@ export const restartAllMonitorJobs = async () => {
   for (const monitor of monitors) {
     startMonitorJob(monitor);
   }
-  console.log(`♻️ Restarted ${monitors.length} monitor jobs`);
+  console.log(` Restarted ${monitors.length} monitor jobs`);
 };
 
 export const deleteMonitorLogs = async (monitorId: string) => {
   await MonitorLogs.deleteMany({ monitorId });
   stopMonitorJob(monitorId);
-  console.log(`🗑️ Deleted all logs for monitor ${monitorId}`);
+  console.log(` Deleted all logs for monitor ${monitorId}`);
 };

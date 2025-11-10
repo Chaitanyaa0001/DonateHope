@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import {
   FiHome,
   FiPlusCircle,
-  FiHelpCircle,
+  // FiHelpCircle,
   FiLogOut,
   FiMenu,
   FiX,

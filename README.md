@@ -63,9 +63,6 @@ To set up UptimeIQ locally, follow these steps:
 ### ENVIRONMENT VARIABLES
 Create a `.env` file in the root of the `backend` directory and add your environment variables.
 
-## 📸 Screenshots
-_Add screenshots here_
-
 ## 🚀 Usage / How it Works
 
 UptimeIQ provides a robust and secure authentication system. Here's an overview of the step-by-step flow:

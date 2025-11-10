@@ -42,7 +42,7 @@ const Sidebar: React.FC = () => {
     <>
       {/* Mobile Header */}
       <div className="lg:hidden fixed top-0 left-0 w-full bg-white dark:bg-[#0d0b1d] border-b border-gray-200 dark:border-gray-800 z-30 flex items-center justify-between px-4 py-3">
-        <h1 className="text-xl font-bold text-[#9810FA]">DonateHope</h1>
+        <h1 className="text-xl font-bold text-[#9810FA]">UptimeIQ</h1>
         <button onClick={() => setIsOpen(true)} className="text-2xl text-gray-700 dark:text-gray-300">
           <FiMenu />
         </button>
@@ -51,7 +51,7 @@ const Sidebar: React.FC = () => {
       {/* Desktop Sidebar */}
       <div className="hidden lg:flex h-screen w-64 bg-white dark:bg-[#0d0b1d] border-r border-gray-200 dark:border-gray-800 flex-col justify-between fixed left-0 top-0">
         <div className="px-6 py-4">
-          <h1 className="text-2xl font-bold text-[#9810FA]">DonateHope</h1>
+          <h1 className="text-2xl font-bold text-[#9810FA]">UptimeIQ</h1>
         </div>
         <nav className="flex-1 px-4">
           <ul className="space-y-2">
@@ -75,13 +75,7 @@ const Sidebar: React.FC = () => {
 
         {/* Common links */}
         <div className="px-4 py-6 space-y-2 border-t border-gray-200 dark:border-gray-800">
-          <Link
-            to="/help"
-            className="flex items-center gap-3 px-4 py-2 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
-          >
-            <FiHelpCircle />
-            Help Center
-          </Link>
+          
           <button
             type="button"
             onClick={handleLogout}
@@ -134,21 +128,8 @@ const Sidebar: React.FC = () => {
             </nav>
 
             <div className="px-4 py-6 space-y-2 border-t border-gray-200 dark:border-gray-800">
-              <Link
-                to="/help"
-                onClick={() => setIsOpen(false)}
-                className="flex items-center gap-3 px-4 py-2 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
-              >
-                <FiHelpCircle />
-                Help Center
-              </Link>
-              <button
-                onClick={() => {
-                  console.log("Logout clicked");
-                  setIsOpen(false);
-                }}
-                className="flex items-center gap-3 px-4 py-2 rounded-lg text-sm font-medium text-red-600 hover:bg-red-100 dark:hover:bg-red-900/30 w-full text-left"
-              >
+              
+              <button onClick={() => {handleLogout();setIsOpen(false);}}className="flex items-center gap-3 px-4 py-2 rounded-lg text-sm font-medium text-red-600 hover:bg-red-100 dark:hover:bg-red-900/30 w-full text-left">
                 <FiLogOut />
                 Logout
               </button>

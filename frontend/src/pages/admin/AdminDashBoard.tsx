@@ -6,6 +6,8 @@ import { useDeleteUser, useGetUsers } from "@/hooks/userAdmin/useAdminUsers";
 import { toast } from "react-toastify";
 import Loader from "@/components/Loader";
 import ErrorState from "@/components/ErrorState";
+import { FiBarChart2,FiUsers } from "react-icons/fi";
+
 
 const container: Variants = {
   hidden: {},
@@ -35,17 +37,17 @@ const AdminDashboard: React.FC = () => {
   const handleDeleteUser = async (id: string) => {
     await deleteUser(id);
     toast.success("User deleted successfully");
-  };
+  };  
 
   return (
     <div className="p-2 text-gray-900 dark:text-gray-100">
-      <div className="flex flex-col sm:flex-row justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">🛠 Admin Dashboard</h1>
+      <div className="flex flex-row items-start sm:flex-row justify-between lg:mt-5 mt-12 mb-6">
+        <h1 className="text-xl  text-purple-500 flex items-center justify-center lg:text-3xl font-bold"><FiBarChart2 className="text-purple-600"/> Admin Dashboard</h1>
         <Togglebutton />
       </div>
 
       <section>
-        <h2 className="text-2xl font-semibold mb-4 text-purple-500">👥 Manage Users</h2>
+        <h2 className="text-2xl flex items-center gap-2 font-semibold mb-4 text-purple-500"><FiUsers/> Manage Users</h2>
         <motion.div variants={container} initial="hidden" animate="show" className="grid gap-5">
           {users.map((user) => (
             <UserCard key={user._id} user={user} onDelete={handleDeleteUser} />

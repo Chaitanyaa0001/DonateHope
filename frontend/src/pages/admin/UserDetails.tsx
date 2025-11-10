@@ -8,6 +8,8 @@ import {
   FiArrowLeft,
   FiLink,
   FiClock,
+  FiCheckCircle,
+  FiXCircle
 } from "react-icons/fi";
 import Togglebutton from "@/components/ui/Togglebutton";
 import { useDeleteUser, useGetUserById } from "@/hooks/userAdmin/useAdminUsers";
@@ -77,27 +79,18 @@ const UserDetails: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen p-4 sm:p-6 text-gray-900 dark:text-gray-100 bg-gray-100 dark:bg-[#0c0c1d]">
+    <div className="min-h-screen p-2 lg:mt-3 sm:p-6 text-gray-900 dark:text-gray-100 ">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-center mb-8">
-        <div className="flex items-center gap-3">
-          <button
-            onClick={handleBack}
-            className="flex items-center gap-2 text-sm font-semibold text-purple-500 hover:text-purple-400"
-          >
-            <FiArrowLeft /> Back
-          </button>
-          <h1 className="text-3xl font-bold">{data.user.fullname}</h1>
-        </div>
-        <div className="flex items-center gap-4 mt-4 sm:mt-0">
+      <div className="flex flex-row justify-between gap-3">
+          <button onClick={handleBack} className="flex items-center  gap-2 text-sm font-semibold text-purple-500 hover:text-purple-400"><FiArrowLeft /> Back to Dashboard</button>
           <Togglebutton />
-          <button
-            onClick={handleDeleteUser}
-            className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all"
-          >
-            <FiTrash2 /> Delete User
-          </button>
-        </div>
+      </div>
+
+      <div className="flex  justify-between mt-5  items-start  mb-8">
+        {/* <div className="flex items-center justify-between  mt-4 sm:mt-0"> */}
+          <h1 className="text-3xl font-bold">{data.user.fullname}</h1>
+        
+          <button onClick={handleDeleteUser} className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all"> <FiTrash2 /> Delete User</button>
       </div>
 
       {/* User Info */}
@@ -120,9 +113,9 @@ const UserDetails: React.FC = () => {
           <p className="flex items-center gap-2">
             Status:{" "}
             {data.user.isVerified ? (
-              <span className="text-green-400 font-semibold">✅ Verified</span>
+              <span className="text-green-400 flex items-center gap-2 font-semibold"><FiCheckCircle/> Verified</span>
             ) : (
-              <span className="text-red-400 font-semibold">❌ Not Verified</span>
+              <span className="text-red-400 items-center flex font-semibold"> <FiXCircle/>Not Verified</span>
             )}
           </p>
         </div>
@@ -155,14 +148,7 @@ const UserDetails: React.FC = () => {
                 whileHover={{ scale: 1.02 }}
                 className="relative rounded-2xl border border-[#C800DE]/40 bg-white dark:bg-[#0d0b1d] p-5 shadow-md hover:shadow-[0_0_20px_rgba(200,0,222,0.3)] transition-all"
               >
-                <button
-                  onClick={() => handleDeleteMonitor(monitor._id)}
-                  className="absolute top-3 right-3 text-red-500 hover:text-red-600"
-                  title="Delete monitor"
-                >
-                  <FiTrash2 />
-                </button>
-
+                <button onClick={() => handleDeleteMonitor(monitor._id)} className="absolute top-3 right-3 text-red-500 hover:text-red-600" title="Delete monitor"> <FiTrash2 /></button>
                 <h3 className="text-lg font-semibold text-purple-500 mb-2">
                   {monitor.name}
                 </h3>

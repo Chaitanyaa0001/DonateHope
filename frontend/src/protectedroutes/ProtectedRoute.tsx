@@ -17,5 +17,5 @@ const ProtectedRoutes = ({ role, children }: ProtectedRouteProps) => {
   if (currentRole !== role) return <Navigate to="/" replace />;
   return <>{children}</>;
 };
-
+  
 export default ProtectedRoutes;

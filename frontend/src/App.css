@@ -3,6 +3,19 @@
 
 @custom-variant dark (&:is(.dark *));
 
+:root {
+  --font-primary: "Montserrat", sans-serif;
+  --font-heading: "League Spartan", sans-serif;
+  --font-alt: "Nunito Sans", sans-serif;
+}
+
+body {
+  font-family: var(--font-primary);
+}
+h1, h2, h3 {
+  font-family: var(--font-heading);
+}
+
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
